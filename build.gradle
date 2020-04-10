@@ -7,7 +7,7 @@ if (file('publish.gradle').exists()) {
 }
 
 group 'com.infomaximum'
-version '0.0.1'
+version '0.0.1RC1'
 
 sourceCompatibility = 1.8
 
@@ -17,6 +17,12 @@ repositories {
 }
 
 dependencies {
+
+    compile 'com.infomaximum:cluster:0.0.66'
+    compile 'com.infomaximum:cluster-graphql:0.0.24RC1'
+    compile 'com.infomaximum:rdao:1.11.2'
+    
+    compile 'com.infomaximum:network:0.0.16RC10'
 
     compile 'org.slf4j:slf4j-api:1.7.25'
     
