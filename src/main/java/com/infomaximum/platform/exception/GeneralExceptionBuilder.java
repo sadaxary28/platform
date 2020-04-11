@@ -116,6 +116,10 @@ public class GeneralExceptionBuilder {
         return EXCEPTION_FACTORY.build("io_error", e);
     }
 
+    public static SubsystemException buildSecurityException(SecurityException e) {
+        return EXCEPTION_FACTORY.build("security_exception", e);
+    }
+
     public static SubsystemException buildEmptyValueException(String fieldName) {
         return EXCEPTION_FACTORY.build("empty_value", Collections.singletonMap("fieldName", fieldName));
     }
