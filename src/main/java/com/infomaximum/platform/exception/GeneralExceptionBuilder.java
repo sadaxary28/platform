@@ -170,6 +170,10 @@ public class GeneralExceptionBuilder {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, comment, buildParams(clazz, fieldNumber, fieldValue));
     }
 
+    public static SubsystemException buildOnlyWebsocket() {
+        return EXCEPTION_FACTORY.build("only_websocket");
+    }
+
     public static SubsystemException buildAccessDeniedException() {
         return EXCEPTION_FACTORY.build(ACCESS_DENIED_CODE);
     }
