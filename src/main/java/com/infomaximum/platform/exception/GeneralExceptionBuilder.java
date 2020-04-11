@@ -170,6 +170,10 @@ public class GeneralExceptionBuilder {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, comment, buildParams(clazz, fieldNumber, fieldValue));
     }
 
+    public static SubsystemException buildUploadFileNotFoundException() {
+        return EXCEPTION_FACTORY.build("upload_file_not_found");
+    }
+
     public static SubsystemException buildOnlyWebsocket() {
         return EXCEPTION_FACTORY.build("only_websocket");
     }
