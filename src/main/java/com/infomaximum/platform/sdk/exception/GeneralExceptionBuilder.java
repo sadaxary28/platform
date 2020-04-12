@@ -1,4 +1,4 @@
-package com.infomaximum.platform.exception;
+package com.infomaximum.platform.sdk.exception;
 
 import com.google.common.collect.ImmutableMap;
 import com.infomaximum.database.domainobject.DomainObject;
