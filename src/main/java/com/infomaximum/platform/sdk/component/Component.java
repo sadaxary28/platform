@@ -11,8 +11,11 @@ import com.infomaximum.database.domainobject.DomainObjectSource;
 import com.infomaximum.database.domainobject.Transaction;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.exception.runtime.SchemaException;
+import com.infomaximum.database.maintenance.ChangeMode;
 import com.infomaximum.database.maintenance.SchemaService;
 import com.infomaximum.database.provider.DBProvider;
+import com.infomaximum.database.schema.Schema;
+import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
 import org.reflections.Reflections;
 
@@ -23,15 +26,11 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 
 	protected DBProvider dbProvider;
 	protected DomainObjectSource domainObjectSource;
+	private Schema schema;
 
 	public Component(Cluster cluster) {
 		super(cluster);
 	}
-
-//	@Override
-//	public Info getInfo() {
-//		return null;
-//	}
 
 	protected DBProvider initDBProvider() throws ClusterException {
 		if (dbProvider != null) {
@@ -63,7 +62,21 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 	}
 
 	public void onStarting() throws Exception {
+		Set<StructEntity> domains = new HashSet<>();
+		for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
+			domains.add(Schema.getEntity(domainObjectClass));
+		}
+		schema.checkSubsystemIntegrity(domains, getInfo().getUuid());
+		buildSchemaService()
+				.setChangeMode(ChangeMode.CREATION)
+				.setValidationMode(false)
+				.execute();
+	}
 
+	public SchemaService buildSchemaService() {
+		return new SchemaService(getDbProvider())
+				.setNamespace(getInfo().getUuid())
+				.setSchema(getSchema());
 	}
 
 	@Override
@@ -84,16 +97,40 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 		return domainObjectSource;
 	}
 
+	protected Schema getSchema() {
+		return schema;
+	}
+
 	public void initialize() throws ClusterException {
 		if (!getClass().getPackage().getName().equals(getInfo().getUuid())) {
 			throw new RuntimeException(getClass() + " is not correspond to uuid: " + getInfo().getUuid());
 		}
 
 		this.dbProvider = initDBProvider();
+		this.schema = initializeSchema(dbProvider);
 	}
 
 	@Override
 	public void destroying() throws ClusterException {
 
 	}
+
+	private Schema initializeSchema(DBProvider dbProvider) {
+		try {
+			Schema schema;
+			if (Schema.exists(dbProvider)) {
+				schema = Schema.read(dbProvider);
+			} else {
+				schema = Schema.create(dbProvider);
+			}
+			for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
+				Schema.resolve(domainObjectClass); //todo убрать resolve когда переведу функционал из StructEntity
+			}
+			return schema;
+		} catch (DatabaseException e) {
+			throw new SchemaException(e);
+		}
+	}
+
+
 }
