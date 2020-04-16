@@ -1,46 +1,67 @@
 package com.infomaximum.platform;
 
+import com.infomaximum.cluster.Cluster;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 
-public class Platform {
+public class Platform implements AutoCloseable {
 
-    private static volatile Platform instant;
+	private static volatile Platform instant;
 
-    private final DatabaseConfigure databaseConfigure;
+	private final DatabaseConfigure databaseConfigure;
+	private final Cluster cluster;
 
-    private Platform(Builder builder) {
-        synchronized (Platform.class) {
-            if (instant != null) throw new IllegalStateException();
+	private Platform(Builder builder) {
+		synchronized (Platform.class) {
+			if (instant != null) throw new IllegalStateException();
 
-            this.databaseConfigure = builder.databaseConfigure;
+			this.databaseConfigure = builder.databaseConfigure;
+			this.cluster = builder.clusterBuilder.build();
 
-            instant = this;
-        }
-    }
+			instant = this;
+		}
+	}
 
-    public DatabaseConfigure getDatabaseConfigure() {
-        return databaseConfigure;
-    }
+	public DatabaseConfigure getDatabaseConfigure() {
+		return databaseConfigure;
+	}
+
+	public Cluster getCluster() {
+		return cluster;
+	}
+
+	@Override
+	public void close() {
+		cluster.close();
+		instant = null;
+	}
 
 
-    public static Platform get() {
-        return instant;
-    }
+	public static Platform get() {
+		return instant;
+	}
 
-    public static class Builder {
+	public static class Builder {
 
-        private DatabaseConfigure databaseConfigure;
+		private DatabaseConfigure databaseConfigure;
 
-        public Builder() {
-        }
+		private Cluster.Builder clusterBuilder;
 
-        public Builder withConfig(DatabaseConfigure databaseConfigure) {
-            this.databaseConfigure = databaseConfigure;
-            return this;
-        }
+		public Builder() {
+			clusterBuilder = new Cluster.Builder();
+		}
 
-        public Platform build() {
-            return new Platform(this);
-        }
-    }
+		public Builder withConfig(DatabaseConfigure databaseConfigure) {
+			this.databaseConfigure = databaseConfigure;
+			return this;
+		}
+
+		public Builder withClusterBuilder(Cluster.Builder clusterBuilder) {
+			this.clusterBuilder = clusterBuilder;
+			return this;
+		}
+
+		public Platform build() {
+			return new Platform(this);
+		}
+	}
 }
