@@ -17,6 +17,7 @@ import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
+import com.infomaximum.subsystems.remote.QueryRemotes;
 import org.reflections.Reflections;
 
 import java.util.HashSet;
@@ -27,6 +28,8 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 	protected DBProvider dbProvider;
 	protected DomainObjectSource domainObjectSource;
 	private Schema schema;
+
+	private QueryRemotes queryRemotes;
 
 	public Component(Cluster cluster) {
 		super(cluster);
@@ -108,6 +111,12 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 
 		this.dbProvider = initDBProvider();
 		this.schema = initializeSchema(dbProvider);
+
+		this.queryRemotes = new QueryRemotes(this);
+	}
+
+	public final QueryRemotes getQueryRemotes() {
+		return queryRemotes;
 	}
 
 	@Override
