@@ -1,4 +1,4 @@
-package com.infomaximum.subsystems.remote;
+package com.infomaximum.platform.sdk.remote;
 
 import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
