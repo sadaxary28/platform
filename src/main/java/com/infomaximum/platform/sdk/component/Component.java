@@ -17,7 +17,7 @@ import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
-import com.infomaximum.subsystems.remote.QueryRemotes;
+import com.infomaximum.platform.sdk.remote.QueryRemotes;
 import org.reflections.Reflections;
 
 import java.util.HashSet;
