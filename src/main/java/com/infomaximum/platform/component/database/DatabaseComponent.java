@@ -13,7 +13,7 @@ import com.infomaximum.rocksdb.RocksDataBaseBuilder;
 
 public class DatabaseComponent extends Component {
 
-	public static final Info INFO = new Info.Builder(DatabaseConsts.UUID, null)
+	public static final Info INFO = (Info) new Info.Builder(DatabaseConsts.UUID, null)
 			.withComponentClass(DatabaseComponent.class)
 			.build();
 
