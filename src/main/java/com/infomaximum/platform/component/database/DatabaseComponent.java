@@ -2,18 +2,18 @@ package com.infomaximum.platform.component.database;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.database.utils.DatabaseUtils;
 import com.infomaximum.platform.sdk.component.Component;
+import com.infomaximum.platform.sdk.component.Info;
 import com.infomaximum.rocksdb.RocksDBProvider;
 import com.infomaximum.rocksdb.RocksDataBaseBuilder;
 
 public class DatabaseComponent extends Component {
 
-	public static final Info INFO = new Info.Builder(DatabaseConsts.UUID)
+	public static final Info INFO = new Info.Builder(DatabaseConsts.UUID, null)
 			.withComponentClass(DatabaseComponent.class)
 			.build();
 

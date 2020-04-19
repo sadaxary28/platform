@@ -1,13 +1,20 @@
 package com.infomaximum.platform;
 
 import com.infomaximum.cluster.Cluster;
+import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
+import com.infomaximum.platform.upgrade.PlatformUpgrade;
+import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.querypool.QueryPool;
+import com.infomaximum.subsystems.utils.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Platform implements AutoCloseable {
 
+	public static final String UUID = Platform.class.getPackage().getName();
+	public static final Version VERSION = new Version(0, 0, 1);
+	
 	private final static Logger log = LoggerFactory.getLogger(Platform.class);
 
 	private static volatile Platform instant;
@@ -30,6 +37,15 @@ public class Platform implements AutoCloseable {
 
 			instant = this;
 		}
+	}
+
+	public void install() throws SubsystemException {
+        new PlatformUpgrade(this).install();
+	}
+
+
+	public void upgrade() throws DatabaseException {
+        new PlatformUpgrade(this).upgrade();
 	}
 
 	public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
