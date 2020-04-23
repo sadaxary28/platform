@@ -42,12 +42,6 @@ public class PlatformUpgrade {
 			new DomainObjectSource(databaseSubsystem.getRocksDBProvider()).executeTransactional(transaction -> {
 				schema.createTable(new StructEntity(ModuleReadable.class));
 
-				//Записыываем версию платформы
-				ModuleEditable module = transaction.create(ModuleEditable.class);
-				module.setUuid(Platform.UUID);
-				module.setVersion(Platform.VERSION);
-				transaction.save(module);
-
 				//Регистрируем и установливаем модули
                 List<Component> components = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
                 for (Component component : components) {
@@ -79,7 +73,7 @@ public class PlatformUpgrade {
 			return;
 		}
 
-		//Регистрируем
+		//Регистрируем компонент
 		ModuleEditable moduleEditable = transaction.create(ModuleEditable.class);
 		moduleEditable.setUuid(info.getUuid());
 		moduleEditable.setVersion(info.getVersion());

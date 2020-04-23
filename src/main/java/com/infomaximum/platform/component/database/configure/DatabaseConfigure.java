@@ -24,7 +24,7 @@ public class DatabaseConfigure {
 			return this;
 		}
 
-		public Builder withExtension(DatabaseComponentExtension extensions) {
+		public Builder withExtension(DatabaseComponentExtension extension) {
 			this.extension = extension;
 			return this;
 		}
