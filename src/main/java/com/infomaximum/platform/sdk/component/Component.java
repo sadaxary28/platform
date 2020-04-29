@@ -18,6 +18,7 @@ import com.infomaximum.database.schema.Schema;
 import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
 import com.infomaximum.platform.sdk.remote.QueryRemotes;
+import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import org.reflections.Reflections;
 
 import java.util.HashSet;
@@ -59,6 +60,14 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 	public void install(Transaction transaction) throws DatabaseException {
 
 	}
+
+	public QuerySystem<Void> onStart() {
+        return null;
+	}
+
+    public QuerySystem<Void> onStop() {
+        return null;
+    }
 
 	public void start() throws Exception {
 

@@ -1,4 +1,4 @@
-package com.infomaximum.platform.upgrade;
+package com.infomaximum.platform.control;
 
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObject;
