@@ -17,8 +17,10 @@ import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
+import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.remote.QueryRemotes;
 import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
+import com.infomaximum.subsystems.exception.SubsystemException;
 import org.reflections.Reflections;
 
 import java.util.HashSet;
@@ -69,20 +71,20 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         return null;
     }
 
-	public void start() throws Exception {
-
-	}
-
-	public void onStarting() throws Exception {
-		Set<StructEntity> domains = new HashSet<>();
-		for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
-			domains.add(Schema.getEntity(domainObjectClass));
+	public void onStarting() throws SubsystemException {
+		try {
+			Set<StructEntity> domains = new HashSet<>();
+			for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
+				domains.add(Schema.getEntity(domainObjectClass));
+			}
+			schema.checkSubsystemIntegrity(domains, getInfo().getUuid());
+			buildSchemaService()
+					.setChangeMode(ChangeMode.CREATION)
+					.setValidationMode(false)
+					.execute();
+		} catch (DatabaseException e) {
+			throw GeneralExceptionBuilder.buildDatabaseException(e);
 		}
-		schema.checkSubsystemIntegrity(domains, getInfo().getUuid());
-		buildSchemaService()
-				.setChangeMode(ChangeMode.CREATION)
-				.setValidationMode(false)
-				.execute();
 	}
 
 	public SchemaService buildSchemaService() {

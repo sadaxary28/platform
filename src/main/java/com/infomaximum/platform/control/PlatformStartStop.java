@@ -27,13 +27,23 @@ public class PlatformStartStop {
         this.platform = platform;
     }
 
+    /**
+     * Запуск происходит в несколько фаз:
+     * 1) onStarting - инициализирующая фаза старта компонента
+     * 2) onStart - Все необходимые фазы пройденны - пользовательский запуск
+     * @throws SubsystemException
+     */
     public void start() throws SubsystemException {
-        DatabaseComponent databaseComponent = platform.getCluster().getAnyComponent(DatabaseComponent.class);
+        //onStarting
+        for (Component component: platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
+            component.onStarting();
+        }
 
+        //onStart
+        DatabaseComponent databaseComponent = platform.getCluster().getAnyComponent(DatabaseComponent.class);
         List<QuerySystem<Void>> startQueries = platform.getCluster().getDependencyOrderedComponentsOf(Component.class)
                 .stream().map(component -> component.onStart()).filter(query -> query != null)
                 .collect(Collectors.toList());
-
         try {
             platform.getQueryPool().execute(databaseComponent, new Query<Void>() {
 
