@@ -3,7 +3,8 @@ package com.infomaximum.platform;
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
-import com.infomaximum.platform.upgrade.PlatformUpgrade;
+import com.infomaximum.platform.control.PlatformStartStop;
+import com.infomaximum.platform.control.PlatformUpgrade;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.querypool.QueryPool;
 import com.infomaximum.subsystems.utils.Version;
@@ -43,10 +44,17 @@ public class Platform implements AutoCloseable {
         new PlatformUpgrade(this).install();
 	}
 
-
 	public void upgrade() throws DatabaseException {
         new PlatformUpgrade(this).upgrade();
 	}
+
+	public void start() throws SubsystemException {
+        new PlatformStartStop(this).start();
+	}
+
+    public void stop() throws SubsystemException {
+        new PlatformStartStop(this).stop();
+    }
 
 	public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
 		return uncaughtExceptionHandler;
