@@ -10,6 +10,7 @@ import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.component.Info;
 import com.infomaximum.rocksdb.RocksDBProvider;
 import com.infomaximum.rocksdb.RocksDataBaseBuilder;
+import com.infomaximum.subsystems.exception.SubsystemException;
 
 public class DatabaseComponent extends Component {
 
@@ -50,15 +51,14 @@ public class DatabaseComponent extends Component {
 		}
 	}
 
-	public void start() throws Exception {
-		super.start();
+	public void onStarting() throws SubsystemException {
+		super.onStarting();
 
 		this.extension = Platform.get().getDatabaseConfigure().extension;
 		if (extension != null) {
 			extension.initialize(this);
 		}
 	}
-
 
 	public RocksDBProvider getRocksDBProvider() {
 		return dbProvider;
