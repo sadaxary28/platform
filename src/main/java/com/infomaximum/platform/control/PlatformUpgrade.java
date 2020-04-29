@@ -62,7 +62,8 @@ public class PlatformUpgrade {
 //		Schema schema = Schema.read(provider);
 	}
 
-	private void installComponent(Component component, Transaction transaction) throws DatabaseException {
+	//TODO Ulitin V. Временно сделано public - перевести на private
+	public void installComponent(Component component, Transaction transaction) throws DatabaseException {
 		if (!(component.getInfo() instanceof Info)) {
 			return;
 		}
