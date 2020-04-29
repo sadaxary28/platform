@@ -48,7 +48,6 @@ public class PlatformUpgrade {
                     installComponent(component, transaction);
                 }
 			});
-
 		} catch (DatabaseException e) {
 			throw GeneralExceptionBuilder.buildDatabaseException(e);
 		} catch (Throwable e) {

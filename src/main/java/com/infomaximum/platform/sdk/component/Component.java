@@ -6,9 +6,7 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.graphql.exception.GraphQLExecutorException;
 import com.infomaximum.database.anotation.Entity;
-import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.domainobject.DomainObjectSource;
-import com.infomaximum.database.domainobject.Transaction;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.exception.runtime.SchemaException;
 import com.infomaximum.database.maintenance.ChangeMode;
@@ -43,24 +41,6 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 			return dbProvider;
 		}
 		return new ComponentDBProvider(cluster, this);
-	}
-
-	public void install() throws Exception {
-		dbProvider = initDBProvider();
-		domainObjectSource = new DomainObjectSource(dbProvider);
-		Set<Class<? extends DomainObject>> objects = new HashSet<>();
-		for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
-			objects.add(domainObjectClass);
-		}
-		try {
-			SchemaService.install(objects, dbProvider);
-		} catch (DatabaseException e) {
-			throw new SchemaException(e);
-		}
-	}
-
-	public void install(Transaction transaction) throws DatabaseException {
-
 	}
 
 	public QuerySystem<Void> onStart() {
