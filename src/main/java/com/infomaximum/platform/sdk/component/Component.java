@@ -121,6 +121,8 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 		this.dbProvider = initDBProvider();
 		this.schema = initializeSchema(dbProvider);
 
+		this.domainObjectSource = new DomainObjectSource(dbProvider);
+
 		this.queryRemotes = new QueryRemotes(this);
 	}
 
