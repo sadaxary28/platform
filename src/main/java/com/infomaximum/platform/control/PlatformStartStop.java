@@ -1,6 +1,8 @@
 package com.infomaximum.platform.control;
 
 import com.infomaximum.database.domainobject.filter.HashFilter;
+import com.infomaximum.database.exception.DatabaseException;
+import com.infomaximum.database.schema.Schema;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.sdk.component.Component;
@@ -8,18 +10,24 @@ import com.infomaximum.platform.sdk.context.ContextTransaction;
 import com.infomaximum.platform.sdk.context.impl.ContextTransactionImpl;
 import com.infomaximum.platform.sdk.context.source.impl.SourceSystemImpl;
 import com.infomaximum.platform.sdk.domainobject.module.ModuleEditable;
+import com.infomaximum.platform.sdk.domainobject.module.ModuleReadable;
+import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.querypool.Query;
 import com.infomaximum.subsystems.querypool.QueryTransaction;
 import com.infomaximum.subsystems.querypool.RemovableResource;
 import com.infomaximum.subsystems.querypool.ResourceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class PlatformStartStop {
+
+    private final static Logger log = LoggerFactory.getLogger(PlatformStartStop.class);
 
     private final Platform platform;
 
@@ -31,11 +39,29 @@ public class PlatformStartStop {
      * Запуск происходит в несколько фаз:
      * 1) onStarting - инициализирующая фаза старта компонента
      * 2) onStart - Все необходимые фазы пройденны - пользовательский запуск
+     *
      * @throws SubsystemException
      */
     public void start() throws SubsystemException {
+        //initialize
+        for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
+            if (component.getDbProvider() == null) {
+                component.initialize();
+            }
+        }
+
+        //Инициализируем ModuleReadable
+        try {
+            DatabaseComponent databaseSubsystem = platform.getCluster().getAnyComponent(DatabaseComponent.class);
+            Schema schema = Schema.read(databaseSubsystem.getRocksDBProvider());
+            log.warn("Schema on start: " + schema.getDbSchema().toTablesJsonString());
+            Schema.resolve(ModuleReadable.class);
+        } catch (DatabaseException e) {
+            throw GeneralExceptionBuilder.buildDatabaseException(e);
+        }
+
         //onStarting
-        for (Component component: platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
+        for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
             component.onStarting();
         }
 
