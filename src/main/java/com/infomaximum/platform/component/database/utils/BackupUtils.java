@@ -1,4 +1,4 @@
-package com.infomaximum.subsystem.database.utils;
+package com.infomaximum.platform.component.database.utils;
 
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.utils.PathUtils;

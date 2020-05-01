@@ -1,6 +1,4 @@
-package com.infomaximum.subsystems.subsystem;
-
-import com.infomaximum.subsystems.utils.Version;
+package com.infomaximum.platform.sdk.component.version;
 
 //https://semver.org/lang/ru/
 public class CompatibleVersion {

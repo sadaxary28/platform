@@ -1,4 +1,4 @@
-package com.infomaximum.subsystems.threadpool;
+package com.infomaximum.platform.sdk.threadpool;
 
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.utils.DefaultThreadPoolExecutor;
