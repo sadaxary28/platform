@@ -5,9 +5,9 @@ import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
+import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.querypool.QueryPool;
-import com.infomaximum.subsystems.utils.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

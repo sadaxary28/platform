@@ -1,4 +1,4 @@
-package com.infomaximum.subsystem.database.exception;
+package com.infomaximum.platform.component.database.exception;
 
 import com.infomaximum.platform.component.database.DatabaseConsts;
 import com.infomaximum.subsystems.exception.ExceptionFactory;

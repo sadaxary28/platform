@@ -1,6 +1,6 @@
 package com.infomaximum.platform.sdk.component;
 
-import com.infomaximum.subsystems.utils.Version;
+import com.infomaximum.platform.sdk.component.version.Version;
 
 public class Info extends com.infomaximum.cluster.struct.Info {
 

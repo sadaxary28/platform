@@ -1,4 +1,4 @@
-package com.infomaximum.subsystems.utils;
+package com.infomaximum.platform.sdk.component.version;
 
 public class Version {
 

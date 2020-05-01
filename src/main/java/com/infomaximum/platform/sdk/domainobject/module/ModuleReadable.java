@@ -5,7 +5,7 @@ import com.infomaximum.database.anotation.Field;
 import com.infomaximum.database.anotation.HashIndex;
 import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.exception.DatabaseException;
-import com.infomaximum.subsystems.utils.Version;
+import com.infomaximum.platform.sdk.component.version.Version;
 
 @Entity(
         namespace = "com.infomaximum.subsystems",
