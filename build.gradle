@@ -7,7 +7,7 @@ if (file('publish.gradle').exists()) {
 }
 
 group 'com.infomaximum'
-version '0.0.1RC28'
+version '0.0.1RC29'
 
 sourceCompatibility = 1.8
 

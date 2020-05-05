@@ -60,6 +60,8 @@ public class PlatformStartStop {
             throw GeneralExceptionBuilder.buildDatabaseException(e);
         }
 
+        //TODO Ulitin V. - где то потерялась валидация схемы база данных!!!
+
         //onStarting
         for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
             component.onStarting();

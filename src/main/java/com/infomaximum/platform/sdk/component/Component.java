@@ -5,6 +5,7 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.graphql.exception.GraphQLExecutorException;
+import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEvent;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObjectSource;
 import com.infomaximum.database.exception.DatabaseException;
@@ -31,6 +32,8 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 	private Schema schema;
 
 	private QueryRemotes queryRemotes;
+
+	private GraphQLSubscribeEvent graphQLSubscribeEvent;
 
 	public Component(Cluster cluster) {
 		super(cluster);
@@ -65,6 +68,8 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 		} catch (DatabaseException e) {
 			throw GeneralExceptionBuilder.buildDatabaseException(e);
 		}
+
+		this.graphQLSubscribeEvent = new GraphQLSubscribeEvent(this);
 	}
 
 	public SchemaService buildSchemaService() {
@@ -110,6 +115,10 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 
 	public final QueryRemotes getQueryRemotes() {
 		return queryRemotes;
+	}
+
+	public final GraphQLSubscribeEvent getGraphQLSubscribeEvent() {
+		return graphQLSubscribeEvent;
 	}
 
 	@Override
