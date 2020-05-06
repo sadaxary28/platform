@@ -3,8 +3,8 @@ package com.infomaximum.subsystems.querypool;
 import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.domainobject.filter.EmptyFilter;
 import com.infomaximum.database.domainobject.filter.Filter;
+import com.infomaximum.platform.sdk.function.Consumer;
 import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.function.Consumer;
 import com.infomaximum.subsystems.querypool.iterator.IteratorEntity;
 
 import java.util.ArrayList;

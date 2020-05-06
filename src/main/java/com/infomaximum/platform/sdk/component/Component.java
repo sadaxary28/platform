@@ -5,7 +5,6 @@ import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.graphql.exception.GraphQLExecutorException;
-import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEvent;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObjectSource;
 import com.infomaximum.database.exception.DatabaseException;
@@ -19,6 +18,7 @@ import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.remote.QueryRemotes;
 import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
+import com.infomaximum.platform.sdk.subscription.GraphQLSubscribeEvent;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import org.reflections.Reflections;
 

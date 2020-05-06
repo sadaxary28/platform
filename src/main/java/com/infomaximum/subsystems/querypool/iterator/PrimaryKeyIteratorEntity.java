@@ -1,17 +1,16 @@
 package com.infomaximum.subsystems.querypool.iterator;
 
 import com.infomaximum.database.domainobject.DomainObject;
+import com.infomaximum.platform.sdk.iterator.Iterator;
 import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.iterator.ImIterator;
 import com.infomaximum.subsystems.querypool.QueryTransaction;
 import com.infomaximum.subsystems.querypool.ReadableResource;
 
-import java.util.Iterator;
 import java.util.Set;
 
-public class PrimaryKeyIteratorEntity<E extends DomainObject> implements ImIterator<E> {
+public class PrimaryKeyIteratorEntity<E extends DomainObject> implements Iterator<E> {
 
-    private Iterator<Long> iterator;
+    private java.util.Iterator<Long> iterator;
     private ReadableResource<E> readableResource;
     private QueryTransaction transaction;
 
