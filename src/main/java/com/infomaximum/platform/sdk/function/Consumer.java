@@ -1,4 +1,4 @@
-package com.infomaximum.subsystems.function;
+package com.infomaximum.platform.sdk.function;
 
 import com.infomaximum.subsystems.exception.SubsystemException;
 

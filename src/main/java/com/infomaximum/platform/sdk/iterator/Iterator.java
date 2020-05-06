@@ -1,8 +1,8 @@
-package com.infomaximum.subsystems.iterator;
+package com.infomaximum.platform.sdk.iterator;
 
 import com.infomaximum.subsystems.exception.SubsystemException;
 
-public interface ImIterator<T> extends AutoCloseable {
+public interface Iterator<T> extends AutoCloseable {
 
     boolean hasNext() throws SubsystemException;
 

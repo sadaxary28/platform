@@ -3,10 +3,10 @@ package com.infomaximum.subsystems.querypool.iterator;
 import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
+import com.infomaximum.platform.sdk.iterator.Iterator;
 import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.iterator.ImIterator;
 
-public class IteratorEntity<E extends DomainObject> implements ImIterator<E> {
+public class IteratorEntity<E extends DomainObject> implements Iterator<E> {
 
     private final com.infomaximum.database.domainobject.iterator.IteratorEntity<E> ie;
 
