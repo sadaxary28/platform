@@ -27,121 +27,130 @@ import java.util.Set;
 
 public abstract class Component extends com.infomaximum.cluster.struct.Component {
 
-	protected DBProvider dbProvider;
-	protected DomainObjectSource domainObjectSource;
-	private Schema schema;
+    protected DBProvider dbProvider;
+    protected DomainObjectSource domainObjectSource;
+    private Schema schema;
 
-	private QueryRemotes queryRemotes;
+    private QueryRemotes queryRemotes;
 
-	private GraphQLSubscribeEvent graphQLSubscribeEvent;
+    private GraphQLSubscribeEvent graphQLSubscribeEvent;
 
-	public Component(Cluster cluster) {
-		super(cluster);
-	}
+    public Component(Cluster cluster) {
+        super(cluster);
+    }
 
-	protected DBProvider initDBProvider() throws ClusterException {
-		if (dbProvider != null) {
-			return dbProvider;
-		}
-		return new ComponentDBProvider(cluster, this);
-	}
+    protected DBProvider initDBProvider() throws ClusterException {
+        if (dbProvider != null) {
+            return dbProvider;
+        }
+        return new ComponentDBProvider(cluster, this);
+    }
 
-	public QuerySystem<Void> onStart() {
+    public QuerySystem<Void> onStart() {
         return null;
-	}
+    }
 
     public QuerySystem<Void> onStop() {
         return null;
     }
 
-	public void onStarting() throws SubsystemException {
-		try {
-			Set<StructEntity> domains = new HashSet<>();
-			for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
-				domains.add(Schema.getEntity(domainObjectClass));
-			}
-			schema.checkSubsystemIntegrity(domains, getInfo().getUuid());
-			buildSchemaService()
-					.setChangeMode(ChangeMode.CREATION)
-					.setValidationMode(false)
-					.execute();
-		} catch (DatabaseException e) {
-			throw GeneralExceptionBuilder.buildDatabaseException(e);
-		}
+    public void onStarting() throws SubsystemException {
+        try {
+            Set<StructEntity> domains = new HashSet<>();
+            for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
+                domains.add(Schema.getEntity(domainObjectClass));
+            }
+            schema.checkSubsystemIntegrity(domains, getInfo().getUuid());
+            buildSchemaService()
+                    .setChangeMode(ChangeMode.CREATION)
+                    .setValidationMode(false)
+                    .execute();
+        } catch (DatabaseException e) {
+            throw GeneralExceptionBuilder.buildDatabaseException(e);
+        }
 
-		this.graphQLSubscribeEvent = new GraphQLSubscribeEvent(this);
-	}
+        this.graphQLSubscribeEvent = new GraphQLSubscribeEvent(this);
+    }
 
-	public SchemaService buildSchemaService() {
-		return new SchemaService(getDbProvider())
-				.setNamespace(getInfo().getUuid())
-				.setSchema(getSchema());
-	}
+    public SchemaService buildSchemaService() {
+        return new SchemaService(getDbProvider())
+                .setNamespace(getInfo().getUuid())
+                .setSchema(getSchema());
+    }
 
-	@Override
-	public ExecutorTransport initExecutorTransport() throws ClusterException {
-		try {
-			return new ExecutorTransportImpl.Builder(this)
-					.build();
-		} catch (GraphQLExecutorException e) {
-			throw new ClusterException(e);
-		}
-	}
+    @Override
+    public ExecutorTransport initExecutorTransport() throws ClusterException {
+        try {
+            return new ExecutorTransportImpl.Builder(this)
+                    .build();
+        } catch (GraphQLExecutorException e) {
+            throw new ClusterException(e);
+        }
+    }
 
-	public final DBProvider getDbProvider() {
-		return dbProvider;
-	}
+    public final DBProvider getDbProvider() {
+        return dbProvider;
+    }
 
-	public final DomainObjectSource getDomainObjectSource() {
-		return domainObjectSource;
-	}
+    public final DomainObjectSource getDomainObjectSource() {
+        return domainObjectSource;
+    }
 
-	protected Schema getSchema() {
-		return schema;
-	}
+    protected Schema getSchema() {
+        return schema;
+    }
 
-	public void initialize() throws ClusterException {
-		if (!getClass().getPackage().getName().equals(getInfo().getUuid())) {
-			throw new RuntimeException(getClass() + " is not correspond to uuid: " + getInfo().getUuid());
-		}
+    public void initialize() throws ClusterException {
+        if (!getClass().getPackage().getName().equals(getInfo().getUuid())) {
+            throw new RuntimeException(getClass() + " is not correspond to uuid: " + getInfo().getUuid());
+        }
 
-		this.dbProvider = initDBProvider();
-		this.schema = initializeSchema(dbProvider);
+        this.dbProvider = initDBProvider();
+        this.schema = initializeSchema(dbProvider);
 
-		this.domainObjectSource = new DomainObjectSource(dbProvider);
+        this.domainObjectSource = new DomainObjectSource(dbProvider);
 
-		this.queryRemotes = new QueryRemotes(this);
-	}
+        this.queryRemotes = new QueryRemotes(this);
+    }
 
-	public final QueryRemotes getQueryRemotes() {
-		return queryRemotes;
-	}
+    //TODO Ulitin V. Временное решение - после переноса механизма обновления в платформу - убрать
+    public void reloadSchema(DBProvider dbProvider) {
+        try {
+            this.schema = Schema.read(dbProvider);
+        } catch (DatabaseException e) {
+            throw new SchemaException(e);
+        }
+    }
 
-	public final GraphQLSubscribeEvent getGraphQLSubscribeEvent() {
-		return graphQLSubscribeEvent;
-	}
+    public final QueryRemotes getQueryRemotes() {
+        return queryRemotes;
+    }
 
-	@Override
-	public void destroying() throws ClusterException {
+    public final GraphQLSubscribeEvent getGraphQLSubscribeEvent() {
+        return graphQLSubscribeEvent;
+    }
 
-	}
+    @Override
+    public void destroying() throws ClusterException {
 
-	private Schema initializeSchema(DBProvider dbProvider) {
-		try {
-			Schema schema;
-			if (Schema.exists(dbProvider)) {
-				schema = Schema.read(dbProvider);
-			} else {
-				schema = Schema.create(dbProvider);
-			}
-			for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
-				Schema.resolve(domainObjectClass); //todo убрать resolve когда переведу функционал из StructEntity
-			}
-			return schema;
-		} catch (DatabaseException e) {
-			throw new SchemaException(e);
-		}
-	}
+    }
+
+    private Schema initializeSchema(DBProvider dbProvider) {
+        try {
+            Schema schema;
+            if (Schema.exists(dbProvider)) {
+                schema = Schema.read(dbProvider);
+            } else {
+                schema = Schema.create(dbProvider);
+            }
+            for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
+                Schema.resolve(domainObjectClass); //todo убрать resolve когда переведу функционал из StructEntity
+            }
+            return schema;
+        } catch (DatabaseException e) {
+            throw new SchemaException(e);
+        }
+    }
 
 
 }
