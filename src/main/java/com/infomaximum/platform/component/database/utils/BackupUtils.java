@@ -7,7 +7,6 @@ import com.infomaximum.rocksdb.RocksDataBaseBuilder;
 import org.rocksdb.*;
 
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
 
 public class BackupUtils {
@@ -42,13 +41,8 @@ public class BackupUtils {
             if (backups.isEmpty()) {
                 throw new RocksDBException("BackupEngine::getBackupInfo return empty list.");
             }
-
-            BackupInfo lastBackup = backups.stream().max(Comparator.comparingLong(BackupInfo::backupId)).get();
-            try {
-                backupEngine.verifyBackup(lastBackup.backupId());
-            } catch (RocksDBException e) {
-                backupEngine.deleteBackup(lastBackup.backupId());
-                throw e;
+            for (int corruptedBackup : backupEngine.getCorruptedBackups()) {
+                backupEngine.deleteBackup(corruptedBackup);
             }
 
             backupEngine.purgeOldBackups(1);
