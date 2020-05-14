@@ -3,6 +3,7 @@ package com.infomaximum.subsystems.querypool;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.subsystems.exception.SubsystemException;
+import com.infomaximum.subsystems.querypool.service.DetectEndingWorker;
 import com.infomaximum.subsystems.querypool.service.DetectLongQuery;
 import com.infomaximum.utils.DefaultThreadPoolExecutor;
 import com.infomaximum.utils.LockGuard;
@@ -38,8 +39,8 @@ public class QueryPool {
 		final Map<String, LockType> resources;
 
 		private Thread thread;
-		private Instant timeStart;
-		private Instant timeComplete;
+		private volatile Instant timeStart;
+		private volatile Instant timeComplete;
 
 		QueryWrapper(QueryPool queryPool, Component subsystem, Query<T> query) throws SubsystemException {
 			this(new QueryFuture<T>(queryPool, subsystem, new CompletableFuture<>()), query);
@@ -124,6 +125,7 @@ public class QueryPool {
 	private final ArrayList<Callback> emptyPoolListners = new ArrayList<>();
 
 	private final DetectLongQuery detectLongQuery;
+	private final DetectEndingWorker detectEndingWorker;
 
 	private volatile int highPriorityWaitingQueryCount = 0;
 	private volatile int lowPriorityWaitingQueryCount = 0;
@@ -132,7 +134,7 @@ public class QueryPool {
 	public QueryPool(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
 		this.threadPool = new DefaultThreadPoolExecutor(
 				MAX_THREAD_COUNT,
-				MAX_THREAD_COUNT,
+				MAX_THREAD_COUNT,//TODO Ulitin V. Баг!!!
 				0L,
 				TimeUnit.MILLISECONDS,
 				new ArrayBlockingQueue<>(MAX_WORKED_QUERY_COUNT),
@@ -140,6 +142,7 @@ public class QueryPool {
 				uncaughtExceptionHandler
 		);
 		this.detectLongQuery = new DetectLongQuery(this, uncaughtExceptionHandler);
+		this.detectEndingWorker = new DetectEndingWorker(threadPool, uncaughtExceptionHandler);
 	}
 
 	public void setHardException(SubsystemException e) {
@@ -261,6 +264,8 @@ public class QueryPool {
 
 	public void shutdownAwait() throws InterruptedException {
 		detectLongQuery.shutdownAwait();
+		detectEndingWorker.shutdownAwait();
+
 		threadPool.shutdown();
 
 		final HashSet<QueryWrapper> queries = new HashSet<>();
