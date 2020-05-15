@@ -57,11 +57,14 @@ public class DetectLongQuery implements Runnable {
 				Map<String, QueryPool.LockType> resources = queryWrapper.getResources();
 				if (resources.isEmpty()) continue;
 
+				Thread thread = queryWrapper.getThread();
+				if (thread == null) continue;
+
 				log.warn("Detect long query! start: {}, duration: {}, resources: {}, stackTrace: {}",
 						queryWrapper.getTimeStart(),
 						duration,
 						toStringResources(resources),
-						toStringStackTrace(queryWrapper.getThread().getStackTrace())
+						toStringStackTrace(thread.getStackTrace())
 				);
 			}
 		} catch (Throwable e) {

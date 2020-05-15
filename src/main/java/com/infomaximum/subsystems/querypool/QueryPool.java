@@ -38,7 +38,7 @@ public class QueryPool {
 
 		final Map<String, LockType> resources;
 
-		private Thread thread;
+		private volatile Thread thread;
 		private volatile Instant timeStart;
 		private volatile Instant timeComplete;
 
