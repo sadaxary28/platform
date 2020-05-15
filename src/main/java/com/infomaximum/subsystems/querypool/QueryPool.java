@@ -112,7 +112,7 @@ public class QueryPool {
 	private static class ResourceMap extends HashMap<String, ArrayList<QueryLockType>> {
 	}
 
-	public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors();
+	public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 8;
 	public static final int MAX_WORKED_QUERY_COUNT = MAX_THREAD_COUNT * 5;
 	public static final int MAX_WAITING_QUERY_COUNT = MAX_THREAD_COUNT * 20;
 
@@ -134,7 +134,7 @@ public class QueryPool {
 	public QueryPool(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
 		this.threadPool = new DefaultThreadPoolExecutor(
 				MAX_THREAD_COUNT,
-				MAX_THREAD_COUNT,//TODO Ulitin V. Баг!!!
+				MAX_THREAD_COUNT,
 				0L,
 				TimeUnit.MILLISECONDS,
 				new ArrayBlockingQueue<>(MAX_WORKED_QUERY_COUNT),
