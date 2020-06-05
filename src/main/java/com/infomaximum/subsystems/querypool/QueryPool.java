@@ -112,7 +112,8 @@ public class QueryPool {
 	private static class ResourceMap extends HashMap<String, ArrayList<QueryLockType>> {
 	}
 
-	public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 8;
+	//TODO Удалить костыль
+	public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 80;
 	public static final int MAX_WORKED_QUERY_COUNT = MAX_THREAD_COUNT * 5;
 	public static final int MAX_WAITING_QUERY_COUNT = MAX_THREAD_COUNT * 20;
 
