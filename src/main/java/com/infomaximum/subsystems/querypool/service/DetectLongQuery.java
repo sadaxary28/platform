@@ -62,7 +62,7 @@ public class DetectLongQuery implements Runnable {
 
 				log.warn("Detect long query! start: {}, duration: {}, resources: {}, stackTrace: {}",
 						queryWrapper.getTimeStart(),
-						duration,
+						duration.toMillis(),
 						toStringResources(resources),
 						toStringStackTrace(thread.getStackTrace())
 				);
