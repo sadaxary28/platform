@@ -7,9 +7,25 @@ if (file('publish.gradle').exists()) {
 }
 
 group 'com.infomaximum'
-version '0.0.1RC48'
+version '0.0.1RC49'
 
 sourceCompatibility = 1.8
+
+sourceSets {
+    main {
+        java.srcDir 'src/main/java'
+        resources.srcDir 'src/main/resources'
+    }
+    test {
+        java.srcDir 'src/test/java'
+        resources.srcDir 'src/test/resources'
+    }
+    test_integration {
+        java.srcDir 'src/test_integration/java'
+        resources.srcDir 'src/test_integration/resources'
+        compileClasspath += configurations.compile + configurations.testCompile + sourceSets.main.output + sourceSets.test.output
+    }
+}
 
 repositories {
     mavenCentral()

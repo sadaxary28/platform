@@ -161,18 +161,18 @@ public class QueryPool {
 		execute(queryWrapp, failIfPoolBusy);
 	}
 
-	public <T> QueryFuture<T> execute(Component subsystem, Query<T> query) {
-		return execute(subsystem, query, true);
+	public <T> QueryFuture<T> execute(Component component, Query<T> query) {
+		return execute(component, query, true);
 	}
 
-	public <T> QueryFuture<T> execute(Component subsystem, Query<T> query, boolean failIfPoolBusy) {
+	public <T> QueryFuture<T> execute(Component component, Query<T> query, boolean failIfPoolBusy) {
 		QueryWrapper<T> queryWrapp;
 		try {
-			queryWrapp = new QueryWrapper<>(this, subsystem, query);
+			queryWrapp = new QueryWrapper<>(this, component, query);
 		} catch (SubsystemException e) {
 			CompletableFuture future = new CompletableFuture();
 			future.completeExceptionally(e);
-			return new QueryFuture<>(this, subsystem, future);
+			return new QueryFuture<>(this, component, future);
 		}
 		return execute(queryWrapp, failIfPoolBusy);
 	}
