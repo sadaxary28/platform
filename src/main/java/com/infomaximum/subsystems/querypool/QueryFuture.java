@@ -54,8 +54,8 @@ public class QueryFuture<T> {
 	public <U> QueryFuture<U> thenApply(Function<? super T, Query<? extends U>> fn, boolean failIfPoolBusy) {
 		QueryFuture<U> queryFuture = new QueryFuture<U>(queryPool, subsystem, new CompletableFuture<>());
 		future.thenApply(t -> {
-			Query prev = fn.apply(t);
-			queryPool.execute(queryFuture, prev, failIfPoolBusy);
+			Query nextQuery = fn.apply(t);
+			queryPool.execute(queryFuture, nextQuery, failIfPoolBusy);
 			return null;
 		}).exceptionally(throwable -> {
 			queryFuture.future.completeExceptionally((Throwable) throwable);
