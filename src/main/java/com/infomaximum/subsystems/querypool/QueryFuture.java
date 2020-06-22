@@ -39,7 +39,7 @@ public class QueryFuture<T> {
 		return future.thenRun(action);
 	}
 
-	public <U> CompletableFuture<U> thenApply(Function<? super T, ? extends U> fn) {
+	public <U> CompletableFuture<U> thenApplyCompletableFuture(Function<? super T, ? extends U> fn) {
 		return future.thenApply(fn);
 	}
 
@@ -47,14 +47,18 @@ public class QueryFuture<T> {
 		return future.whenComplete(action);
 	}
 
-	public <U> QueryFuture<U> thenApply(Query<U> query) {
-		return thenApply(query, true);
+	public <U> QueryFuture<U> thenApply(Function<? super T, Query<? extends U>> fn) {
+		return thenApply(fn, true);
 	}
 
-	public <U> QueryFuture<U> thenApply(Query<U> query, boolean failIfPoolBusy) {
+	public <U> QueryFuture<U> thenApply(Function<? super T, Query<? extends U>> fn, boolean failIfPoolBusy) {
 		QueryFuture<U> queryFuture = new QueryFuture<U>(queryPool, subsystem, new CompletableFuture<>());
 		future.thenApply(t -> {
-			queryPool.execute(queryFuture, query, failIfPoolBusy);
+			Query prev = fn.apply(t);
+			queryPool.execute(queryFuture, prev, failIfPoolBusy);
+			return null;
+		}).exceptionally(throwable -> {
+			queryFuture.future.completeExceptionally((Throwable) throwable);
 			return null;
 		});
 		return queryFuture;
