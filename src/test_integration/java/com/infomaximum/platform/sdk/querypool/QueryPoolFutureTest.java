@@ -79,6 +79,38 @@ public class QueryPoolFutureTest {
         }
     }
 
+    @Test
+    public void testChainThrowResult() throws ExecutionException, InterruptedException {
+        int testResult = 15;
+        buildQueryPool().execute(
+                component,
+                new Query<Integer>() {
+
+                    @Override
+                    public void prepare(ResourceProvider resources) {
+                    }
+
+                    @Override
+                    public Integer execute(QueryTransaction transaction) throws SubsystemException {
+                        return testResult;
+                    }
+                })
+                .thenApply(aInteger ->
+                        new Query<Void>() {
+
+                            @Override
+                            public void prepare(ResourceProvider resources) throws SubsystemException {
+                                Assert.assertEquals(testResult, (int)aInteger);
+                            }
+
+                            @Override
+                            public Void execute(QueryTransaction transaction) throws SubsystemException {
+                                return null;
+                            }
+                        })
+                .get();
+    }
+
     private QueryPool buildQueryPool() {
         return new QueryPool((t, e) -> uncaughtException = e);
     }
