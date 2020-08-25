@@ -7,7 +7,7 @@ if (file('publish.gradle').exists()) {
 }
 
 group 'com.infomaximum'
-version '0.0.1RC51'
+version '0.0.1RC52'
 
 sourceCompatibility = 1.8
 
@@ -42,7 +42,8 @@ dependencies {
     
     compile 'com.infomaximum:rdao:1.12.1'
     
-    compile 'com.infomaximum:network:0.0.16RC13'
+    compile 'com.infomaximum:network:0.0.16RC14'
+//    compile project(':network')
 
     compile 'org.apache.commons:commons-lang3:3.10'
     
