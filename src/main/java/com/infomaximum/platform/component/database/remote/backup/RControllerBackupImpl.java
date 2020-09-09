@@ -11,6 +11,8 @@ import com.infomaximum.subsystems.querypool.AbstractQueryRController;
 import com.infomaximum.subsystems.querypool.QueryPool;
 import com.infomaximum.subsystems.querypool.ResourceProvider;
 import org.apache.commons.lang3.StringUtils;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -28,8 +30,10 @@ public class RControllerBackupImpl extends AbstractQueryRController<DatabaseComp
         Path backupPath = buildBackupPath(backupDirPath, backupName);
         FileUtils.ensureDirectory(backupPath);
         try {
-            BackupUtils.createBackup(backupPath, component.getRocksDBProvider().getRocksDB());
-        } catch (DatabaseException e) {
+            RocksDB rocksDB = component.getRocksDBProvider().getRocksDB();
+            BackupUtils.createBackup(backupPath, rocksDB);
+            rocksDB.compactRange();
+        } catch (DatabaseException | RocksDBException e) {
             throw DatabaseExceptionBuilder.buildBackupException(e);
         }
     }
