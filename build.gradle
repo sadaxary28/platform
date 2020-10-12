@@ -2,12 +2,13 @@ plugins {
     id 'java'
     id 'maven'
 }
+compileJava.options.encoding = 'UTF-8'
 if (file('publish.gradle').exists()) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '0.0.1RC54'
+version '0.0.1RC55'
 
 sourceCompatibility = 1.8
 
