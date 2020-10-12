@@ -198,10 +198,9 @@ public class GeneralExceptionBuilder {
         return EXCEPTION_FACTORY.build("server_shuts_down");
     }
 
-    public static SubsystemException buildAuthAmbiguityException() {
-        return EXCEPTION_FACTORY.build("auth_ambiguity");
+    public static SubsystemException buildAuthAmbiguityException(String message) {
+        return EXCEPTION_FACTORY.build("auth_ambiguity", message);
     }
-
 
     /**
      * @return Не найден обязательный параметр.
