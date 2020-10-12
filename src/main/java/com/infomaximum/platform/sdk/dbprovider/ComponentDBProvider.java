@@ -59,6 +59,11 @@ public class ComponentDBProvider implements DBProvider {
     }
 
     @Override
+    public void compactRange() throws DatabaseException {
+        dbProvider.compactRange();
+    }
+
+    @Override
     public boolean containsSequence(String name) throws DatabaseException {
         return dbProvider.containsSequence(name);
     }

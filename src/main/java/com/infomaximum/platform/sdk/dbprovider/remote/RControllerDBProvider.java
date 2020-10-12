@@ -35,6 +35,8 @@ public interface RControllerDBProvider extends RController {
     void singleDeleteRangeTransaction(String columnFamily, byte[] beginKey, byte[] endKey, long transactionId) throws DatabaseException;
     void singleDeleteRangeTransaction(String columnFamily, KeyPattern keyPattern, long transactionId) throws DatabaseException;
 
+    void compactRange() throws DatabaseException;
+
     void commitTransaction(long transactionId) throws DatabaseException;
     void rollbackTransaction(long transactionId) throws DatabaseException;
     void closeTransaction(long transactionId) throws DatabaseException;
