@@ -151,6 +151,11 @@ public class RControllerDBProviderImpl extends AbstractRController<DatabaseCompo
     }
 
     @Override
+    public void compactRange() throws DatabaseException {
+        component.getRocksDBProvider().compactRange();
+    }
+
+    @Override
     public void commitTransaction(long transactionId) throws DatabaseException {
         getTransaction(transactionId).commit();
     }

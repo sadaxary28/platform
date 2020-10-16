@@ -51,6 +51,11 @@ class RemoteDBProvider implements DBProvider {
     }
 
     @Override
+    public void compactRange() throws DatabaseException {
+        getRemoteProvider().compactRange();
+    }
+
+    @Override
     public boolean containsSequence(String name) throws DatabaseException {
         return getRemoteProvider().containsSequence(name);
     }
@@ -159,6 +164,11 @@ class RemoteDBProvider implements DBProvider {
         @Override
         public void rollback() throws DatabaseException {
             getRemoteProvider().rollbackTransaction(transactionId);
+        }
+
+        @Override
+        public void compactRange() throws DatabaseException {
+            getRemoteProvider().compactRange();
         }
 
         @Override
