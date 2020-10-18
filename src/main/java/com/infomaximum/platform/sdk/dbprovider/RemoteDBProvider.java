@@ -71,7 +71,7 @@ class RemoteDBProvider implements DBProvider {
     }
 
     private RControllerDBProvider getRemoteProvider() {
-        return component.getRemotes().getFromSSKey(shardKey, RControllerDBProvider.class);
+        return component.getRemotes().getFromCKey(shardKey, RControllerDBProvider.class);
     }
 
     private class Iterator implements DBIterator {

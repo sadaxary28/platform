@@ -57,7 +57,7 @@ public class QueryRemotes {
 
         try {
             Set<T> controllers = new HashSet<>();
-            for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveSubSystems()) {
+            for (RuntimeComponentInfo componentInfo : component.getActiveComponents().getActiveComponents()) {
 
                 com.infomaximum.cluster.struct.Component iComponent = Platform.get().getCluster().getAnyComponent(componentInfo.info.getUuid());
                 if (!Component.class.isAssignableFrom(iComponent.getClass())) continue;
