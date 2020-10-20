@@ -1,4 +1,4 @@
-package com.infomaximum.platform.component.frontend;
+package com.infomaximum.platform.component.frontend.engine;
 
 import com.infomaximum.cluster.graphql.GraphQLEngine;
 import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEngine;

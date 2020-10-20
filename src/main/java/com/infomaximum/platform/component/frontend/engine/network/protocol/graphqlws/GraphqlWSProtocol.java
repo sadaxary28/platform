@@ -1,10 +1,10 @@
-package com.infomaximum.platform.component.frontend.network.protocol.graphqlws;
+package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws;
 
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.transport.Transport;
-import com.infomaximum.platform.component.frontend.network.protocol.graphqlws.handler.PacketHandler;
-import com.infomaximum.platform.component.frontend.network.protocol.graphqlws.handler.handshake.Handshake;
-import com.infomaximum.platform.component.frontend.network.protocol.graphqlws.session.GraphqlWSTransportSession;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.PacketHandler;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.handshake.Handshake;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.session.GraphqlWSTransportSession;
 
 import java.lang.reflect.InvocationTargetException;
 
