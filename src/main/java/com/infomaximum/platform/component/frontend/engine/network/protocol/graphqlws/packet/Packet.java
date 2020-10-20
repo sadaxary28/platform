@@ -1,4 +1,4 @@
-package com.infomaximum.platform.component.frontend.network.protocol.graphqlws.packet;
+package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet;
 
 import com.infomaximum.network.packet.IPacket;
 import net.minidev.json.JSONObject;

@@ -1,9 +1,9 @@
-package com.infomaximum.platform.component.frontend.network.protocol.graphqlws.handler;
+package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler;
 
 import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.session.Session;
-import com.infomaximum.platform.component.frontend.network.protocol.graphqlws.packet.Packet;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 
 import java.util.concurrent.CompletableFuture;
 

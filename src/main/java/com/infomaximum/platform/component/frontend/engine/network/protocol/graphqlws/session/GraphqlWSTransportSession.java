@@ -1,13 +1,13 @@
-package com.infomaximum.platform.component.frontend.network.protocol.graphqlws.session;
+package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.session;
 
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
-import com.infomaximum.platform.component.frontend.network.protocol.graphqlws.GraphqlWSProtocol;
-import com.infomaximum.platform.component.frontend.network.protocol.graphqlws.handler.PacketHandler;
-import com.infomaximum.platform.component.frontend.network.protocol.graphqlws.packet.Packet;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.GraphqlWSProtocol;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.PacketHandler;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
