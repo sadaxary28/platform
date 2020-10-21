@@ -5,10 +5,13 @@ import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEng
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.exception.NetworkException;
+import com.infomaximum.platform.sdk.component.Component;
 
 public class FrontendEngine implements AutoCloseable {
 
     private final Builder builder;
+
+    private final Component component;
 
     private final GraphQLEngine graphQLEngine;
     public final GraphQLSubscribeEngine graphQLSubscribeEngine;
@@ -17,7 +20,9 @@ public class FrontendEngine implements AutoCloseable {
 
     private FrontendEngine(Builder builder) {
         this.builder = builder;
-        
+
+        this.component = builder.component;
+
         this.graphQLEngine = builder.graphQLEngine;
         this.graphQLSubscribeEngine = graphQLEngine.buildSubscribeEngine();
     }
@@ -39,11 +44,13 @@ public class FrontendEngine implements AutoCloseable {
 
     public static class Builder {
 
+        private final Component component;
+
         private GraphQLEngine graphQLEngine;
         private BuilderNetwork builderNetwork;
 
-        public Builder() {
-
+        public Builder(Component component) {
+            this.component = component;
         }
 
         public Builder withGraphQLEngine(GraphQLEngine graphQLEngine) {
