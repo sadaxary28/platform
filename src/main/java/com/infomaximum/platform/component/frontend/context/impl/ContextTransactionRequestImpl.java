@@ -12,7 +12,12 @@ public class ContextTransactionRequestImpl implements ContextTransactionRequest,
     private QueryTransaction transaction;
 
     public ContextTransactionRequestImpl(SourceGRequestAuth source) {
+        this(source, null);
+    }
+
+    public ContextTransactionRequestImpl(SourceGRequestAuth source, QueryTransaction transaction) {
         this.source = source;
+        this.transaction = transaction;
     }
 
     @Override
