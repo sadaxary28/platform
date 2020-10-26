@@ -1,7 +1,7 @@
-package com.infomaximum.platform.sdk.context.source.impl;
+package com.infomaximum.platform.component.frontend.context.source.impl;
 
 import com.infomaximum.cluster.graphql.struct.GRequest;
-import com.infomaximum.platform.sdk.context.source.SourceGRequest;
+import com.infomaximum.platform.component.frontend.context.source.SourceGRequest;
 
 public class SourceGRequestImpl implements SourceGRequest {
 
