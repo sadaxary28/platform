@@ -13,17 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public abstract class AbstractQueryRController<TComponent extends Component> {
 
     protected final TComponent component;
-    private final ResourceProvider resources;
 
     private final Map<Class<? extends RController>, Map<String, List<Method>>> hashControllersRemoteMethods;//Хеш методов
 
-    protected AbstractQueryRController(TComponent component, ResourceProvider resources) {
+    public AbstractQueryRController(TComponent component, ResourceProvider resources) {
         this.component = component;
-        this.resources = resources;
 
         hashControllersRemoteMethods = new HashMap<>();
         for (Class interfaceClazz : this.getClass().getInterfaces()) {
@@ -39,12 +36,7 @@ public abstract class AbstractQueryRController<TComponent extends Component> {
                 //Игнорируем права доступа
                 method.setAccessible(true);
 
-                List<Method> methods = hashMethods.get(method.getName());
-                if (methods == null) {
-                    methods = new ArrayList<>();
-                    hashMethods.put(method.getName(), methods);
-                }
-                methods.add(method);
+                hashMethods.computeIfAbsent(method.getName(), k -> new ArrayList<>()).add(method);
             }
             hashControllersRemoteMethods.put(interfaceClazz, hashMethods);
         }

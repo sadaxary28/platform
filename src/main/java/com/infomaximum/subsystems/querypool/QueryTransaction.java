@@ -7,7 +7,9 @@ import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.subsystems.exception.SubsystemException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Класс не потокобезопасен
@@ -26,6 +28,7 @@ public class QueryTransaction implements AutoCloseable {
 
     private final Transaction transaction;
 
+    private Map<ByteKey, CommitListener> commitListenerMap;
     private List<CommitListener> commitListeners;
     private List<RollbackListener> rollbackListeners;
 
@@ -45,6 +48,20 @@ public class QueryTransaction implements AutoCloseable {
             commitListeners = new ArrayList<>();
         }
         commitListeners.add(listener);
+    }
+
+    public void addCommitListener(byte[] key, CommitListener listener) {
+        if (closed()) {
+            throw new RuntimeException("Нельзя добавлять слушателя после закрытия транзакции");
+        }
+        if (commitListenerMap == null){
+            commitListenerMap = new HashMap<>();
+        }
+        commitListenerMap.put(new ByteKey(key), listener);
+    }
+
+    public void addCommitListener(String key, CommitListener listener) {
+        addCommitListener(key.getBytes(), listener);
     }
 
     public void addRollbackListener(RollbackListener listener) {
@@ -89,6 +106,11 @@ public class QueryTransaction implements AutoCloseable {
             //в момент комита выполняет код который в конечном итоге также подписывается на коммит(своеобразная рекурсия)
             //По этой же причине не реализован метод removeCommitListener
             for (CommitListener listener : commitListeners) {
+                listener.onCommitted();
+            }
+        }
+        if (commitListenerMap != null) {
+            for (CommitListener listener : commitListenerMap.values()) {
                 listener.onCommitted();
             }
         }
