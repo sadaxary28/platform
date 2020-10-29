@@ -3,12 +3,10 @@ package com.infomaximum.platform.sdk.dbprovider;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.*;
-import com.infomaximum.platform.component.database.utils.DatabaseUtils;
 import com.infomaximum.platform.sdk.dbprovider.remote.RControllerDBProvider;
 
 class RemoteDBProvider implements DBProvider {
 
-    private final String shardKey = DatabaseUtils.getDefaultKey();
     private final Component component;
 
     RemoteDBProvider(Component component) {
@@ -71,7 +69,9 @@ class RemoteDBProvider implements DBProvider {
     }
 
     private RControllerDBProvider getRemoteProvider() {
-        return component.getRemotes().getFromCKey(shardKey, RControllerDBProvider.class);
+        throw new RuntimeException("Not implemented");
+        //TODO not implemented
+//        return component.getRemotes().getFromCKey(shardKey, RControllerDBProvider.class);
     }
 
     private class Iterator implements DBIterator {
