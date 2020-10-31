@@ -59,7 +59,8 @@ public class DatabaseComponent extends Component {
 	}
 
 	@Override
-	public void destroying() {
+	public final void destroy(){
 		dbProvider.close();
+		super.destroy();
 	}
 }

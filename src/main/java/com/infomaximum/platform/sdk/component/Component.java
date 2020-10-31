@@ -1,10 +1,8 @@
 package com.infomaximum.platform.sdk.component;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransport;
-import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
+import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.exception.ClusterException;
-import com.infomaximum.cluster.graphql.exception.GraphQLExecutorException;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObjectSource;
 import com.infomaximum.database.exception.DatabaseException;
@@ -46,12 +44,31 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         return new ComponentDBProvider(cluster, this);
     }
 
+    @Override
+    protected ActiveComponents registerComponent() {
+        ActiveComponents activeComponents = super.registerComponent();
+        onCreate();
+        return activeComponents;
+    }
+
+    @Override
+    public void destroy(){
+        onDestroy();
+        super.destroy();
+    }
+
+    public void onCreate() {
+    }
+
     public QuerySystem<Void> onStart() {
         return null;
     }
 
     public QuerySystem<Void> onStop() {
         return null;
+    }
+
+    public void onDestroy() {
     }
 
     public void onStarting() throws SubsystemException {
@@ -76,16 +93,6 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         return new SchemaService(getDbProvider())
                 .setNamespace(getInfo().getUuid())
                 .setSchema(getSchema());
-    }
-
-    @Override
-    public ExecutorTransport initExecutorTransport() throws ClusterException {
-        try {
-            return new ExecutorTransportImpl.Builder(this)
-                    .build();
-        } catch (GraphQLExecutorException e) {
-            throw new ClusterException(e);
-        }
     }
 
     public final DBProvider getDbProvider() {
@@ -128,11 +135,6 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 
     public final GraphQLSubscribeEvent getGraphQLSubscribeEvent() {
         return graphQLSubscribeEvent;
-    }
-
-    @Override
-    public void destroying() throws ClusterException {
-
     }
 
     private Schema initializeSchema(DBProvider dbProvider) {
