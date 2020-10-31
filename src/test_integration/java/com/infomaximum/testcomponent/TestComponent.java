@@ -60,8 +60,8 @@ public class TestComponent extends Component {
     }
 
     @Override
-    public void destroying() throws ClusterException {
-        if (pathDatabase!=null) {
+    public void onDestroy() {
+        if (pathDatabase != null) {
             try {
                 FileUtils.deleteDirectoryIfExists(pathDatabase);
             } catch (IOException e) {

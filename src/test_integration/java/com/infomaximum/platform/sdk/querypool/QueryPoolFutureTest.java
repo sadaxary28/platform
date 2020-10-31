@@ -117,6 +117,6 @@ public class QueryPoolFutureTest {
 
     @AfterClass
     public static void destroying() {
-        component.destroying();
+        component.destroy();
     }
 }
