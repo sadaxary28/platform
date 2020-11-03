@@ -6,6 +6,7 @@ import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
 import com.infomaximum.platform.sdk.component.version.Version;
+import com.infomaximum.platform.sdk.struct.ClusterContext;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.querypool.QueryPool;
 import org.slf4j.Logger;
@@ -33,7 +34,9 @@ public class Platform implements AutoCloseable {
 
 			this.uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
 			this.databaseConfigure = builder.databaseConfigure;
-			this.cluster = builder.clusterBuilder.build();
+			this.cluster = builder.clusterBuilder
+					.withContext(new ClusterContext(this, builder.clusterContext))
+					.build();
 			this.queryPool = new QueryPool(builder.uncaughtExceptionHandler);
 
 			instant = this;
@@ -94,6 +97,7 @@ public class Platform implements AutoCloseable {
 		private DatabaseConfigure databaseConfigure;
 
 		private Cluster.Builder clusterBuilder;
+		private Object clusterContext;
 
 		public Builder() {
 
@@ -120,6 +124,11 @@ public class Platform implements AutoCloseable {
 
 		public Builder withUncaughtExceptionHandler(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
 			this.uncaughtExceptionHandler = uncaughtExceptionHandler;
+			return this;
+		}
+
+		public Builder withClusterContext(Object clusterContext) {
+			this.clusterContext = clusterContext;
 			return this;
 		}
 
