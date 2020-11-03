@@ -12,30 +12,30 @@ import java.util.Set;
 
 public class ResourceProviderImpl implements ResourceProvider, AutoCloseable {
 
-    private final Component subsystem;
+    private final Component component;
     private final HashMap<String, QueryPool.LockType> resources = new HashMap<>();
     private boolean closed = false;
 
-    protected ResourceProviderImpl(Component subsystem) {
-        this.subsystem = subsystem;
+    protected ResourceProviderImpl(Component component) {
+        this.component = component;
     }
 
     @Override
     public <T extends QueryRemoteController> Set<T> getQueryRemoteControllers(Class<T> remoteControllerClass) {
         check();
-        return subsystem.getQueryRemotes().getControllers(this, remoteControllerClass);
+        return component.getQueryRemotes().getControllers(this, remoteControllerClass);
     }
 
     @Override
     public <T extends QueryRemoteController> T getQueryRemoteController(Class<? extends Component> componentClass, Class<T> remoteControllerClass) {
         check();
-        return subsystem.getQueryRemotes().getController(this, componentClass, remoteControllerClass);
+        return component.getQueryRemotes().getController(this, componentClass, remoteControllerClass);
     }
 
     @Override
     public <T extends QueryRemoteController> T getQueryRemoteController(String componentUuid, Class<T> remoteControllerClass) {
         check();
-        return subsystem.getQueryRemotes().getController(this, componentUuid, remoteControllerClass);
+        return component.getQueryRemotes().getController(this, componentUuid, remoteControllerClass);
     }
 
     @Override
