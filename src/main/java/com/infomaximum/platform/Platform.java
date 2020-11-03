@@ -1,11 +1,16 @@
 package com.infomaximum.platform;
 
 import com.infomaximum.cluster.Cluster;
+import com.infomaximum.cluster.graphql.GraphQLEngine;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
 import com.infomaximum.platform.sdk.component.version.Version;
+import com.infomaximum.platform.sdk.graphql.customfield.graphqlquery.GraphQLQueryCustomField;
+import com.infomaximum.platform.sdk.graphql.datafetcher.SubsystemsDataFetcher;
+import com.infomaximum.platform.sdk.graphql.fieldconfiguration.TypeGraphQLFieldConfigurationBuilderImpl;
+import com.infomaximum.platform.sdk.graphql.scalartype.GraphQLScalarTypePlatform;
 import com.infomaximum.platform.sdk.struct.ClusterContext;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.querypool.QueryPool;
@@ -25,6 +30,7 @@ public class Platform implements AutoCloseable {
 
 	private final DatabaseConfigure databaseConfigure;
 
+	private final GraphQLEngine graphQLEngine;
 	private final Cluster cluster;
 	private final QueryPool queryPool;
 
@@ -34,6 +40,7 @@ public class Platform implements AutoCloseable {
 
 			this.uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
 			this.databaseConfigure = builder.databaseConfigure;
+			this.graphQLEngine = builder.graphQLEngineBuilder.build();
 			this.cluster = builder.clusterBuilder
 					.withContext(new ClusterContext(this, builder.clusterContext))
 					.build();
@@ -71,6 +78,10 @@ public class Platform implements AutoCloseable {
 		return cluster;
 	}
 
+	public GraphQLEngine getGraphQLEngine() {
+		return graphQLEngine;
+	}
+
 	public QueryPool getQueryPool() {
 		return queryPool;
 	}
@@ -99,6 +110,8 @@ public class Platform implements AutoCloseable {
 		private Cluster.Builder clusterBuilder;
 		private Object clusterContext;
 
+		public final GraphQLEngine.Builder graphQLEngineBuilder;
+
 		public Builder() {
 
 			//default configure
@@ -110,6 +123,13 @@ public class Platform implements AutoCloseable {
 			};
 
 			this.clusterBuilder = new Cluster.Builder();
+
+			this.graphQLEngineBuilder = new GraphQLEngine.Builder()
+					.withFieldConfigurationBuilder(new TypeGraphQLFieldConfigurationBuilderImpl())
+					.withDataFetcher(SubsystemsDataFetcher.class)
+					.withPrepareCustomField(new GraphQLQueryCustomField())
+					.withTypeScalar(GraphQLScalarTypePlatform.GraphQLDuration)
+					.withTypeScalar(GraphQLScalarTypePlatform.GraphQLGOutputFile);
 		}
 
 		public Builder withConfig(DatabaseConfigure databaseConfigure) {
