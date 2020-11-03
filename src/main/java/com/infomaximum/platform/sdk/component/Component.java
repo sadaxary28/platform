@@ -51,6 +51,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     @Override
     protected ActiveComponents registerComponent() {
         ActiveComponents activeComponents = super.registerComponent();
+        this.rControllerGraphQLExecutor.init();
         onCreate();
         return activeComponents;
     }
