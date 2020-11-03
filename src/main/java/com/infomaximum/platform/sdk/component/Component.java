@@ -2,7 +2,9 @@ package com.infomaximum.platform.sdk.component;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.core.component.active.ActiveComponents;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
+import com.infomaximum.cluster.graphql.remote.graphql.executor.RControllerGraphQLExecutorImpl;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObjectSource;
 import com.infomaximum.database.exception.DatabaseException;
@@ -15,6 +17,7 @@ import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.remote.QueryRemotes;
+import com.infomaximum.platform.sdk.struct.ClusterContext;
 import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.platform.sdk.subscription.GraphQLSubscribeEvent;
 import com.infomaximum.subsystems.exception.SubsystemException;
@@ -32,6 +35,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     private QueryRemotes queryRemotes;
 
     private GraphQLSubscribeEvent graphQLSubscribeEvent;
+    private RControllerGraphQLExecutorImpl rControllerGraphQLExecutor;
 
     public Component(Cluster cluster) {
         super(cluster);
@@ -49,6 +53,14 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         ActiveComponents activeComponents = super.registerComponent();
         onCreate();
         return activeComponents;
+    }
+
+    @Override
+    protected ExecutorTransportImpl.Builder getExecutorTransportBuilder() {
+        ClusterContext clusterContext = cluster.getContext();
+        this.rControllerGraphQLExecutor = clusterContext.platform.getGraphQLEngine().buildRemoteControllerGraphQLExecutor(this);//Обработчик GraphQL запросов
+        return super.getExecutorTransportBuilder()
+                .withRemoteController(rControllerGraphQLExecutor);
     }
 
     @Override
