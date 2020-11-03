@@ -5,34 +5,56 @@ import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEng
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.exception.NetworkException;
+import com.infomaximum.platform.Platform;
+import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.sdk.component.Component;
 
 public class FrontendEngine implements AutoCloseable {
 
     private final Builder builder;
 
+    private final Platform platform;
     private final Component component;
 
     private final GraphQLEngine graphQLEngine;
     public final GraphQLSubscribeEngine graphQLSubscribeEngine;
+
+    private final RequestAuthorize.Builder requestAuthorizeBuilder;
+
+    private GraphQLRequestExecuteService graphQLRequestExecuteService;
 
     private Network network;
 
     private FrontendEngine(Builder builder) {
         this.builder = builder;
 
+        this.platform = builder.platform;
         this.component = builder.component;
 
         this.graphQLEngine = builder.graphQLEngine;
         this.graphQLSubscribeEngine = graphQLEngine.buildSubscribeEngine();
+
+        this.requestAuthorizeBuilder = builder.requestAuthorizeBuilder;
     }
 
     public void start() throws NetworkException {
+        graphQLRequestExecuteService = new GraphQLRequestExecuteService(
+                component,
+                platform.getQueryPool(),
+                graphQLEngine, graphQLSubscribeEngine,
+                requestAuthorizeBuilder
+        );
+
         network = builder.builderNetwork.build();
     }
 
     public Network getNetwork() {
         return network;
+    }
+
+    public GraphQLRequestExecuteService getGraphQLRequestExecuteService() {
+        return graphQLRequestExecuteService;
     }
 
     @Override
@@ -44,12 +66,15 @@ public class FrontendEngine implements AutoCloseable {
 
     public static class Builder {
 
+        private final Platform platform;
         private final Component component;
 
         private GraphQLEngine graphQLEngine;
         private BuilderNetwork builderNetwork;
+        private RequestAuthorize.Builder requestAuthorizeBuilder;
 
-        public Builder(Component component) {
+        public Builder(Platform platform, Component component) {
+            this.platform = platform;
             this.component = component;
         }
 
@@ -60,6 +85,11 @@ public class FrontendEngine implements AutoCloseable {
 
         public Builder withBuilderNetwork(BuilderNetwork builderNetwork) {
             this.builderNetwork = builderNetwork;
+            return this;
+        }
+
+        public Builder withRequestAuthorizeBuilder(RequestAuthorize.Builder requestAuthorizeBuilder) {
+            this.requestAuthorizeBuilder = requestAuthorizeBuilder;
             return this;
         }
 
