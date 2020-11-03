@@ -18,7 +18,7 @@ public class FrontendEngine implements AutoCloseable {
     private final Component component;
 
     private final GraphQLEngine graphQLEngine;
-    public final GraphQLSubscribeEngine graphQLSubscribeEngine;
+    private GraphQLSubscribeEngine graphQLSubscribeEngine;
 
     private final RequestAuthorize.Builder requestAuthorizeBuilder;
 
@@ -32,13 +32,14 @@ public class FrontendEngine implements AutoCloseable {
         this.platform = builder.platform;
         this.component = builder.component;
 
-        this.graphQLEngine = builder.graphQLEngine;
-        this.graphQLSubscribeEngine = graphQLEngine.buildSubscribeEngine();
+        this.graphQLEngine = builder.platform.getGraphQLEngine();
 
         this.requestAuthorizeBuilder = builder.requestAuthorizeBuilder;
     }
 
     public void start() throws NetworkException {
+        graphQLSubscribeEngine = graphQLEngine.buildSubscribeEngine();
+
         graphQLRequestExecuteService = new GraphQLRequestExecuteService(
                 component,
                 platform.getQueryPool(),
@@ -57,6 +58,10 @@ public class FrontendEngine implements AutoCloseable {
         return graphQLRequestExecuteService;
     }
 
+    public GraphQLSubscribeEngine getGraphQLSubscribeEngine() {
+        return graphQLSubscribeEngine;
+    }
+
     @Override
     public void close() {
         if (network != null) {
@@ -69,18 +74,12 @@ public class FrontendEngine implements AutoCloseable {
         private final Platform platform;
         private final Component component;
 
-        private GraphQLEngine graphQLEngine;
         private BuilderNetwork builderNetwork;
         private RequestAuthorize.Builder requestAuthorizeBuilder;
 
         public Builder(Platform platform, Component component) {
             this.platform = platform;
             this.component = component;
-        }
-
-        public Builder withGraphQLEngine(GraphQLEngine graphQLEngine) {
-            this.graphQLEngine = graphQLEngine;
-            return this;
         }
 
         public Builder withBuilderNetwork(BuilderNetwork builderNetwork) {
