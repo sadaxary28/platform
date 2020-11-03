@@ -4,7 +4,7 @@ public enum TypePacket {
 
     GQL_CONNECTION_INIT("connection_init"),// Client -> Server
     GQL_CONNECTION_ACK("connection_ack"), // Server -> Client
-    GQL_CONNECTION_ERROR("'connection_error'"), // Server -> Client
+    GQL_CONNECTION_ERROR("connection_error"), // Server -> Client
 
 
     GQL_START("start"), // Client -> Server
