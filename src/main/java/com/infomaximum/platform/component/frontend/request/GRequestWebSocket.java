@@ -1,6 +1,7 @@
 package com.infomaximum.platform.component.frontend.request;
 
 import com.infomaximum.cluster.graphql.struct.GRequest;
+import com.infomaximum.network.struct.HandshakeData;
 
 import javax.servlet.http.Cookie;
 import java.io.Serializable;
@@ -16,12 +17,20 @@ public class GRequestWebSocket extends GRequest {
     private final Map<String, String> parameters;
     private final Cookie[] cookies;
 
+    private final HandshakeData handshakeData;
+
     public GRequestWebSocket(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String sessionUuid, Map<String, String> parameters, Cookie[] cookies) {
+        this(instant, remoteAddress, query, queryVariables, sessionUuid, parameters, cookies, null);
+    }
+
+    public GRequestWebSocket(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String sessionUuid, Map<String, String> parameters, Cookie[] cookies, HandshakeData handshakeData) {
         super(instant, remoteAddress, query, queryVariables);
 
         this.sessionUuid = sessionUuid;
         this.parameters = parameters != null ? parameters : new HashMap<>();
         this.cookies = cookies;
+
+        this.handshakeData = handshakeData;
     }
 
     public String getSessionUuid() {
@@ -43,5 +52,9 @@ public class GRequestWebSocket extends GRequest {
             }
         }
         return null;
+    }
+
+    public <T extends HandshakeData> T getHandshakeData() {
+        return (T) handshakeData;
     }
 }
