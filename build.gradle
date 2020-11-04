@@ -8,7 +8,7 @@ if (file('publish.gradle').exists()) {
 }
 
 group 'com.infomaximum'
-version '0.0.1p27'
+version '0.0.1p28'
 
 sourceCompatibility = 1.8
 
@@ -45,6 +45,7 @@ dependencies {
     
     compile 'com.infomaximum:network:0.0.18p2'
 //    compile project(':network')
+    compile 'commons-fileupload:commons-fileupload:1.3.2'
 
     compile 'org.apache.commons:commons-lang3:3.10'
     
