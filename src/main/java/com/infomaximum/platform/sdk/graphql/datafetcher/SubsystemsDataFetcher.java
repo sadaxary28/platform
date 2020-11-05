@@ -6,12 +6,12 @@ import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEng
 import com.infomaximum.cluster.graphql.schema.datafetcher.ComponentDataFetcher;
 import com.infomaximum.cluster.graphql.schema.struct.out.RGraphQLObjectTypeField;
 import com.infomaximum.cluster.graphql.struct.GRequest;
-import com.infomaximum.cluster.graphql.utils.ExceptionUtils;
 import com.infomaximum.platform.component.frontend.authcontext.UnauthorizedContext;
 import com.infomaximum.platform.component.frontend.context.impl.ContextTransactionRequestImpl;
 import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.struct.FieldConfiguration;
+import com.infomaximum.platform.utils.ExceptionUtils;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.exception.runtime.SubsystemRuntimeException;
 import graphql.schema.DataFetchingEnvironment;
