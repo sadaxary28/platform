@@ -18,7 +18,7 @@ public class FrontendEngine implements AutoCloseable {
     private final Component component;
 
     private final GraphQLEngine graphQLEngine;
-    private GraphQLSubscribeEngine graphQLSubscribeEngine;
+    private final GraphQLSubscribeEngine graphQLSubscribeEngine;
 
     private final RequestAuthorize.Builder requestAuthorizeBuilder;
 
@@ -33,13 +33,12 @@ public class FrontendEngine implements AutoCloseable {
         this.component = builder.component;
 
         this.graphQLEngine = builder.platform.getGraphQLEngine();
+        this.graphQLSubscribeEngine = graphQLEngine.buildSubscribeEngine();
 
         this.requestAuthorizeBuilder = builder.requestAuthorizeBuilder;
     }
 
     public void start() throws NetworkException {
-        graphQLSubscribeEngine = graphQLEngine.buildSubscribeEngine();
-
         graphQLRequestExecuteService = new GraphQLRequestExecuteService(
                 component,
                 platform.getQueryPool(),
