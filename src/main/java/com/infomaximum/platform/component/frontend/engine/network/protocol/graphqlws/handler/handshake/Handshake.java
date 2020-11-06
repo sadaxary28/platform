@@ -1,10 +1,10 @@
 package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.handshake;
 
 import com.infomaximum.network.packet.IPacket;
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.struct.HandshakeData;
-import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.PacketHandler;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.TypePacket;
 
@@ -41,13 +41,14 @@ public class Handshake implements PacketHandler {
     }
 
     @Override
-    public CompletableFuture<IPacket> exec(Session session, Packet packet) {
+    public CompletableFuture<IPacket> exec(Session session, IPacket packet) {
+        Packet requestPacket = (Packet) packet;
         Packet responsePacket;
-        if (packet.type == TypePacket.GQL_CONNECTION_INIT) {
-            responsePacket = new Packet(packet.id, TypePacket.GQL_CONNECTION_ACK);
+        if (requestPacket.type == TypePacket.GQL_CONNECTION_INIT) {
+            responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ACK);
             completedPhaseHandshake(session, null);
         } else {
-            responsePacket = new Packet(packet.id, TypePacket.GQL_CONNECTION_ERROR);
+            responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ERROR);
         }
         return CompletableFuture.completedFuture(responsePacket);
     }

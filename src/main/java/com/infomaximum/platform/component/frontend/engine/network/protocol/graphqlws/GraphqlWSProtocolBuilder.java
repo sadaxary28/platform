@@ -1,8 +1,8 @@
 package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws;
 
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.protocol.ProtocolBuilder;
-import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.PacketHandler;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.handshake.Handshake;
 
 public class GraphqlWSProtocolBuilder extends ProtocolBuilder {
@@ -15,6 +15,6 @@ public class GraphqlWSProtocolBuilder extends ProtocolBuilder {
 
     @Override
     public Protocol build(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        return new GraphqlWSProtocol(new Handshake(), packetHandler);
+        return new GraphqlWSProtocol(new Handshake(), packetHandler, uncaughtExceptionHandler);
     }
 }
