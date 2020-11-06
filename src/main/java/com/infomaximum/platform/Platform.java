@@ -8,7 +8,8 @@ import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
 import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.sdk.graphql.customfield.graphqlquery.GraphQLQueryCustomField;
-import com.infomaximum.platform.sdk.graphql.datafetcher.SubsystemsDataFetcher;
+import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcher;
+import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcherExceptionHandler;
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.TypeGraphQLFieldConfigurationBuilderImpl;
 import com.infomaximum.platform.sdk.graphql.scalartype.GraphQLScalarTypePlatform;
 import com.infomaximum.platform.sdk.struct.ClusterContext;
@@ -126,7 +127,8 @@ public class Platform implements AutoCloseable {
 
 			this.graphQLEngineBuilder = new GraphQLEngine.Builder()
 					.withFieldConfigurationBuilder(new TypeGraphQLFieldConfigurationBuilderImpl())
-					.withDataFetcher(SubsystemsDataFetcher.class)
+					.withDataFetcher(PlatformDataFetcher.class)
+					.withDataFetcherExceptionHandler(new PlatformDataFetcherExceptionHandler())
 					.withPrepareCustomField(new GraphQLQueryCustomField())
 					.withTypeScalar(GraphQLScalarTypePlatform.GraphQLDuration)
 					.withTypeScalar(GraphQLScalarTypePlatform.GraphQLGOutputFile);

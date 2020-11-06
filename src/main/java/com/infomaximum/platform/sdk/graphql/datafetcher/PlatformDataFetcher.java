@@ -19,9 +19,9 @@ import graphql.schema.DataFetchingEnvironment;
 /**
  * Created by kris on 11.01.17.
  */
-public class SubsystemsDataFetcher extends ComponentDataFetcher {
+public class PlatformDataFetcher extends ComponentDataFetcher {
 
-    public SubsystemsDataFetcher(Remotes remotes, GraphQLComponentExecutor sdkGraphQLItemExecutor, GraphQLSubscribeEngineImpl subscribeEngine, String graphQLTypeName, RGraphQLObjectTypeField rTypeGraphQLField) {
+    public PlatformDataFetcher(Remotes remotes, GraphQLComponentExecutor sdkGraphQLItemExecutor, GraphQLSubscribeEngineImpl subscribeEngine, String graphQLTypeName, RGraphQLObjectTypeField rTypeGraphQLField) {
         super(remotes, sdkGraphQLItemExecutor, subscribeEngine, graphQLTypeName, rTypeGraphQLField);
     }
 
@@ -43,8 +43,8 @@ public class SubsystemsDataFetcher extends ComponentDataFetcher {
 
         if (!isAccess) {
             SubsystemException invalidCredentialException = GeneralExceptionBuilder.buildInvalidCredentialsException(rTypeGraphQLField.type, rTypeGraphQLField.name);
-            throw new SubsystemRuntimeException(getExceptionDetails(context)  + ". " + invalidCredentialException.toString(),
-                    invalidCredentialException);
+            String message = getExceptionDetails(context) + ". SubsystemException: " + invalidCredentialException.getMessage() + ", path: " + environment.getExecutionStepInfo().getPath();
+            throw new SubsystemRuntimeException(message, invalidCredentialException);
         }
 
         try {
