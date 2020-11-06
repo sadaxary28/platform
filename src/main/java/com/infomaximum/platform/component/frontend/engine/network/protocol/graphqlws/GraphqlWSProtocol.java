@@ -1,8 +1,8 @@
 package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws;
 
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.transport.Transport;
-import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.PacketHandler;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.handshake.Handshake;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.session.GraphqlWSTransportSession;
 
@@ -13,7 +13,8 @@ public class GraphqlWSProtocol extends Protocol {
     public final Handshake handshake;
     public final PacketHandler packetHandler;
 
-    public GraphqlWSProtocol(Handshake handshake, PacketHandler packetHandler) {
+    public GraphqlWSProtocol(Handshake handshake, PacketHandler packetHandler, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+        super(uncaughtExceptionHandler);
         this.handshake = handshake;
         this.packetHandler = packetHandler;
     }

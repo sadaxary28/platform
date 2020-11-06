@@ -2,13 +2,13 @@ package com.infomaximum.platform.component.frontend.engine.network.protocol.grap
 
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.packet.IPacket;
-import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.session.Session;
+import com.infomaximum.network.struct.RemoteAddress;
 import com.infomaximum.platform.component.frontend.context.ContextTransactionRequest;
 import com.infomaximum.platform.component.frontend.context.impl.ContextTransactionRequestImpl;
 import com.infomaximum.platform.component.frontend.context.source.SourceGRequestAuth;
 import com.infomaximum.platform.component.frontend.context.source.impl.SourceGRequestAuthImpl;
-import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.PacketHandler;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.TypePacket;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.subscriber.WebSocketGraphQLWSSubscriber;
@@ -40,15 +40,17 @@ public class GraphQLHandler implements PacketHandler {
         this.providerGraphQLRequestExecuteService = providerGraphQLRequestExecuteService;
     }
 
+
     @Override
-    public CompletableFuture<IPacket> exec(Session session, Packet packet) {
-        TypePacket typePacket = packet.type;
+    public CompletableFuture<IPacket> exec(Session session, IPacket packet) {
+        Packet requestPacket = (Packet) packet;
+        TypePacket typePacket = requestPacket.type;
 
         if (typePacket == TypePacket.GQL_START) {
-            return execGraphQL(session, packet);
+            return execGraphQL(session, requestPacket);
         } else {
             return CompletableFuture.completedFuture(
-                    new Packet(packet.id, TypePacket.GQL_ERROR)
+                    new Packet(requestPacket.id, TypePacket.GQL_ERROR)
             );
         }
     }
@@ -78,7 +80,7 @@ public class GraphQLHandler implements PacketHandler {
             parameters.put(entry.getKey(), entry.getValue().get(0));
         }
 
-        StandardTransportSession.RemoteAddress remoteAddress = session.getTransportSession().getRemoteAddress();
+        RemoteAddress remoteAddress = session.getTransportSession().buildRemoteAddress();
         GRequestWebSocket gRequest = new GRequestWebSocket(
                 Instant.now(),
                 new GRequest.RemoteAddress(remoteAddress.getRawRemoteAddress(), remoteAddress.getEndRemoteAddress()),
