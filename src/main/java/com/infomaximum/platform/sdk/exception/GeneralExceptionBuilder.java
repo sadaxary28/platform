@@ -19,7 +19,7 @@ public class GeneralExceptionBuilder {
 
     private static final ExceptionFactory EXCEPTION_FACTORY = new GeneralExceptionFactory();
 
-    private static final String INVALID_CREDENTIALS = "invalid_credentials";
+    public static final String INVALID_CREDENTIALS = "invalid_credentials";
     private static final String NOT_UNIQUE_VALUE_CODE = "not_unique_value";
     private static final String INVALID_VALUE_CODE = "invalid_value";
     public static final String ACCESS_DENIED_CODE = "access_denied";
