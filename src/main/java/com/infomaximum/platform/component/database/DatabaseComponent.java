@@ -13,54 +13,56 @@ import com.infomaximum.subsystems.exception.SubsystemException;
 
 public class DatabaseComponent extends Component {
 
-	public static final Info INFO = (Info) new Info.Builder(DatabaseConsts.UUID, null)
-			.withComponentClass(DatabaseComponent.class)
-			.build();
+    public static final Info INFO = (Info) new Info.Builder(DatabaseConsts.UUID, null)
+            .withComponentClass(DatabaseComponent.class)
+            .build();
 
-	private volatile RocksDBProvider dbProvider;
+    private volatile RocksDBProvider dbProvider;
 
-	private DatabaseComponentExtension extension;
+    private DatabaseComponentExtension extension;
 
-	public DatabaseComponent(Cluster cluster) {
-		super(cluster);
-	}
+    public DatabaseComponent(Cluster cluster) {
+        super(cluster);
+    }
 
-	@Override
-	public Info getInfo() {
-		return INFO;
-	}
+    @Override
+    public Info getInfo() {
+        return INFO;
+    }
 
-	@Override
-	protected DBProvider initDBProvider() throws ClusterException {
-		if (dbProvider != null) {
-			return dbProvider;
-		}
-		try {
-			dbProvider = new RocksDataBaseBuilder()
-					.withPath(Platform.get().getDatabaseConfigure().dbPath)
-					.build();
-			return dbProvider;
-		} catch (DatabaseException e) {
-			throw new ClusterException(e);
-		}
-	}
+    @Override
+    protected DBProvider initDBProvider() throws ClusterException {
+        if (dbProvider != null) {
+            return dbProvider;
+        }
+        try {
+            dbProvider = new RocksDataBaseBuilder()
+                    .withPath(Platform.get().getDatabaseConfigure().dbPath)
+                    .build();
+            return dbProvider;
+        } catch (DatabaseException e) {
+            throw new ClusterException(e);
+        }
+    }
 
-	public void onStarting() throws SubsystemException {
-		super.onStarting();
+    public void onStarting() throws SubsystemException {
+        super.onStarting();
 
-		this.extension = Platform.get().getDatabaseConfigure().extension;
-		if (extension != null) {
-			extension.initialize(this);
-		}
-	}
+        this.extension = Platform.get().getDatabaseConfigure().extension;
+        if (extension != null) {
+            extension.initialize(this);
+        }
+    }
 
-	public RocksDBProvider getRocksDBProvider() {
-		return dbProvider;
-	}
+    public RocksDBProvider getRocksDBProvider() {
+        return dbProvider;
+    }
 
-	@Override
-	public final void destroy(){
-		dbProvider.close();
-		super.destroy();
-	}
+    @Override
+    public final void destroy() {
+        if (dbProvider != null) {
+            dbProvider.close();
+        }
+        super.destroy();
+    }
 }
