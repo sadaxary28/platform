@@ -11,7 +11,6 @@ import com.infomaximum.platform.component.frontend.context.impl.ContextTransacti
 import com.infomaximum.platform.component.frontend.context.source.impl.SourceGRequestAuthImpl;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.graphql.PrepareGraphQLDocument;
-import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
@@ -84,6 +83,7 @@ public class GraphQLRequestExecuteService {
         if (prepareGraphQLDocument.isQueryPoolRequest()) {
             return queryPool.execute(
                     frontendComponent,
+                    context,
                     new Query<GraphQLResponse>() {
 
                         private QueryPool.Priority priority;
@@ -107,9 +107,6 @@ public class GraphQLRequestExecuteService {
 
                         @Override
                         public GraphQLResponse execute(QueryTransaction transaction) throws SubsystemException {
-                            context.setTransaction(transaction);
-
-//                            UnauthorizedContext authContext = authContextComponent.getAuthContext(context);
                             UnauthorizedContext authContext = requestAuthorize.authorize(context);
                             source.setAuthContext(authContext);
 
@@ -117,8 +114,8 @@ public class GraphQLRequestExecuteService {
 
                             ExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
-                            log.debug("Request ({}), priority: {}, wait: {}, exec: {}, query: {}",
-                                    GRequestUtils.getHashRequest(gRequest),
+                            log.debug("Request (Trace: {}), priority: {}, wait: {}, exec: {}, query: {}",
+                                    context.getTrace(),
                                     priority,
                                     instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
                                     Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),

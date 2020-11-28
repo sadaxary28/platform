@@ -6,4 +6,5 @@ public interface Context<S extends Source> {
 
     S getSource();
 
+    String getTrace();
 }

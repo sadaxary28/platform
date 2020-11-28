@@ -15,5 +15,10 @@ public class ContextImpl implements Context {
     public Source getSource() {
         return source;
     }
+
+    @Override
+    public String getTrace() {
+        return "s" + hashCode();
+    }
 }
 

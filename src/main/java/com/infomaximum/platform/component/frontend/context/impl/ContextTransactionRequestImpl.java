@@ -4,9 +4,11 @@ import com.infomaximum.cluster.graphql.struct.ContextRequest;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.platform.component.frontend.context.ContextTransactionRequest;
 import com.infomaximum.platform.component.frontend.context.source.SourceGRequestAuth;
+import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
+import com.infomaximum.platform.sdk.context.ContextTransactionInternal;
 import com.infomaximum.subsystems.querypool.QueryTransaction;
 
-public class ContextTransactionRequestImpl implements ContextTransactionRequest, ContextRequest {
+public class ContextTransactionRequestImpl implements ContextTransactionRequest, ContextRequest, ContextTransactionInternal {
 
     private final SourceGRequestAuth source;
     private QueryTransaction transaction;
@@ -30,6 +32,7 @@ public class ContextTransactionRequestImpl implements ContextTransactionRequest,
         return transaction;
     }
 
+    @Override
     public void setTransaction(QueryTransaction transaction) {
         this.transaction = transaction;
     }
@@ -37,5 +40,10 @@ public class ContextTransactionRequestImpl implements ContextTransactionRequest,
     @Override
     public GRequest getRequest() {
         return getSource().getRequest();
+    }
+
+    @Override
+    public String getTrace() {
+        return GRequestUtils.getTraceRequest(source.getRequest());
     }
 }

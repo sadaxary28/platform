@@ -1,6 +1,9 @@
 package com.infomaximum.subsystems.querypool;
 
 import com.infomaximum.platform.sdk.component.Component;
+import com.infomaximum.platform.sdk.context.ContextTransaction;
+import com.infomaximum.platform.sdk.context.impl.ContextTransactionImpl;
+import com.infomaximum.platform.sdk.context.source.impl.SourceSystemImpl;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -10,12 +13,18 @@ import java.util.function.Function;
 public class QueryFuture<T> {
 
 	protected final QueryPool queryPool;
-	protected final Component subsystem;
+	protected final Component component;
+	protected final ContextTransaction context;
 	private final CompletableFuture<T> future;
 
-	public QueryFuture(QueryPool queryPool, Component subsystem, CompletableFuture<T> future) {
+	public QueryFuture(QueryPool queryPool, Component component, ContextTransaction context, CompletableFuture<T> future) {
 		this.queryPool = queryPool;
-		this.subsystem = subsystem;
+		this.component = component;
+		if (context == null) {
+			this.context = new ContextTransactionImpl(new SourceSystemImpl(), null);
+		} else {
+			this.context = context;
+		}
 		this.future = future;
 	}
 
@@ -52,7 +61,7 @@ public class QueryFuture<T> {
 	}
 
 	public <U> QueryFuture<U> thenApply(Function<? super T, Query<? extends U>> fn, boolean failIfPoolBusy) {
-		QueryFuture<U> queryFuture = new QueryFuture<U>(queryPool, subsystem, new CompletableFuture<>());
+		QueryFuture<U> queryFuture = new QueryFuture<U>(queryPool, component, context, new CompletableFuture<>());
 		future.thenApply(t -> {
 			Query nextQuery = fn.apply(t);
 			queryPool.execute(queryFuture, nextQuery, failIfPoolBusy);

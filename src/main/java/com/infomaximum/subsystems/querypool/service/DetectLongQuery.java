@@ -1,5 +1,6 @@
 package com.infomaximum.subsystems.querypool.service;
 
+import com.infomaximum.platform.sdk.context.Context;
 import com.infomaximum.subsystems.querypool.QueryPool;
 import com.infomaximum.utils.DefaultThreadFactory;
 import org.slf4j.Logger;
@@ -60,7 +61,10 @@ public class DetectLongQuery implements Runnable {
 				Thread thread = queryWrapper.getThread();
 				if (thread == null) continue;
 
-				log.warn("Detect long query! start: {}, duration: {}, resources: {}, stackTrace: {}",
+				Context context = queryWrapper.getContext();
+
+				log.warn("Detect long query! trace: {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
+						context.getTrace(),
 						queryWrapper.getTimeStart(),
 						duration.toMillis(),
 						toStringResources(resources),

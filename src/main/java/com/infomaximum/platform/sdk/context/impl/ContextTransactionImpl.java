@@ -1,10 +1,11 @@
 package com.infomaximum.platform.sdk.context.impl;
 
 import com.infomaximum.platform.sdk.context.ContextTransaction;
+import com.infomaximum.platform.sdk.context.ContextTransactionInternal;
 import com.infomaximum.platform.sdk.context.source.SourceSystem;
 import com.infomaximum.subsystems.querypool.QueryTransaction;
 
-public class ContextTransactionImpl implements ContextTransaction {
+public class ContextTransactionImpl implements ContextTransaction, ContextTransactionInternal {
 
     private final SourceSystem source;
     private QueryTransaction transaction;
@@ -24,8 +25,13 @@ public class ContextTransactionImpl implements ContextTransaction {
         return transaction;
     }
 
+    @Override
     public void setTransaction(QueryTransaction transaction) {
         this.transaction = transaction;
     }
 
+    @Override
+    public String getTrace() {
+        return "s" + hashCode();
+    }
 }
