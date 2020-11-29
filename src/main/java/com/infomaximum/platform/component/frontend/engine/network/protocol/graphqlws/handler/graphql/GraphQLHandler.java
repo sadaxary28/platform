@@ -4,6 +4,7 @@ import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.session.Session;
+import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.struct.RemoteAddress;
 import com.infomaximum.platform.component.frontend.context.ContextTransactionRequest;
 import com.infomaximum.platform.component.frontend.context.impl.ContextTransactionRequestImpl;
@@ -73,19 +74,19 @@ public class GraphQLHandler implements PacketHandler {
             variables = new HashMap<>();
         }
 
-        UpgradeRequest upgradeRequest = session.getTransportSession().getUpgradeRequest();
+        UpgradeRequest upgradeRequest = ((SessionImpl)session).getTransportSession().getUpgradeRequest();
 
         Map<String, String> parameters = new HashMap<>();
         for (Map.Entry<String, List<String>> entry : upgradeRequest.getParameterMap().entrySet()) {
             parameters.put(entry.getKey(), entry.getValue().get(0));
         }
 
-        RemoteAddress remoteAddress = session.getTransportSession().buildRemoteAddress();
+        RemoteAddress remoteAddress = ((SessionImpl)session).getTransportSession().buildRemoteAddress();
         GRequestWebSocket gRequest = new GRequestWebSocket(
                 Instant.now(),
                 new GRequest.RemoteAddress(remoteAddress.getRawRemoteAddress(), remoteAddress.getEndRemoteAddress()),
                 query, variables,
-                session.uuid,
+                session.getUuid(),
                 parameters,
                 buildCookies(upgradeRequest)
         );
@@ -125,7 +126,7 @@ public class GraphQLHandler implements PacketHandler {
                 );
             } else if (data instanceof CompletionStageMappingPublisher) {
                 CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
-                WebSocketGraphQLWSSubscriber websocketSubscriber = new WebSocketGraphQLWSSubscriber(requestPacket.id, session.getTransportSession());
+                WebSocketGraphQLWSSubscriber websocketSubscriber = new WebSocketGraphQLWSSubscriber(requestPacket.id, ((SessionImpl)session).getTransportSession());
                 completionPublisher.subscribe(websocketSubscriber);
                 return websocketSubscriber.getFirstResponseCompletableFuture();
             } else {

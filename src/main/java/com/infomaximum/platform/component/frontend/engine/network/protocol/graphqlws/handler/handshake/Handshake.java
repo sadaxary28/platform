@@ -4,6 +4,7 @@ import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.session.Session;
+import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.TypePacket;
@@ -28,7 +29,7 @@ public class Handshake implements PacketHandler {
      * @param session
      */
     public void completedPhaseHandshake(Session session, HandshakeData handshakeData) {
-        session.getTransportSession().completedPhaseHandshake(handshakeData);
+        ((SessionImpl)session).getTransportSession().completedPhaseHandshake(handshakeData);
     }
 
     /**
@@ -37,7 +38,7 @@ public class Handshake implements PacketHandler {
      * @param session
      */
     public void failPhaseHandshake(Session session, ResponsePacket responsePacket) {
-        session.getTransportSession().failPhaseHandshake(responsePacket);
+        ((SessionImpl)session).getTransportSession().failPhaseHandshake(responsePacket);
     }
 
     @Override

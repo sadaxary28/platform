@@ -2,6 +2,7 @@ package com.infomaximum.platform.component.frontend.engine.network.protocol.grap
 
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
+import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
@@ -43,6 +44,7 @@ public class GraphqlWSTransportSession extends TransportSession {
     @Override
     public void completedPhaseHandshake(HandshakeData handshakeData) {
         phaseHandshake = false;
+        ((SessionImpl)session).initHandshakeData(handshakeData);
     }
 
     @Override
