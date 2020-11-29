@@ -44,6 +44,7 @@ public class Platform implements AutoCloseable {
 			this.graphQLEngine = builder.graphQLEngineBuilder.build();
 			this.cluster = builder.clusterBuilder
 					.withContext(new ClusterContext(this, builder.clusterContext))
+					.withUncaughtExceptionHandler(uncaughtExceptionHandler)
 					.build();
 			this.queryPool = new QueryPool(builder.uncaughtExceptionHandler);
 
