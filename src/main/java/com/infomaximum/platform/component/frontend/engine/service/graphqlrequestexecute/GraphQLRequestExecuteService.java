@@ -20,6 +20,7 @@ import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.exception.runtime.SubsystemRuntimeException;
 import com.infomaximum.subsystems.querypool.*;
 import graphql.*;
+import graphql.execution.ExecutionId;
 import graphql.execution.NonNullableValueCoercedAsNullException;
 import graphql.execution.reactive.CompletionStageMappingPublisher;
 import graphql.language.SourceLocation;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -56,9 +58,17 @@ public class GraphQLRequestExecuteService {
         this.requestAuthorizeBuilder = requestAuthorizeBuilder;
     }
 
-    public CompletableFuture<GraphQLResponse> execute(GRequest gRequest, ExecutionInput executionInput) {
-        ContextTransactionRequestImpl context = (ContextTransactionRequestImpl) executionInput.getContext();
-        SourceGRequestAuthImpl source = (SourceGRequestAuthImpl) context.getSource();
+    public CompletableFuture<GraphQLResponse> execute(GRequest gRequest) {
+
+        SourceGRequestAuthImpl source = new SourceGRequestAuthImpl(gRequest);
+        ContextTransactionRequestImpl context = new ContextTransactionRequestImpl(source);
+
+        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .executionId(ExecutionId.generate())
+                .query(gRequest.getQuery())
+                .context(context)
+                .variables(Collections.unmodifiableMap(gRequest.getQueryVariables()))
+                .build();
 
         //Парсим graphql запрос - собирая ресурсы
         PrepareGraphQLDocument prepareGraphQLDocument;
