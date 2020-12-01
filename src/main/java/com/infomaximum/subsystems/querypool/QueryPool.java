@@ -123,7 +123,16 @@ public class QueryPool {
     //TODO Удалить костыль
     public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 80;
     public static final int MAX_WORKED_QUERY_COUNT = MAX_THREAD_COUNT * 5;
-    public static final int MAX_WAITING_QUERY_COUNT = MAX_THREAD_COUNT * 20;
+
+    /**
+     * Пользовательские запросы более приоритетны, потоэму лучше их положить в очередь, чем сразу кинуть ошибку
+     */
+    public static final int MAX_WAITING_HIGH_QUERY_COUNT = MAX_THREAD_COUNT * 20;
+    /**
+     * Очередь для низко приоритетных запросов в два раза меньше пула потоков данных, сделана для того,
+     * что бы сервер не захлебывался в моменты пиковой нагрузки
+     */
+    public static final int MAX_WAITING_LOW_QUERY_COUNT = MAX_THREAD_COUNT / 2;
 
     private final ThreadPoolExecutor threadPool;
 
@@ -437,9 +446,9 @@ public class QueryPool {
 
         switch (newQueryPriority) {
             case LOW:
-                return lowPriorityWaitingQueryCount >= MAX_WAITING_QUERY_COUNT;
+                return lowPriorityWaitingQueryCount >= MAX_WAITING_LOW_QUERY_COUNT;
             case HIGH:
-                return highPriorityWaitingQueryCount >= MAX_WAITING_QUERY_COUNT;
+                return highPriorityWaitingQueryCount >= MAX_WAITING_HIGH_QUERY_COUNT;
         }
         return false;
     }

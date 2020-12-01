@@ -526,7 +526,7 @@ public class QueryPoolTest {
         QueryPool pool = buildPool();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        for (int i = 0; i < QueryPool.MAX_WAITING_QUERY_COUNT + 1; ++i) {
+        for (int i = 0; i < QueryPool.MAX_WAITING_HIGH_QUERY_COUNT + 1; ++i) {
             pool.execute(component, createQuery(
                     Object.class, QueryPool.LockType.EXCLUSIVE, QueryPool.Priority.HIGH, () -> {
                         try {
@@ -553,7 +553,7 @@ public class QueryPoolTest {
         QueryPool pool = buildPool();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        for (int i = 0; i < QueryPool.MAX_WAITING_QUERY_COUNT + 1; ++i) {
+        for (int i = 0; i < QueryPool.MAX_WAITING_LOW_QUERY_COUNT + 1; ++i) {
             pool.execute(component, createQuery(
                     Object.class, QueryPool.LockType.EXCLUSIVE, QueryPool.Priority.LOW, () -> {
                         try {
