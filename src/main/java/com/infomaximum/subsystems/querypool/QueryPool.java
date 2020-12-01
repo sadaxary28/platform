@@ -446,7 +446,15 @@ public class QueryPool {
 
         switch (newQueryPriority) {
             case LOW:
-                return lowPriorityWaitingQueryCount >= MAX_WAITING_LOW_QUERY_COUNT;
+                //Низкоприоритетные запросы не должны создавать нагрузку на сервер
+                //Не допускаем рост очереди:
+                //1) Если запросы требуют блокирующие друг друга ресурсы и формируется очередь
+                //2) Пул потоков загружен больше чем на половину - сразу откидываем низкоприоритетные запросы
+                return ((lowPriorityWaitingQueryCount >= MAX_WAITING_LOW_QUERY_COUNT)
+                        ||
+                        //Эквивалент: threadPool.getActiveCount() * 2 > threadPool.getMaximumPoolSize()
+                        ((threadPool.getActiveCount() << 1) > threadPool.getMaximumPoolSize())
+                );
             case HIGH:
                 return highPriorityWaitingQueryCount >= MAX_WAITING_HIGH_QUERY_COUNT;
         }
