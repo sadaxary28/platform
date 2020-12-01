@@ -6,10 +6,6 @@ import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.struct.RemoteAddress;
-import com.infomaximum.platform.component.frontend.context.ContextTransactionRequest;
-import com.infomaximum.platform.component.frontend.context.impl.ContextTransactionRequestImpl;
-import com.infomaximum.platform.component.frontend.context.source.SourceGRequestAuth;
-import com.infomaximum.platform.component.frontend.context.source.impl.SourceGRequestAuthImpl;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.TypePacket;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.subscriber.WebSocketGraphQLWSSubscriber;
@@ -17,8 +13,6 @@ import com.infomaximum.platform.component.frontend.engine.provider.ProviderGraph
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.request.GRequestWebSocket;
 import com.infomaximum.platform.sdk.utils.StreamUtils;
-import graphql.ExecutionInput;
-import graphql.execution.ExecutionId;
 import graphql.execution.reactive.CompletionStageMappingPublisher;
 import net.minidev.json.JSONObject;
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
@@ -27,7 +21,6 @@ import javax.servlet.http.Cookie;
 import java.io.Serializable;
 import java.net.HttpCookie;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,18 +84,8 @@ public class GraphQLHandler implements PacketHandler {
                 buildCookies(upgradeRequest)
         );
 
-        SourceGRequestAuth source = new SourceGRequestAuthImpl(gRequest);
-        ContextTransactionRequest context = new ContextTransactionRequestImpl(source);
-
-        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
-                .executionId(ExecutionId.generate())
-                .query(query)
-                .context(context)
-                .variables(Collections.unmodifiableMap(variables))
-                .build();
-
         return providerGraphQLRequestExecuteService.getGraphQLRequestExecuteService()
-                .execute(gRequest, executionInput)
+                .execute(gRequest)
                 .thenCompose(graphQLResponse -> buildResponsePacket(graphQLResponse, session, requestPacket));
     }
 
