@@ -32,6 +32,6 @@ public class ContextTransactionImpl implements ContextTransaction, ContextTransa
 
     @Override
     public String getTrace() {
-        return "s" + hashCode();
+        return "(trace: s" + hashCode() + ")";
     }
 }

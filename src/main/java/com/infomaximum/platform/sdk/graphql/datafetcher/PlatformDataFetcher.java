@@ -53,6 +53,6 @@ public class PlatformDataFetcher extends ComponentDataFetcher {
     }
 
     private String getExceptionDetails(ContextTransactionRequestImpl context) {
-        return "ContextRequest (" + context.getTrace() + ")";
+        return "Request " + context.getTrace();
     }
 }

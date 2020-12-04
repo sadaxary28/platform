@@ -63,7 +63,7 @@ public class DetectLongQuery implements Runnable {
 
 				Context context = queryWrapper.getContext();
 
-				log.warn("Detect long query! trace: {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
+				log.warn("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
 						context.getTrace(),
 						queryWrapper.getTimeStart(),
 						duration.toMillis(),

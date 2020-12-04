@@ -124,7 +124,7 @@ public class GraphQLRequestExecuteService {
 
                             ExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
-                            log.debug("Request (Trace: {}), priority: {}, wait: {}, exec: {}, query: {}",
+                            log.debug("Request {}, priority: {}, wait: {}, exec: {}, query: {}",
                                     context.getTrace(),
                                     priority,
                                     instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
