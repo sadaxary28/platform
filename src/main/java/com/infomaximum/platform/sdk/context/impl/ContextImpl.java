@@ -18,7 +18,7 @@ public class ContextImpl implements Context {
 
     @Override
     public String getTrace() {
-        return "s" + hashCode();
+        return "(trace: s" + hashCode() + ")";
     }
 }
 
