@@ -7,4 +7,10 @@ import com.infomaximum.cluster.core.remote.struct.RemoteObject;
  */
 public class UnauthorizedContext implements RemoteObject {
 
+    public static final String TO_STRING = "UnauthorizedContext";
+
+    @Override
+    public String toString() {
+        return TO_STRING;
+    }
 }
