@@ -11,7 +11,6 @@ import com.infomaximum.platform.component.frontend.context.impl.ContextTransacti
 import com.infomaximum.platform.component.frontend.context.source.impl.SourceGRequestAuthImpl;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.graphql.PrepareGraphQLDocument;
-import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
@@ -128,7 +127,6 @@ public class GraphQLRequestExecuteService {
                             log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {}, query: {}",
                                     context.getTrace(),
                                     authContext,
-                                    GRequestUtils.getTraceRequest(gRequest),
                                     priority,
                                     instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
                                     Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),
@@ -161,7 +159,6 @@ public class GraphQLRequestExecuteService {
                 log.debug("Request {}, auth: {}, priority: null, wait: {}, exec: {}, query: {}",
                         context.getTrace(),
                         UnauthorizedContext.TO_STRING,
-                        GRequestUtils.getTraceRequest(gRequest),
                         instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
                         Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),
                         gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "")
