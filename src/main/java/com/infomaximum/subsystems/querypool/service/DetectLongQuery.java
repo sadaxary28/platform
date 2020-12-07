@@ -24,6 +24,8 @@ public class DetectLongQuery implements Runnable {
 	private final static Duration DETECTED_PERIOD = Duration.ofSeconds(1);
 	private final static Duration CHECK_PERIOD = Duration.ofMillis(DETECTED_PERIOD.toMillis() - 100);
 
+	private final static Duration WARN_LOG_DETECTED_PERIOD =  Duration.ofSeconds(30);
+
 	private final QueryPool queryPool;
 	private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
@@ -63,13 +65,23 @@ public class DetectLongQuery implements Runnable {
 
 				Context context = queryWrapper.getContext();
 
-				log.warn("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
-						context.getTrace(),
-						queryWrapper.getTimeStart(),
-						duration.toMillis(),
-						toStringResources(resources),
-						toStringStackTrace(thread.getStackTrace())
-				);
+				if (duration.compareTo(WARN_LOG_DETECTED_PERIOD) < 0) {
+					log.debug("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
+							context.getTrace(),
+							queryWrapper.getTimeStart(),
+							duration.toMillis(),
+							toStringResources(resources),
+							toStringStackTrace(thread.getStackTrace())
+					);
+				} else {
+					log.warn("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
+							context.getTrace(),
+							queryWrapper.getTimeStart(),
+							duration.toMillis(),
+							toStringResources(resources),
+							toStringStackTrace(thread.getStackTrace())
+					);
+				}
 			}
 		} catch (Throwable e) {
 			uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
