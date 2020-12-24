@@ -11,6 +11,8 @@ import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.uploadfile.FrontendMultipartSource;
+import com.infomaximum.platform.component.frontend.request.graphql.builder.GraphQLRequestBuilder;
+import com.infomaximum.platform.component.frontend.request.graphql.builder.impl.DefaultGraphQLRequestBuilder;
 import com.infomaximum.platform.sdk.component.Component;
 
 public class FrontendEngine implements AutoCloseable {
@@ -25,6 +27,8 @@ public class FrontendEngine implements AutoCloseable {
 
     private final RequestAuthorize.Builder requestAuthorizeBuilder;
     private final FrontendMultipartSource frontendMiltipartSource;
+
+    private final GraphQLRequestBuilder graphQLRequestBuilder;
 
     private GraphQLRequestExecuteService graphQLRequestExecuteService;
 
@@ -42,6 +46,8 @@ public class FrontendEngine implements AutoCloseable {
         this.requestAuthorizeBuilder = builder.requestAuthorizeBuilder;
 
         this.frontendMiltipartSource = new FrontendMultipartSource(builder.component);
+
+        this.graphQLRequestBuilder = builder.graphQLRequestBuilder.build(frontendMiltipartSource);
     }
 
     public ExecutorTransportImpl.Builder registerControllers(ExecutorTransportImpl.Builder builder) {
@@ -73,6 +79,10 @@ public class FrontendEngine implements AutoCloseable {
         return frontendMiltipartSource;
     }
 
+    public GraphQLRequestBuilder getGraphQLRequestBuilder() {
+        return graphQLRequestBuilder;
+    }
+
     public GraphQLRequestExecuteService getGraphQLRequestExecuteService() {
         return graphQLRequestExecuteService;
     }
@@ -96,6 +106,8 @@ public class FrontendEngine implements AutoCloseable {
         private BuilderNetwork builderNetwork;
         private RequestAuthorize.Builder requestAuthorizeBuilder;
 
+        private GraphQLRequestBuilder.Builder graphQLRequestBuilder = new DefaultGraphQLRequestBuilder.Builder();
+
         public Builder(Platform platform, Component component) {
             this.platform = platform;
             this.component = component;
@@ -108,6 +120,11 @@ public class FrontendEngine implements AutoCloseable {
 
         public Builder withRequestAuthorizeBuilder(RequestAuthorize.Builder requestAuthorizeBuilder) {
             this.requestAuthorizeBuilder = requestAuthorizeBuilder;
+            return this;
+        }
+
+        public Builder withGraphQLRequestBuilder(GraphQLRequestBuilder.Builder graphQLRequestBuilder) {
+            this.graphQLRequestBuilder=graphQLRequestBuilder;
             return this;
         }
 
