@@ -1,5 +1,7 @@
 package com.infomaximum.platform.component.frontend.engine;
 
+import com.infomaximum.cluster.core.remote.controller.clusterfile.RControllerClusterFileImpl;
+import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.graphql.GraphQLEngine;
 import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEngine;
 import com.infomaximum.network.Network;
@@ -40,6 +42,16 @@ public class FrontendEngine implements AutoCloseable {
         this.requestAuthorizeBuilder = builder.requestAuthorizeBuilder;
 
         this.frontendMiltipartSource = new FrontendMultipartSource(builder.component);
+    }
+
+    public ExecutorTransportImpl.Builder registerControllers(ExecutorTransportImpl.Builder builder) {
+        return builder
+                .withRemoteController(
+                        platform.getGraphQLEngine().buildRemoteControllerGraphQLSubscribe(component, graphQLSubscribeEngine)
+                )
+                .withRemoteController(
+                        new RControllerClusterFileImpl.Builder(component, frontendMiltipartSource).build()//Обработчик ClusterFiles
+                );
     }
 
     public void start() throws NetworkException {
