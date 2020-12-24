@@ -8,6 +8,7 @@ import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
+import com.infomaximum.platform.component.frontend.engine.uploadfile.FrontendMultipartSource;
 import com.infomaximum.platform.sdk.component.Component;
 
 public class FrontendEngine implements AutoCloseable {
@@ -21,6 +22,7 @@ public class FrontendEngine implements AutoCloseable {
     private final GraphQLSubscribeEngine graphQLSubscribeEngine;
 
     private final RequestAuthorize.Builder requestAuthorizeBuilder;
+    private final FrontendMultipartSource frontendMiltipartSource;
 
     private GraphQLRequestExecuteService graphQLRequestExecuteService;
 
@@ -36,6 +38,8 @@ public class FrontendEngine implements AutoCloseable {
         this.graphQLSubscribeEngine = graphQLEngine.buildSubscribeEngine();
 
         this.requestAuthorizeBuilder = builder.requestAuthorizeBuilder;
+
+        this.frontendMiltipartSource = new FrontendMultipartSource(builder.component);
     }
 
     public void start() throws NetworkException {
@@ -51,6 +55,10 @@ public class FrontendEngine implements AutoCloseable {
 
     public Network getNetwork() {
         return network;
+    }
+
+    public FrontendMultipartSource getFrontendMiltipartSource() {
+        return frontendMiltipartSource;
     }
 
     public GraphQLRequestExecuteService getGraphQLRequestExecuteService() {
