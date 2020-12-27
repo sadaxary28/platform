@@ -6,11 +6,15 @@ import com.infomaximum.cluster.graphql.GraphQLEngine;
 import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEngine;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
+import com.infomaximum.network.builder.BuilderTransport;
 import com.infomaximum.network.exception.NetworkException;
+import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
+import com.infomaximum.platform.component.frontend.engine.service.requestcomplete.RequestCompleteCallbackService;
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
+import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticServiceImpl;
 import com.infomaximum.platform.component.frontend.engine.uploadfile.FrontendMultipartSource;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.GraphQLRequestBuilder;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.impl.DefaultGraphQLRequestBuilder;
@@ -36,6 +40,7 @@ public class FrontendEngine implements AutoCloseable {
     private Network network;
 
     private final StatisticService statisticService;
+    private final RequestCompleteCallbackService requestCompleteCallbackService;
 
     private FrontendEngine(Builder builder) {
         this.builder = builder;
@@ -53,6 +58,22 @@ public class FrontendEngine implements AutoCloseable {
         this.graphQLRequestBuilder = builder.graphQLRequestBuilder.build(frontendMiltipartSource);
 
         this.statisticService = builder.statisticService;
+        this.requestCompleteCallbackService = new RequestCompleteCallbackService(
+                builder.builderNetwork.getUncaughtExceptionHandler()
+        );
+
+        //Регистрируем подписчиков
+        for (BuilderTransport builderTransport: builder.builderNetwork.getBuilderTransports()) {
+            if (builderTransport instanceof HttpBuilderTransport) {
+                HttpBuilderTransport httpBuilderTransport = (HttpBuilderTransport) builderTransport;
+
+                httpBuilderTransport.addListener(((StatisticServiceImpl) statisticService).getListener());
+                httpBuilderTransport.addListener(requestCompleteCallbackService);
+            } else {
+                throw new RuntimeException("Not support builder transport: " + builderTransport);
+            }
+        }
+
     }
 
     public ExecutorTransportImpl.Builder registerControllers(ExecutorTransportImpl.Builder builder) {
