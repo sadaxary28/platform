@@ -11,6 +11,7 @@ import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
+import com.infomaximum.platform.component.frontend.engine.controller.Controllers;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.requestcomplete.RequestCompleteCallbackService;
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
@@ -41,6 +42,8 @@ public class FrontendEngine implements AutoCloseable {
 
     private final StatisticService statisticService;
     private final RequestCompleteCallbackService requestCompleteCallbackService;
+
+    private final Controllers controllers;
 
     private FrontendEngine(Builder builder) {
         this.builder = builder;
@@ -74,6 +77,7 @@ public class FrontendEngine implements AutoCloseable {
             }
         }
 
+        this.controllers = new Controllers(this);
     }
 
     public ExecutorTransportImpl.Builder registerControllers(ExecutorTransportImpl.Builder builder) {
@@ -115,6 +119,10 @@ public class FrontendEngine implements AutoCloseable {
 
     public GraphQLSubscribeEngine getGraphQLSubscribeEngine() {
         return graphQLSubscribeEngine;
+    }
+
+    public Controllers getControllers() {
+        return controllers;
     }
 
     public StatisticService getStatisticService() {
