@@ -10,6 +10,7 @@ import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
+import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
 import com.infomaximum.platform.component.frontend.engine.uploadfile.FrontendMultipartSource;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.GraphQLRequestBuilder;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.impl.DefaultGraphQLRequestBuilder;
@@ -34,6 +35,8 @@ public class FrontendEngine implements AutoCloseable {
 
     private Network network;
 
+    private final StatisticService statisticService;
+
     private FrontendEngine(Builder builder) {
         this.builder = builder;
 
@@ -48,6 +51,8 @@ public class FrontendEngine implements AutoCloseable {
         this.frontendMiltipartSource = new FrontendMultipartSource(builder.component);
 
         this.graphQLRequestBuilder = builder.graphQLRequestBuilder.build(frontendMiltipartSource);
+
+        this.statisticService = builder.statisticService;
     }
 
     public ExecutorTransportImpl.Builder registerControllers(ExecutorTransportImpl.Builder builder) {
@@ -91,6 +96,10 @@ public class FrontendEngine implements AutoCloseable {
         return graphQLSubscribeEngine;
     }
 
+    public StatisticService getStatisticService() {
+        return statisticService;
+    }
+
     @Override
     public void close() {
         if (network != null) {
@@ -108,6 +117,8 @@ public class FrontendEngine implements AutoCloseable {
 
         private GraphQLRequestBuilder.Builder graphQLRequestBuilder = new DefaultGraphQLRequestBuilder.Builder();
 
+        private StatisticService statisticService;
+
         public Builder(Platform platform, Component component) {
             this.platform = platform;
             this.component = component;
@@ -124,7 +135,12 @@ public class FrontendEngine implements AutoCloseable {
         }
 
         public Builder withGraphQLRequestBuilder(GraphQLRequestBuilder.Builder graphQLRequestBuilder) {
-            this.graphQLRequestBuilder=graphQLRequestBuilder;
+            this.graphQLRequestBuilder = graphQLRequestBuilder;
+            return this;
+        }
+
+        public Builder withStatisticService(StatisticService statisticService) {
+            this.statisticService = statisticService;
             return this;
         }
 
