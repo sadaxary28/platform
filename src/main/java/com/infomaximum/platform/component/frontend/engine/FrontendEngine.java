@@ -146,7 +146,7 @@ public class FrontendEngine implements AutoCloseable {
 
         private GraphQLRequestBuilder.Builder graphQLRequestBuilder = new DefaultGraphQLRequestBuilder.Builder();
 
-        private StatisticService statisticService;
+        private StatisticService statisticService = new StatisticServiceImpl();
 
         public Builder(Platform platform, Component component) {
             this.platform = platform;
