@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by kris on 01.09.16.
  */
-public class Handshake implements PacketHandler {
+public abstract class Handshake implements PacketHandler {
 
     public Handshake() {
     }
@@ -41,13 +41,16 @@ public class Handshake implements PacketHandler {
         ((SessionImpl)session).getTransportSession().failPhaseHandshake(responsePacket);
     }
 
+    public abstract HandshakeData handshake(Packet packet);
+
     @Override
     public CompletableFuture<IPacket> exec(Session session, IPacket packet) {
         Packet requestPacket = (Packet) packet;
         Packet responsePacket;
         if (requestPacket.type == TypePacket.GQL_CONNECTION_INIT) {
+            HandshakeData handshakeData = handshake(requestPacket);
+            completedPhaseHandshake(session, handshakeData);
             responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ACK);
-            completedPhaseHandshake(session, null);
         } else {
             responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ERROR);
         }

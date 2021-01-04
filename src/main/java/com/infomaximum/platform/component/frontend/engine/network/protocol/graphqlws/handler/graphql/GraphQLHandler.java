@@ -81,7 +81,8 @@ public class GraphQLHandler implements PacketHandler {
                 query, variables,
                 session.getUuid(),
                 parameters,
-                buildCookies(upgradeRequest)
+                buildCookies(upgradeRequest),
+                session.getHandshakeData()
         );
 
         return providerGraphQLRequestExecuteService.getGraphQLRequestExecuteService()
