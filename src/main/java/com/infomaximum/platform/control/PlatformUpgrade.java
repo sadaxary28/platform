@@ -5,7 +5,7 @@ import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.domainobject.DomainObjectSource;
 import com.infomaximum.database.domainobject.Transaction;
 import com.infomaximum.database.exception.DatabaseException;
-import com.infomaximum.database.exception.runtime.SchemaException;
+import com.infomaximum.database.exception.SchemaException;
 import com.infomaximum.database.maintenance.SchemaService;
 import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.database.schema.Schema;

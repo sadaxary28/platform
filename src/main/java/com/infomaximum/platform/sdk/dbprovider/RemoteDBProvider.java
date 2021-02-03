@@ -4,8 +4,12 @@ import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.*;
 import com.infomaximum.platform.sdk.dbprovider.remote.RControllerDBProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class RemoteDBProvider implements DBProvider {
+
+    private final static Logger log = LoggerFactory.getLogger(RemoteDBProvider.class);
 
     private final Component component;
 
@@ -175,5 +179,11 @@ class RemoteDBProvider implements DBProvider {
         public void close() throws DatabaseException {
             getRemoteProvider().closeTransaction(transactionId);
         }
+    }
+
+    @Override
+    public void close() {
+        log.error("Not implemented!");
+        //TODO not implemented
     }
 }

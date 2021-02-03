@@ -77,4 +77,9 @@ public class ComponentDBProvider implements DBProvider {
     public void dropSequence(String name) throws DatabaseException {
         dbProvider.dropSequence(name);
     }
+
+    @Override
+    public void close() throws Exception {
+        dbProvider.close();
+    }
 }
