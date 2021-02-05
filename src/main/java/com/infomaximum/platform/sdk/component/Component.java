@@ -8,7 +8,7 @@ import com.infomaximum.cluster.graphql.remote.graphql.executor.RControllerGraphQ
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObjectSource;
 import com.infomaximum.database.exception.DatabaseException;
-import com.infomaximum.database.exception.SchemaException;
+import com.infomaximum.database.exception.runtime.SchemaException;
 import com.infomaximum.database.maintenance.ChangeMode;
 import com.infomaximum.database.maintenance.SchemaService;
 import com.infomaximum.database.provider.DBProvider;
@@ -73,6 +73,10 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     public void onCreate() {
     }
 
+    public ComponentType getType() {
+        return null;
+    }
+    
     public QuerySystem<Void> onStart() {
         return null;
     }
