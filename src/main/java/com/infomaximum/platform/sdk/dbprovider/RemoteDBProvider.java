@@ -181,9 +181,9 @@ class RemoteDBProvider implements DBProvider {
         }
     }
 
-//    @Override
-//    public void close() {
-//        log.error("Not implemented!");
-//        //TODO not implemented
-//    }
+    @Override
+    public void close() {
+        log.error("Not implemented!");
+        //TODO not implemented
+    }
 }

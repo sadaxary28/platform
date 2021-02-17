@@ -78,8 +78,8 @@ public class ComponentDBProvider implements DBProvider {
         dbProvider.dropSequence(name);
     }
 
-//    @Override
-//    public void close() throws Exception {
-//        dbProvider.close();
-//    }
+    @Override
+    public void close() throws Exception {
+        dbProvider.close();
+    }
 }
