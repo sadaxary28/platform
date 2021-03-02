@@ -97,13 +97,23 @@ public class QueryRemotes {
 
         Constructor constructor = remoteComponent.getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
 
-        if (constructor == null)
+        if (constructor == null) {
             throw new RuntimeException("Implements: " + remoteControllerClass + " in subsystem: " + remoteComponent.getClass() + " not found");
+        }
 
         try {
             return (T) constructor.newInstance(remoteComponent, resourceProvider);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    //TODO Ulitin V. переписать на удаленые вызовы
+    public <T extends QueryRemoteController> boolean isController(String componentUuid, Class<T> remoteControllerClass) {
+        if (!remoteControllerClass.isInterface()) throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+
+        com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) Platform.get().getCluster().getAnyComponent(componentUuid);
+
+        return remoteComponent.getQueryRemotes().queryRemoteControllers.containsKey(remoteControllerClass);
     }
 }
