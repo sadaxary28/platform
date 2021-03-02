@@ -41,7 +41,7 @@ dependencies {
     compile 'com.infomaximum:cluster-graphql:0.0.38'
 //    compile project(':cluster-graphql')
     
-    compile 'com.infomaximum:rdao:1.13.0p2'
+    compile 'com.infomaximum:rdao:1.13.1'
     
     compile 'com.infomaximum:network:0.0.20p3'
 //    compile project(':network')
