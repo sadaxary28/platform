@@ -8,7 +8,7 @@ if (file('publish.gradle').exists()) {
 }
 
 group 'com.infomaximum'
-version '0.0.1p60'
+version '0.0.1p62'
 
 sourceCompatibility = 1.8
 
@@ -41,7 +41,7 @@ dependencies {
     compile 'com.infomaximum:cluster-graphql:0.0.38'
 //    compile project(':cluster-graphql')
     
-    compile 'com.infomaximum:rdao:1.13.0p2'
+    compile 'com.infomaximum:rdao:1.13.1'
     
     compile 'com.infomaximum:network:0.0.20p3'
 //    compile project(':network')

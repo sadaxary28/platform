@@ -14,6 +14,8 @@ public interface ResourceProvider {
 
     <T extends QueryRemoteController> T getQueryRemoteController(String componentUuid, Class<T> remoteControllerClass);
 
+    <T extends QueryRemoteController> boolean isQueryRemoteController(String componentUuid, Class<T> remoteControllerClass);
+
     <T extends DomainObject> ReadableResource<T> getReadableResource(Class<T> resClass);
 
     <T extends DomainObject & DomainObjectEditable> EditableResource<T> getEditableResource(Class<T> resClass);

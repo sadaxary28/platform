@@ -39,6 +39,12 @@ public class ResourceProviderImpl implements ResourceProvider, AutoCloseable {
     }
 
     @Override
+    public <T extends QueryRemoteController> boolean isQueryRemoteController(String componentUuid, Class<T> remoteControllerClass) {
+        check();
+        return component.getQueryRemotes().isController(componentUuid, remoteControllerClass);
+    }
+
+    @Override
     public <T extends DomainObject & DomainObjectEditable> EditableResource<T> getEditableResource(Class<T> resClass) {
         borrowResource(resolveReadClass(resClass), QueryPool.LockType.EXCLUSIVE);
         return new EditableResourceImpl<>(resClass);
