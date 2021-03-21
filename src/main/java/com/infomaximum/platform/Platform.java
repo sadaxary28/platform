@@ -2,7 +2,6 @@ package com.infomaximum.platform;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.graphql.GraphQLEngine;
-import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
@@ -56,12 +55,12 @@ public class Platform implements AutoCloseable {
         new PlatformUpgrade(this).install();
 	}
 
-	public void upgrade() throws DatabaseException {
+	public void upgrade() throws Exception {
         new PlatformUpgrade(this).upgrade();
 	}
 
 	public void start() throws SubsystemException {
-        new PlatformStartStop(this).start();
+        new PlatformStartStop(this).start(false);
 	}
 
     public void stop() throws SubsystemException {

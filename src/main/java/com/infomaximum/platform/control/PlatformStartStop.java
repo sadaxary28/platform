@@ -38,9 +38,10 @@ public class PlatformStartStop {
      * 1) onStarting - инициализирующая фаза старта компонента
      * 2) onStart - Все необходимые фазы пройденны - пользовательский запуск
      *
+     * checkUpgrade - флаг указывающий что старт "урезанный", для проверки обновления
      * @throws SubsystemException
      */
-    public void start() throws SubsystemException {
+    public void start(boolean checkUpgrade) throws SubsystemException {
         //initialize
         for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
             if (component.getDbProvider() == null) {
@@ -63,6 +64,12 @@ public class PlatformStartStop {
         //onStarting
         for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
             component.onStarting();
+        }
+
+
+        //Режим обновления, упрощенный режим старт/стоп
+        if (checkUpgrade) {
+            return;
         }
 
         //onStart
