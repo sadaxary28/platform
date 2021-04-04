@@ -7,6 +7,8 @@ import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.subsystems.querypool.QueryRemoteController;
 import com.infomaximum.subsystems.querypool.ResourceProvider;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import java.util.Set;
 
 
 public class QueryRemotes {
+
+    private final static Logger log = LoggerFactory.getLogger(QueryRemotes.class);
 
     private final Component component;
 
@@ -64,6 +68,7 @@ public class QueryRemotes {
 
                 Constructor constructor = ((Component)iComponent).getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
                 if (constructor == null) continue;
+                constructor.setAccessible(true);
 
                 T iQueryRemoteController = (T) constructor.newInstance(iComponent, resourceProvider);
                 controllers.add(iQueryRemoteController);
@@ -80,11 +85,15 @@ public class QueryRemotes {
 
         Component remoteComponent = Platform.get().getCluster().getAnyComponent(componentClass);
         Constructor constructor = remoteComponent.getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
-        if (constructor == null) throw new RuntimeException("Implements: " + remoteControllerClass + " in component: " + componentClass + " not found");
+        if (constructor == null) {
+            throw new RuntimeException("Implements: " + remoteControllerClass + " in component: " + componentClass + " not found");
+        }
+        constructor.setAccessible(true);
 
         try {
             return (T) constructor.newInstance(remoteComponent, resourceProvider);
         } catch (ReflectiveOperationException e) {
+            log.error("Exception getController, remoteComponent: " + remoteComponent + ", constructor: " + constructor, e);
             throw new RuntimeException(e);
         }
     }
@@ -96,14 +105,15 @@ public class QueryRemotes {
         com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) Platform.get().getCluster().getAnyComponent(componentUuid);
 
         Constructor constructor = remoteComponent.getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
-
         if (constructor == null) {
-            throw new RuntimeException("Implements: " + remoteControllerClass + " in subsystem: " + remoteComponent.getClass() + " not found");
+            throw new RuntimeException("Implements: " + remoteControllerClass + " in component: " + remoteComponent.getClass() + " not found");
         }
+        constructor.setAccessible(true);
 
         try {
             return (T) constructor.newInstance(remoteComponent, resourceProvider);
         } catch (ReflectiveOperationException e) {
+            log.error("Exception getController, componentUuid: " + componentUuid + ", constructor: " + constructor, e);
             throw new RuntimeException(e);
         }
     }
