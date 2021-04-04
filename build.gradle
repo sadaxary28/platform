@@ -1,16 +1,16 @@
 plugins {
     id 'java'
-    id 'maven'
 }
-compileJava.options.encoding = 'UTF-8'
-if (file('publish.gradle').exists()) {
+
+if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '0.0.1p65'
+version '0.0.2'
 
 sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
 
 sourceSets {
     main {
@@ -30,7 +30,6 @@ sourceSets {
 
 repositories {
     mavenCentral()
-    maven { url "http://maven.office.infomaximum.com/content/repositories/releases/" }
 }
 
 dependencies {
@@ -38,7 +37,7 @@ dependencies {
     compile 'com.infomaximum:cluster:1.0.0'
 //    compile project(':cluster')
 
-    compile 'com.infomaximum:cluster-graphql:0.0.38'
+    compile 'com.infomaximum:cluster-graphql:1.0.0'
 //    compile project(':cluster-graphql')
     
     compile 'com.infomaximum:rdao:1.13.1'
