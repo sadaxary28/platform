@@ -8,7 +8,7 @@ if (file('publish.gradle').exists()) {
 }
 
 group 'com.infomaximum'
-version '0.0.1p64'
+version '0.0.1p65'
 
 sourceCompatibility = 1.8
 
@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
 
-    compile 'com.infomaximum:cluster:0.0.81'
+    compile 'com.infomaximum:cluster:1.0.0'
 //    compile project(':cluster')
 
     compile 'com.infomaximum:cluster-graphql:0.0.38'
@@ -43,9 +43,9 @@ dependencies {
     
     compile 'com.infomaximum:rdao:1.13.1'
     
-    compile 'com.infomaximum:network:0.0.20p3'
+    compile 'com.infomaximum:network:1.0.0'
 //    compile project(':network')
-    compile 'commons-fileupload:commons-fileupload:1.3.2'
+    compile 'commons-fileupload:commons-fileupload:1.4'
 
     compile 'org.apache.commons:commons-lang3:3.10'
     
