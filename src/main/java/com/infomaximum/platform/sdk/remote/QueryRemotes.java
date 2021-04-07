@@ -57,7 +57,9 @@ public class QueryRemotes {
 
     //TODO Ulitin V. переписать на удаленые вызовы
     public <T extends QueryRemoteController> Set<T> getControllers(ResourceProvider resourceProvider, Class<T> remoteControllerClass) {
-        if (!remoteControllerClass.isInterface()) throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        if (!remoteControllerClass.isInterface()) {
+            throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        }
 
         try {
             Set<T> controllers = new HashSet<>();
@@ -81,7 +83,9 @@ public class QueryRemotes {
 
     //TODO Ulitin V. переписать на удаленые вызовы
     public <T extends QueryRemoteController> T getController(ResourceProvider resourceProvider, Class<? extends Component> componentClass, Class<T> remoteControllerClass) {
-        if (!remoteControllerClass.isInterface()) throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        if (!remoteControllerClass.isInterface()) {
+            throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        }
 
         Component remoteComponent = Platform.get().getCluster().getAnyComponent(componentClass);
         Constructor constructor = remoteComponent.getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
@@ -94,13 +98,16 @@ public class QueryRemotes {
             return (T) constructor.newInstance(remoteComponent, resourceProvider);
         } catch (ReflectiveOperationException e) {
             log.error("Exception getController, remoteComponent: " + remoteComponent + ", constructor: " + constructor, e);
+            log.error("Cause exception (Exception getController)", e.getCause());//Необходимо для InvocationTargetException
             throw new RuntimeException(e);
         }
     }
 
     //TODO Ulitin V. переписать на удаленые вызовы
     public <T extends QueryRemoteController> T getController(ResourceProvider resourceProvider, String componentUuid, Class<T> remoteControllerClass) {
-        if (!remoteControllerClass.isInterface()) throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        if (!remoteControllerClass.isInterface()) {
+            throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        }
 
         com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) Platform.get().getCluster().getAnyComponent(componentUuid);
 
@@ -114,13 +121,16 @@ public class QueryRemotes {
             return (T) constructor.newInstance(remoteComponent, resourceProvider);
         } catch (ReflectiveOperationException e) {
             log.error("Exception getController, componentUuid: " + componentUuid + ", constructor: " + constructor, e);
+            log.error("Cause exception (Exception getController)", e.getCause());//Необходимо для InvocationTargetException
             throw new RuntimeException(e);
         }
     }
 
     //TODO Ulitin V. переписать на удаленые вызовы
     public <T extends QueryRemoteController> boolean isController(String componentUuid, Class<T> remoteControllerClass) {
-        if (!remoteControllerClass.isInterface()) throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        if (!remoteControllerClass.isInterface()) {
+            throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
+        }
 
         com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) Platform.get().getCluster().getAnyComponent(componentUuid);
 
