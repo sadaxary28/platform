@@ -3,9 +3,9 @@ package com.infomaximum.subsystems.querypool;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.domainobject.DomainObjectEditable;
+import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.subsystems.exception.runtime.ClosedObjectException;
-import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -63,11 +63,11 @@ public class ResourceProviderImpl implements ResourceProvider, AutoCloseable {
 		return new RemovableResourceImpl<>(resClass);
     }
 
-    //TODO Ulitin V. Не потокобезопасно! (использование Reflections)
     @Override
     public void borrowAllDomainObjects(QueryPool.LockType type) {
-        for (Class<?> readClass : new Reflections("com.infomaximum").getTypesAnnotatedWith(Entity.class, true)) {
-            checkReadClass((Class<? extends DomainObject>) readClass);
+        for (StructEntity structEntity: component.getSchema().getDomains()) {
+            Class<? extends DomainObject> readClass = structEntity.getObjectClass();
+            checkReadClass(readClass);
             borrowResource(readClass, type);
         }
     }

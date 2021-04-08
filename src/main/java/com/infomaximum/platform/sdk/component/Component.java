@@ -120,7 +120,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         return domainObjectSource;
     }
 
-    protected Schema getSchema() {
+    public Schema getSchema() {
         return schema;
     }
 
