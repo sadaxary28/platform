@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public class Platform implements AutoCloseable {
 
 	public static final String UUID = Platform.class.getPackage().getName();
-	public static final Version VERSION = new Version(0, 0, 1);
+	public static final Version VERSION = new Version(0, 0, 0, 1);
 	
 	private final static Logger log = LoggerFactory.getLogger(Platform.class);
 

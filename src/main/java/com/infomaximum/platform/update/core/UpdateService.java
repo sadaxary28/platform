@@ -27,10 +27,10 @@ public class UpdateService {
         }
     }
 
-    public static <T extends Component> void updateComponent(Version prevVersion, Version nextVersion, T component, Transaction transaction) throws DatabaseException {
-        UpdateTask<T> updateTask = UpdateUtil.getUpdateTaskObj(prevVersion, nextVersion, component);
-        updateComponent(updateTask, transaction);
-    }
+//    public static <T extends Component> void updateComponent(Version prevVersion, Version nextVersion, T component, Transaction transaction) throws DatabaseException {
+//        UpdateTask<T> updateTask = UpdateUtil.getUpdateTaskObj(prevVersion, nextVersion, component);
+//        updateComponent(updateTask, transaction);
+//    }
 
     private static void updateComponent(UpdateTask<? extends Component> updateTask, Transaction transaction) throws DatabaseException {
         updateTask.execute(transaction);

@@ -14,15 +14,14 @@ import java.util.stream.Collectors;
 
 public class UpdateUtil {
 
-    private final static Version START_VERSION = new Version(1, 0, 0);
+    private final static Version START_VERSION = new Version(0, 1, 0, 0);
 
-    @SuppressWarnings("unchecked")
-    public static <T extends UpdateTask<? extends Component>> Update getUpdateAnnotation(Class<T> clazz) {
+    public static Update getUpdateAnnotation(Class<?> clazz) {
         while (!clazz.isAnnotationPresent(Update.class)) {
             if (!UpdateTask.class.isAssignableFrom(clazz.getSuperclass())) {
                 throw new UpdateException("Not found " + Update.class + " annotation in " + clazz + ".");
             }
-            clazz = (Class<T>) clazz.getSuperclass();
+            clazz = clazz.getSuperclass();
         }
         return clazz.getAnnotation(Update.class);
     }
@@ -64,8 +63,6 @@ public class UpdateUtil {
         }
     }
 
-
-    //todo V.Bukharkin нужно покрыть тестами
     public static List<UpdateTask<? extends Component>> getUpdatesInCorrectOrder(ModuleUpdateEntity[] updates) {
         checkUniqueModule(updates);
         List<Module> result = new ArrayList<>(updates.length);
@@ -128,6 +125,7 @@ public class UpdateUtil {
         }
     }
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     private static <T extends Component> Class<UpdateTask<T>> getUpdateTaskClass(Version oldVersion, Version newVersion, T component) {
         for (Class updateTask : new Reflections(component.getInfo().getUuid()).getTypesAnnotatedWith(Update.class, true)) {

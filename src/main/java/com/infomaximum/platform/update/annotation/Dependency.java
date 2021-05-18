@@ -10,5 +10,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Dependency {
 
     String componentUUID();
+    //product.major.x.x format
     String version();
 }

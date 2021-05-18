@@ -44,7 +44,7 @@ class UpdateUtilTest {
         tasks.add(TestUpdate1_0_4.class);
         Assertions.assertThatThrownBy(() -> UpdateUtil.checkIntegrity(tasks))
                 .isExactlyInstanceOf(UpdateException.class)
-                .hasMessage("Integrity error. Can't find previous update version: " + new Version(1,0,3));
+                .hasMessage("Integrity error. Can't find previous update version: " + new Version(0, 1,0,3));
     }
 
     @Test
@@ -57,7 +57,7 @@ class UpdateUtilTest {
         tasks.add(TestUpdate1_0_4.class);
         Assertions.assertThatThrownBy(() -> UpdateUtil.checkIntegrity(tasks))
                 .isExactlyInstanceOf(UpdateException.class)
-                .hasMessage("Integrity error. Previous update version is already exist: " + new Version(1,0,2));
+                .hasMessage("Integrity error. Previous update version is already exist: " + new Version(0, 1,0,2));
     }
 
     @Test
@@ -70,6 +70,6 @@ class UpdateUtilTest {
         tasks.add(TestUpdate1_0_4.class);
         Assertions.assertThatThrownBy(() -> UpdateUtil.checkIntegrity(tasks))
                 .isExactlyInstanceOf(UpdateException.class)
-                .hasMessage("Integrity error. Update version: 1.0.4 is less or equal to previous: " + new Version(1,0,5));
+                .hasMessage("Integrity error. Update version: 1.0.4 is less or equal to previous: " + new Version(0, 1,0,5));
     }
 }
