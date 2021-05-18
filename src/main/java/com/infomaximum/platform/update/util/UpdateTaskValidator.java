@@ -14,21 +14,20 @@ import java.util.Set;
 public class UpdateTaskValidator {
 
     private void validateUpdates(List<Component> modules) {
-
+        modules.forEach(this::validateUpdates);
     }
 
     private <T extends UpdateTask<? extends Component>> void validateUpdates(Component module) {
         Set<Class<?>> updateTasks = new Reflections(module.getInfo().getUuid()).getTypesAnnotatedWith(Update.class, true);
 
-        Set<String> versionSet = new HashSet<>();
+        Set<Version> versionSet = new HashSet<>();
         for (Class<?> updateTask : updateTasks) {
             final Update annotationEntity = UpdateUtil.getUpdateAnnotation(updateTask);
-//            Version.parse()
-            if (versionSet.contains(annotationEntity.version())) {
+            Version version = Version.parse(annotationEntity.version());
+            if (versionSet.contains(version)) {
                 throw new UpdateTaskDuplicateException(annotationEntity.componentUUID(), annotationEntity.version());
             }
-            versionSet.add(annotationEntity.version());
+            versionSet.add(version);
         }
     }
-
 }
