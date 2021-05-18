@@ -10,9 +10,9 @@ import com.infomaximum.platform.update.annotation.Update;
         version = "1.0.3",
         previousVersion = "1.0.2"
 )
-public class TestUpdate1_0_3Repeat extends UpdateTask<TestSubsystem> {
+public class TestUpdate0_1_0_3 extends UpdateTask<TestSubsystem> {
 
-    public TestUpdate1_0_3Repeat(TestSubsystem subsystem) {
+    public TestUpdate0_1_0_3(TestSubsystem subsystem) {
         super(subsystem);
     }
 

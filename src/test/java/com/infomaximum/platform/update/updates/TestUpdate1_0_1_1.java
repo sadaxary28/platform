@@ -1,23 +1,23 @@
 package com.infomaximum.platform.update.updates;
 
 import com.infomaximum.database.domainobject.Transaction;
+import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.update.TestSubsystem;
 import com.infomaximum.platform.update.UpdateTask;
 import com.infomaximum.platform.update.annotation.Update;
 
 @Update(
         componentUUID = TestSubsystem.UUID,
-        version = "1.0.4",
-        previousVersion = "1.0.5"
+        version = "1_0_1_1"
 )
-public class TestUpdate1_0_5IncorrectVersionOrder extends UpdateTask<TestSubsystem> {
+public class TestUpdate1_0_1_1 extends UpdateTask<TestSubsystem> {
 
-    public TestUpdate1_0_5IncorrectVersionOrder(TestSubsystem subsystem) {
-        super(subsystem);
+    public TestUpdate1_0_1_1(TestSubsystem component) {
+        super(component);
     }
 
     @Override
-    public void updateComponent(Transaction transaction) {
+    protected void updateComponent(Transaction transaction) throws DatabaseException {
 
     }
 }

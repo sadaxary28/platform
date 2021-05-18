@@ -13,6 +13,6 @@ public @interface Update {
     String componentUUID();
     String version();
     @Deprecated
-    String previousVersion();
+    String previousVersion() default "";
     Dependency[] dependencies() default {};
 }

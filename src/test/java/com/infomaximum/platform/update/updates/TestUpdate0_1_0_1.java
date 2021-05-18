@@ -13,9 +13,9 @@ import com.infomaximum.platform.update.exception.UpdateException;
         version = "1.0.1",
         previousVersion = "1.0.0"
 )
-public class TestUpdate1_0_1 extends UpdateTask<TestSubsystem> {
+public class TestUpdate0_1_0_1 extends UpdateTask<TestSubsystem> {
 
-    public TestUpdate1_0_1(TestSubsystem subsystem) {
+    public TestUpdate0_1_0_1(TestSubsystem subsystem) {
         super(subsystem);
     }
 
