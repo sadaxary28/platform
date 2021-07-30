@@ -1,5 +1,6 @@
 package com.infomaximum.platform.component.frontend.utils;
 
+import com.infomaximum.platform.component.frontend.struct.MimeType;
 import org.apache.commons.io.FilenameUtils;
 
 import java.util.HashMap;
@@ -7,24 +8,24 @@ import java.util.Map;
 
 public class MimeTypeUtils {
 
-    private static final Map<String, String> mimeTypes = new HashMap<>();
+    private static final Map<String, MimeType> mimeTypes = new HashMap<>();
     static {
-        mimeTypes.put("html", "text/html; charset=UTF-8");
-        mimeTypes.put("css", "text/css; charset=UTF-8");
-        mimeTypes.put("js", "text/javascript; charset=UTF-8");
-        mimeTypes.put("png", "image/png");
-        mimeTypes.put("xls", "application/vnd.ms-excel");
-        mimeTypes.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        mimeTypes.put("exe", "application/x-msdownload");
-        mimeTypes.put("txt", "text/plain; charset=UTF-8");
-        mimeTypes.put("msi", "application/x-msi");
-        mimeTypes.put("dmg", "application/x-apple-diskimage");
-        mimeTypes.put("zip", "application/zip");
+        mimeTypes.put("html", MimeType.HTML);
+        mimeTypes.put("css", MimeType.CSS);
+        mimeTypes.put("js", MimeType.JAVASCRIPT);
+        mimeTypes.put("png", MimeType.PNG);
+        mimeTypes.put("xls", MimeType.XLS);
+        mimeTypes.put("xlsx", MimeType.XLSX);
+        mimeTypes.put("exe", MimeType.EXE);
+        mimeTypes.put("txt", MimeType.TEXT);
+        mimeTypes.put("msi", MimeType.MSI);
+        mimeTypes.put("dmg", MimeType.DMG);
+        mimeTypes.put("zip", MimeType.ZIP);
     }
 
-    public static String findAutoMimeType(String fileName) {
+    public static MimeType findAutoMimeType(String fileName) {
         String extension = FilenameUtils.getExtension(fileName);
-        return mimeTypes.getOrDefault(extension, "application/octet-stream");
+        return mimeTypes.getOrDefault(extension, new MimeType("application/octet-stream") );
     }
 
 }
