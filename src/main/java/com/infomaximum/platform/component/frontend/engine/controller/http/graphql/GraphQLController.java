@@ -10,7 +10,6 @@ import com.infomaximum.platform.component.frontend.engine.service.requestcomplet
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
 import com.infomaximum.platform.component.frontend.request.graphql.GraphQLRequest;
 import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
-import com.infomaximum.platform.component.frontend.utils.MimeTypeUtils;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
 import com.infomaximum.subsystems.exception.GraphQLWrapperSubsystemException;
 import com.infomaximum.subsystems.exception.SubsystemException;
@@ -80,20 +79,12 @@ public class GraphQLController {
                         });
                     } else if (data instanceof GOutputFile) {
                         GOutputFile gOutputFile = (GOutputFile) data;
-                        Path pathOutputFile = Paths.get(gOutputFile.uri);
 
-                        PathResource pathResource;
-                        long fileSize;
-                        try {
-                            pathResource = new PathResource(pathOutputFile);
-                            fileSize = Files.size(pathOutputFile);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        long fileSize = gOutputFile.getSize();
 
                         HttpHeaders header = new HttpHeaders();
                         header.add("Content-Disposition", "attachment; filename*=UTF-8''" + UrlEscapers.urlFragmentEscaper().escape(gOutputFile.fileName));
-                        header.setContentType(MediaType.valueOf(MimeTypeUtils.findAutoMimeType(gOutputFile.fileName)));
+                        header.setContentType(MediaType.valueOf(gOutputFile.mimeType.value));
                         header.setContentLength(fileSize);
 
                         //Помечаем инфу для сервиса сбора статистики
@@ -107,7 +98,7 @@ public class GraphQLController {
                                         @Override
                                         public void exec(Request request) {
                                             try {
-                                                Files.delete(pathOutputFile);
+                                                Files.delete(Paths.get(gOutputFile.uri));
                                             } catch (IOException e) {
                                                 log.error("Exception clear temp file", e);//Падать из-за этого не стоит
                                             }
@@ -116,8 +107,16 @@ public class GraphQLController {
                             );
                         }
 
+                        Object body;
+                        if (gOutputFile.body != null) {
+                            body = gOutputFile.body;
+                        } else {
+                            Path pathOutputFile = Paths.get(gOutputFile.uri);
+                            body = new PathResource(pathOutputFile);
+                        }
+
                         return CompletableFuture.completedFuture(
-                                new ResponseEntity(pathResource, header, HttpStatus.OK)
+                                new ResponseEntity(body, header, HttpStatus.OK)
                         );
                     } else {
                         throw new RuntimeException("Not support type out: " + out);
