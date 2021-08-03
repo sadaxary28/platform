@@ -36,7 +36,7 @@ public class GOutputFile implements RemoteObject {
         this.temp = temp;
     }
 
-    private GOutputFile(String fileName, byte[] body, MimeType mimeType) {
+    public GOutputFile(String fileName, byte[] body, MimeType mimeType) {
         this.fileName = fileName;
 
         this.uri = null;
