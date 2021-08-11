@@ -7,7 +7,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.0.4p5'
+version '0.0.4p6'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
@@ -34,10 +34,10 @@ repositories {
 
 dependencies {
 
-    compile 'com.infomaximum:cluster:1.0.1'
+    compile 'com.infomaximum:cluster:1.0.1p1'
 //    compile project(':cluster')
 
-    compile 'com.infomaximum:cluster-graphql:1.0.1'
+    compile 'com.infomaximum:cluster-graphql:1.0.1p2'
 //    compile project(':cluster-graphql')
     
     compile 'com.infomaximum:rdao:1.13.2'
