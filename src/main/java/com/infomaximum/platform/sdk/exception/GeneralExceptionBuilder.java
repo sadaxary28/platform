@@ -20,6 +20,8 @@ public class GeneralExceptionBuilder {
     private static final ExceptionFactory EXCEPTION_FACTORY = new GeneralExceptionFactory();
 
     public static final String INVALID_CREDENTIALS = "invalid_credentials";
+    public static final String NOT_FOUND_DOMAIN_OBJECT_CODE = "not_found_domain_object";
+    public static final String NOT_EMPTY_DOMAIN_OBJECT_CODE = "not_empty_domain_object";
     private static final String NOT_UNIQUE_VALUE_CODE = "not_unique_value";
     private static final String INVALID_VALUE_CODE = "invalid_value";
     public static final String ACCESS_DENIED_CODE = "access_denied";
@@ -37,7 +39,7 @@ public class GeneralExceptionBuilder {
     }
 
     public static SubsystemException buildNotFoundDomainObjectException(Class<? extends DomainObject> clazz, Long id) {
-        return EXCEPTION_FACTORY.build("not_found_domain_object", new HashMap<String, Object>() {{
+        return EXCEPTION_FACTORY.build(NOT_FOUND_DOMAIN_OBJECT_CODE, new HashMap<String, Object>() {{
             put("type", Schema.getEntity(clazz).getName());
             put("id", id);
         }});
@@ -45,7 +47,7 @@ public class GeneralExceptionBuilder {
 
     public static SubsystemException buildNotFoundDomainObjectException(Class<? extends DomainObject> clazz, int fieldNumber, Object fieldValue) {
         StructEntity entity = Schema.getEntity(clazz);
-        return EXCEPTION_FACTORY.build("not_found_domain_object", new HashMap<String, Object>() {{
+        return EXCEPTION_FACTORY.build(NOT_FOUND_DOMAIN_OBJECT_CODE, new HashMap<String, Object>() {{
             put("type", entity.getName());
             put("field_name", entity.getField(fieldNumber).getName());
             put("field_value", fieldValue);
@@ -60,7 +62,7 @@ public class GeneralExceptionBuilder {
     }
 
     public static SubsystemException buildNotEmptyDomainObjectException(Class<? extends DomainObject> clazz) {
-        return EXCEPTION_FACTORY.build("not_empty_domain_object", new HashMap<String, Object>() {{
+        return EXCEPTION_FACTORY.build(NOT_EMPTY_DOMAIN_OBJECT_CODE, new HashMap<String, Object>() {{
             put("type", Schema.getEntity(clazz).getName());
         }});
     }
