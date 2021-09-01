@@ -1,7 +1,6 @@
 package com.infomaximum.platform.sdk.component;
 
 import com.infomaximum.cluster.Cluster;
-import com.infomaximum.cluster.core.component.active.ActiveComponents;
 import com.infomaximum.cluster.core.service.transport.executor.ExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.graphql.remote.graphql.executor.RControllerGraphQLExecutorImpl;
@@ -49,11 +48,10 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     }
 
     @Override
-    protected ActiveComponents registerComponent() {
-        ActiveComponents activeComponents = super.registerComponent();
+    protected void registerComponent() {
+        super.registerComponent();
         this.rControllerGraphQLExecutor.init();
         onCreate();
-        return activeComponents;
     }
 
     @Override

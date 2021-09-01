@@ -48,7 +48,7 @@ public class PlatformUpgrade {
 
 	public void install() throws SubsystemException {
 		try {
-			DatabaseComponent databaseSubsystem = platform.getCluster().getAnyComponent(DatabaseComponent.class);
+			DatabaseComponent databaseSubsystem = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
             databaseSubsystem.initialize();
 			DBProvider provider = databaseSubsystem.getRocksDBProvider();
 			Schema schema = Schema.read(provider);
@@ -77,7 +77,7 @@ public class PlatformUpgrade {
 
 		List<Component> modules = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
 		//Грузим сперва DatabaseSubsystem
-		DatabaseComponent databaseComponent = platform.getCluster().getAnyComponent(DatabaseComponent.class);
+		DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
 		databaseComponent.initialize();
 		log.info("Database initialized...");
 

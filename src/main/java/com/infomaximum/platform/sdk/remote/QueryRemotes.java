@@ -1,8 +1,6 @@
 package com.infomaximum.platform.sdk.remote;
 
-import com.infomaximum.cluster.core.component.RuntimeComponentInfo;
 import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
-import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.subsystems.querypool.QueryRemoteController;
 import com.infomaximum.subsystems.querypool.ResourceProvider;
@@ -63,12 +61,13 @@ public class QueryRemotes {
 
         try {
             Set<T> controllers = new HashSet<>();
-            for (RuntimeComponentInfo componentInfo : component.getEnvironmentComponents().getActiveComponents()) {
+            for (com.infomaximum.cluster.struct.Component item : component.getRemotes().cluster.getLocalComponents()) {
+                if (!(item instanceof Component)) {
+                    continue;
+                }
+                Component iComponent = (Component) item;
 
-                com.infomaximum.cluster.struct.Component iComponent = Platform.get().getCluster().getAnyComponent(componentInfo.info.getUuid());
-                if (!Component.class.isAssignableFrom(iComponent.getClass())) continue;
-
-                Constructor constructor = ((Component)iComponent).getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
+                Constructor constructor = iComponent.getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
                 if (constructor == null) continue;
                 constructor.setAccessible(true);
 
@@ -86,8 +85,7 @@ public class QueryRemotes {
         if (!remoteControllerClass.isInterface()) {
             throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
         }
-
-        Component remoteComponent = Platform.get().getCluster().getAnyComponent(componentClass);
+        Component remoteComponent = component.getRemotes().cluster.getAnyLocalComponent(componentClass);
         Constructor constructor = remoteComponent.getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
         if (constructor == null) {
             throw new RuntimeException("Implements: " + remoteControllerClass + " in component: " + componentClass + " not found");
@@ -108,8 +106,7 @@ public class QueryRemotes {
         if (!remoteControllerClass.isInterface()) {
             throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
         }
-
-        com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) Platform.get().getCluster().getAnyComponent(componentUuid);
+        com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) component.getRemotes().cluster.getAnyLocalComponent(componentUuid);
 
         Constructor constructor = remoteComponent.getQueryRemotes().queryRemoteControllers.get(remoteControllerClass);
         if (constructor == null) {
@@ -132,7 +129,7 @@ public class QueryRemotes {
             throw new IllegalArgumentException("Class " + remoteControllerClass + " is not interface");
         }
 
-        com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) Platform.get().getCluster().getAnyComponent(componentUuid);
+        com.infomaximum.platform.sdk.component.Component remoteComponent = (com.infomaximum.platform.sdk.component.Component) component.getRemotes().cluster.getAnyLocalComponent(componentUuid);
 
         return remoteComponent.getQueryRemotes().queryRemoteControllers.containsKey(remoteControllerClass);
     }

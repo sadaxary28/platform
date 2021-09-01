@@ -1,5 +1,6 @@
 package com.infomaximum.platform.sdk.component;
 
+import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.platform.sdk.component.version.Version;
 
 public class Info extends com.infomaximum.cluster.struct.Info {
@@ -19,8 +20,14 @@ public class Info extends com.infomaximum.cluster.struct.Info {
 
 		private final Version version;
 
+		@Deprecated
 		public Builder(String uuid, Version version) {
 			super(uuid);
+			this.version = version;
+		}
+
+		public Builder(Class<? extends Component> componentClass, Version version) {
+			super(componentClass);
 			this.version = version;
 		}
 

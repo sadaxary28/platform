@@ -51,7 +51,7 @@ public class PlatformStartStop {
 
         //Инициализируем ModuleReadable
         try {
-            DatabaseComponent databaseSubsystem = platform.getCluster().getAnyComponent(DatabaseComponent.class);
+            DatabaseComponent databaseSubsystem = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
             Schema schema = Schema.read(databaseSubsystem.getRocksDBProvider());
             log.warn("Schema on start: " + schema.getDbSchema().toTablesJsonString());
             Schema.resolve(ModuleReadable.class);
@@ -73,7 +73,7 @@ public class PlatformStartStop {
         }
 
         //onStart
-        DatabaseComponent databaseComponent = platform.getCluster().getAnyComponent(DatabaseComponent.class);
+        DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
         List<QuerySystem<Void>> startQueries = platform.getCluster().getDependencyOrderedComponentsOf(Component.class)
                 .stream()
                 .sorted((o1, o2) -> {//Необходимо, что бы фронт запустился самым последним

@@ -13,7 +13,7 @@ public class ComponentDBProvider implements DBProvider {
     private final DBProvider dbProvider;
 
     public ComponentDBProvider(Cluster cluster, Component component) {
-        Component databaseComponent = cluster.getAnyComponent(DatabaseComponent.class);
+        Component databaseComponent = cluster.getAnyLocalComponent(DatabaseComponent.class);
         if (databaseComponent != null) {
             //Отлично, база у нас локальная - Работаем напрямую
             dbProvider = databaseComponent.getDbProvider();
