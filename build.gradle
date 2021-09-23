@@ -7,7 +7,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.0.5rc2'
+version '0.0.5rc3'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
