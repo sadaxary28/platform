@@ -10,7 +10,7 @@ import com.infomaximum.platform.component.frontend.engine.network.protocol.graph
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.TypePacket;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.subscriber.WebSocketGraphQLWSSubscriber;
 import com.infomaximum.platform.component.frontend.engine.provider.ProviderGraphQLRequestExecuteService;
-import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.request.GRequestWebSocket;
 import com.infomaximum.platform.sdk.utils.StreamUtils;
 import graphql.execution.reactive.CompletionStageMappingPublisher;

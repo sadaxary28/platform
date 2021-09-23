@@ -10,7 +10,7 @@ import com.infomaximum.network.struct.RemoteAddress;
 import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.standard.subscriber.WebSocketStandardSubscriber;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
-import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.request.GRequestWebSocket;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.subsystems.exception.GraphQLWrapperSubsystemException;

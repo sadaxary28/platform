@@ -10,7 +10,6 @@ import com.infomaximum.platform.component.frontend.context.impl.ContextTransacti
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.struct.FieldConfiguration;
 import com.infomaximum.platform.utils.ExceptionUtils;
-import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.exception.runtime.SubsystemRuntimeException;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -40,9 +39,7 @@ public class PlatformDataFetcher extends ComponentDataFetcher {
         }
 
         if (!isAccess) {
-            SubsystemException invalidCredentialException = GeneralExceptionBuilder.buildInvalidCredentialsException(rTypeGraphQLField.type, rTypeGraphQLField.name);
-            String message = getExceptionDetails(context) + ". SubsystemException: " + invalidCredentialException.getMessage() + ", path: " + environment.getExecutionStepInfo().getPath();
-            throw new SubsystemRuntimeException(message, invalidCredentialException);
+            throw new SubsystemRuntimeException(GeneralExceptionBuilder.buildAccessDeniedException());
         }
 
         try {

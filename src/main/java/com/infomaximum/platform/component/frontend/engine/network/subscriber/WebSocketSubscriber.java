@@ -3,7 +3,7 @@ package com.infomaximum.platform.component.frontend.engine.network.subscriber;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
-import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import graphql.ExecutionResult;
 import net.minidev.json.JSONObject;
 import org.reactivestreams.Subscriber;

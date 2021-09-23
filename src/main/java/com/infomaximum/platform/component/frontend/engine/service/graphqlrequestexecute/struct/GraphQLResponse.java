@@ -1,4 +1,4 @@
-package com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute;
+package com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct;
 
 public class GraphQLResponse<T> {
 
