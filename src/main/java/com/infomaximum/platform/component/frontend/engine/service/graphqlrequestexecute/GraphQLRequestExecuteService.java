@@ -11,6 +11,8 @@ import com.infomaximum.platform.component.frontend.context.impl.ContextTransacti
 import com.infomaximum.platform.component.frontend.context.source.impl.SourceGRequestAuthImpl;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.graphql.PrepareGraphQLDocument;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.utils.GraphQLExecutionResultUtils;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
@@ -124,13 +126,13 @@ public class GraphQLRequestExecuteService {
 
                             ExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
-                            log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {}, query: {}",
+                            log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {}, {}",
                                     context.getTrace(),
                                     authContext,
                                     priority,
                                     instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
                                     Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),
-                                    gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "")
+                                    GraphQLExecutionResultUtils.toLog(gRequest, executionResult)
                             );
 
                             //Все чистим

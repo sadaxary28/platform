@@ -5,7 +5,7 @@ import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.TypePacket;
 import com.infomaximum.platform.component.frontend.engine.network.subscriber.WebSocketSubscriber;
-import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import net.minidev.json.JSONObject;
 
 import java.io.Serializable;

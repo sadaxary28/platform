@@ -6,7 +6,7 @@ import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.platform.component.frontend.engine.network.subscriber.WebSocketSubscriber;
-import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

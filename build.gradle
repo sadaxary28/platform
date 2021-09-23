@@ -34,10 +34,10 @@ repositories {
 
 dependencies {
 
-    compile 'com.infomaximum:cluster:1.0.2rc1'
+    compile 'com.infomaximum:cluster:1.0.2p2'
 //    compile project(':cluster')
 
-    compile 'com.infomaximum:cluster-graphql:1.0.1p4'
+    compile 'com.infomaximum:cluster-graphql:1.0.1p5'
 //    compile project(':cluster-graphql')
     
     compile 'com.infomaximum:rdao:1.13.2'
