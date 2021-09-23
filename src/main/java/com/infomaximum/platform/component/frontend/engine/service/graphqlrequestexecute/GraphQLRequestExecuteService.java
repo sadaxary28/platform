@@ -289,7 +289,9 @@ public class GraphQLRequestExecuteService {
         if (gOutputFile != null) {
             return new GraphQLResponse(gOutputFile, false);
         } else {
-            if (executionResult.getData() instanceof CompletionStageMappingPublisher) {
+            if (executionResult.getData() == null) {
+                return new GraphQLResponse(new JSONObject(), false);
+            } else if (executionResult.getData() instanceof CompletionStageMappingPublisher) {
                 return new GraphQLResponse(executionResult.getData(), false);
             } else {
                 return new GraphQLResponse(new JSONObject(executionResult.getData()), false);
