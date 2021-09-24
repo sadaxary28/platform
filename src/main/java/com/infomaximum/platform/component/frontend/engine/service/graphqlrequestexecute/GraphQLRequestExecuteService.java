@@ -182,6 +182,7 @@ public class GraphQLRequestExecuteService {
 
     private boolean isExceptionWithIgnoreAccessDenied(ExecutionResult executionResult) {
         if (executionResult.getErrors().isEmpty()) return false;
+        if (executionResult.getData() == null) return true;//Хак. Необходимо более глубокое иследование - это надо для подписок - когда не удалось выполнить подписку, иначе агент не узнает о ошибке подписки
         for (GraphQLError graphQLError : executionResult.getErrors()) {
             if (!(graphQLError instanceof ExceptionWhileDataFetching)) return true;
             ExceptionWhileDataFetching exceptionWhileDataFetching = (ExceptionWhileDataFetching) graphQLError;
@@ -289,9 +290,7 @@ public class GraphQLRequestExecuteService {
         if (gOutputFile != null) {
             return new GraphQLResponse(gOutputFile, false);
         } else {
-            if (executionResult.getData() == null) {
-                return new GraphQLResponse(new JSONObject(), false);
-            } else if (executionResult.getData() instanceof CompletionStageMappingPublisher) {
+            if (executionResult.getData() instanceof CompletionStageMappingPublisher) {
                 return new GraphQLResponse(executionResult.getData(), false);
             } else {
                 return new GraphQLResponse(new JSONObject(executionResult.getData()), false);
