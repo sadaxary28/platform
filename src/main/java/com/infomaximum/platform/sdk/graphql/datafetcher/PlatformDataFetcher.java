@@ -39,7 +39,7 @@ public class PlatformDataFetcher extends ComponentDataFetcher {
         }
 
         if (!isAccess) {
-            throw new SubsystemRuntimeException(GeneralExceptionBuilder.buildAccessDeniedException());
+            throw new SubsystemRuntimeException(GeneralExceptionBuilder.buildInvalidCredentialsException(rTypeGraphQLField.type, rTypeGraphQLField.name));
         }
 
         try {
