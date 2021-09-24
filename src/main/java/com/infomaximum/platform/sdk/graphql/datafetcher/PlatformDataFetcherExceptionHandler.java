@@ -26,8 +26,8 @@ public class PlatformDataFetcherExceptionHandler implements DataFetcherException
         ExceptionWhileDataFetching error = new ExceptionWhileDataFetching(path, exception, sourceLocation);
 
         SubsystemException extractSubsystemException = extractSubsystemException(exception);
-        String code = (extractSubsystemException != null)?extractSubsystemException.getCode():null;
-        if (GeneralExceptionBuilder.ACCESS_DENIED_CODE.equals(code)) {
+        String code = (extractSubsystemException != null) ? extractSubsystemException.getCode() : null;
+        if (GeneralExceptionBuilder.ACCESS_DENIED_CODE.equals(code) || GeneralExceptionBuilder.INVALID_CREDENTIALS.equals(code)) {
             //ничего в лог не выводим
         } else {
             log.warn(exception.getMessage(), exception);
