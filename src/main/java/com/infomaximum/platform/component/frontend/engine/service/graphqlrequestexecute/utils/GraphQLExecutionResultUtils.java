@@ -18,7 +18,7 @@ public class GraphQLExecutionResultUtils {
         String out = "query: " + gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "");
 
         String outAccessDenied = getAccessDenied(executionResult);
-        if (outAccessDenied!=null) {
+        if (outAccessDenied != null) {
             out += ", access_denied: [ " + outAccessDenied + "]";
         }
 
@@ -34,16 +34,19 @@ public class GraphQLExecutionResultUtils {
 
         Map<String, Integer> errors = new HashMap<>();
         for (GraphQLError graphQLError : executionResult.getErrors()) {
-            ExceptionWhileDataFetching exceptionWhileDataFetching = (ExceptionWhileDataFetching) graphQLError;
+            if (!(graphQLError instanceof ExceptionWhileDataFetching)) {
+                continue;
+            }
 
+            ExceptionWhileDataFetching exceptionWhileDataFetching = (ExceptionWhileDataFetching) graphQLError;
             SubsystemRuntimeException subsystemRuntimeException = (SubsystemRuntimeException) exceptionWhileDataFetching.getException();
             SubsystemException subsystemException = subsystemRuntimeException.getSubsystemException();
 
-            String path = "/" + graphQLError.getPath().stream()
-                    .filter(o -> (o instanceof String)).map(o -> (String) o)
-                    .collect(Collectors.joining("/"));
-
             if (subsystemException.getCode().equals(GeneralExceptionBuilder.ACCESS_DENIED_CODE)) {
+                String path = "/" + graphQLError.getPath().stream()
+                        .filter(o -> (o instanceof String)).map(o -> (String) o)
+                        .collect(Collectors.joining("/"));
+
                 errors.compute(path, (s, integer) -> (integer == null) ? 1 : integer + 1);
             }
         }
