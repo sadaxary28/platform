@@ -277,7 +277,7 @@ public class GraphQLRequestExecuteService {
             } else if (dataFetchingThrowable instanceof SubsystemException) {
                 subsystemException = (SubsystemException) dataFetchingThrowable;
             } else {
-                throw new RuntimeException("Not support throwable", dataFetchingThrowable);
+                throw ExceptionUtils.coercionRuntimeException(dataFetchingThrowable);
             }
         } else {
             throw new RuntimeException("Not support error type: " + graphQLError.getErrorType());
