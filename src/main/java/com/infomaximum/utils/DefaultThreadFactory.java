@@ -9,7 +9,11 @@ public class DefaultThreadFactory implements ThreadFactory {
     private final AtomicInteger threadNumber = new AtomicInteger(1);
 
     public DefaultThreadFactory(String factoryName, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        this.group = new DefaultThreadGroup(factoryName, uncaughtExceptionHandler);
+        this(new DefaultThreadGroup(factoryName, uncaughtExceptionHandler));
+    }
+
+    public DefaultThreadFactory(ThreadGroup group) {
+        this.group = group;
     }
 
     @Override
@@ -26,19 +30,4 @@ public class DefaultThreadFactory implements ThreadFactory {
         return t;
     }
 
-    private static class DefaultThreadGroup extends ThreadGroup {
-
-        private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
-
-        DefaultThreadGroup(String name, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-            super(name);
-
-            this.uncaughtExceptionHandler = uncaughtExceptionHandler;
-        }
-
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            uncaughtExceptionHandler.uncaughtException(t, e);
-        }
-    }
 }

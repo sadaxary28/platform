@@ -14,6 +14,7 @@ import com.infomaximum.platform.component.frontend.engine.graphql.PrepareGraphQL
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.utils.GraphQLExecutionResultUtils;
 import com.infomaximum.platform.sdk.component.Component;
+import com.infomaximum.platform.sdk.context.ContextUtils;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
 import com.infomaximum.platform.utils.ExceptionUtils;
@@ -127,7 +128,7 @@ public class GraphQLRequestExecuteService {
                             ExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
                             log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {}, {}",
-                                    context.getTrace(),
+                                    ContextUtils.toTrace(context),
                                     authContext,
                                     priority,
                                     instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
@@ -159,7 +160,7 @@ public class GraphQLRequestExecuteService {
                 ExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
                 log.debug("Request {}, auth: {}, priority: null, wait: {}, exec: {}, query: {}",
-                        context.getTrace(),
+                        ContextUtils.toTrace(context),
                         UnauthorizedContext.TO_STRING,
                         instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
                         Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),

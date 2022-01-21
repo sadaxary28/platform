@@ -7,6 +7,9 @@ import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.subsystems.exception.SubsystemException;
 import com.infomaximum.subsystems.querypool.service.DetectEndingWorker;
 import com.infomaximum.subsystems.querypool.service.DetectLongQuery;
+import com.infomaximum.subsystems.querypool.service.threadcontext.ThreadContext;
+import com.infomaximum.subsystems.querypool.service.threadcontext.ThreadContextImpl;
+import com.infomaximum.utils.DefaultThreadGroup;
 import com.infomaximum.utils.DefaultThreadPoolExecutor;
 import com.infomaximum.utils.LockGuard;
 
@@ -88,6 +91,8 @@ public class QueryPool {
             try (QueryTransaction transaction = new QueryTransaction(component.getDomainObjectSource())) {
                 try {
                     ((ContextTransactionInternal) context).setTransaction(transaction);
+                    queryPool.threadContext.setContext(context);
+
                     T result = query.execute(transaction);
                     transaction.commit();
                     transaction.fireCommitListeners();
@@ -102,6 +107,7 @@ public class QueryPool {
             } finally {
                 timeComplete = Instant.now();
                 thread = null;
+                queryPool.threadContext.clearContext();
             }
         }
     }
@@ -144,23 +150,26 @@ public class QueryPool {
 
     private final DetectLongQuery detectLongQuery;
     private final DetectEndingWorker detectEndingWorker;
+    private final ThreadContextImpl threadContext;
 
     private volatile int highPriorityWaitingQueryCount = 0;
     private volatile int lowPriorityWaitingQueryCount = 0;
     private volatile SubsystemException hardException = null;
 
     public QueryPool(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+        DefaultThreadGroup defaultThreadGroup = new DefaultThreadGroup("QueryPool", uncaughtExceptionHandler);
+
         this.threadPool = new DefaultThreadPoolExecutor(
                 MAX_THREAD_COUNT,
                 MAX_THREAD_COUNT,
                 0L,
                 TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(MAX_WORKED_QUERY_COUNT),
-                "QueryPool",
-                uncaughtExceptionHandler
+                defaultThreadGroup
         );
         this.detectLongQuery = new DetectLongQuery(this, uncaughtExceptionHandler);
         this.detectEndingWorker = new DetectEndingWorker(threadPool, uncaughtExceptionHandler);
+        this.threadContext = new ThreadContextImpl(defaultThreadGroup);
     }
 
     public void setHardException(SubsystemException e) {
@@ -289,6 +298,10 @@ public class QueryPool {
             occupiedResources.forEach((key, value) -> value.forEach(item -> queries.add(item.query)));
         }
         return queries;
+    }
+
+    public ThreadContext getThreadContext(){
+        return threadContext;
     }
 
     public void shutdownAwait() throws InterruptedException {

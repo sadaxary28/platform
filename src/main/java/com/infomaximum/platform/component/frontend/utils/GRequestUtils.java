@@ -5,6 +5,6 @@ import com.infomaximum.cluster.graphql.struct.GRequest;
 public class GRequestUtils {
 
 	public static String getTraceRequest(GRequest gRequest) {
-		return "(trace: r" + gRequest.hashCode() + ")";
+		return "r" + gRequest.hashCode();
 	}
 }
