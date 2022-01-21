@@ -7,6 +7,7 @@ import com.infomaximum.cluster.graphql.schema.datafetcher.ComponentDataFetcher;
 import com.infomaximum.cluster.graphql.schema.struct.out.RGraphQLObjectTypeField;
 import com.infomaximum.platform.component.frontend.authcontext.UnauthorizedContext;
 import com.infomaximum.platform.component.frontend.context.impl.ContextTransactionRequestImpl;
+import com.infomaximum.platform.sdk.context.ContextUtils;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.struct.FieldConfiguration;
 import com.infomaximum.platform.utils.ExceptionUtils;
@@ -50,6 +51,6 @@ public class PlatformDataFetcher extends ComponentDataFetcher {
     }
 
     private String getExceptionDetails(ContextTransactionRequestImpl context) {
-        return "Request " + context.getTrace();
+        return "Request " + ContextUtils.toTrace(context);
     }
 }

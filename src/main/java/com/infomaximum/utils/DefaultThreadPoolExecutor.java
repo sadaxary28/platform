@@ -4,7 +4,7 @@ import java.util.concurrent.*;
 
 public class DefaultThreadPoolExecutor extends ThreadPoolExecutor {
 
-    private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+    private final DefaultThreadGroup defaultThreadGroup;
 
     public DefaultThreadPoolExecutor(
             int corePoolSize,
@@ -14,16 +14,30 @@ public class DefaultThreadPoolExecutor extends ThreadPoolExecutor {
             BlockingQueue<Runnable> workQueue,
             String threadFactoryName,
             Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new DefaultThreadFactory(threadFactoryName, uncaughtExceptionHandler));
-        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
+        this(
+                corePoolSize,
+                maximumPoolSize,
+                keepAliveTime,
+                unit,
+                workQueue,
+                new DefaultThreadGroup(threadFactoryName, uncaughtExceptionHandler)
+        );
+    }
+
+    public DefaultThreadPoolExecutor(
+            int corePoolSize,
+            int maximumPoolSize,
+            long keepAliveTime,
+            TimeUnit unit,
+            BlockingQueue<Runnable> workQueue,
+            DefaultThreadGroup defaultThreadGroup) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new DefaultThreadFactory(defaultThreadGroup));
+        this.defaultThreadGroup = defaultThreadGroup;
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
-        if (uncaughtExceptionHandler == null) {
-            return;
-        }
 
         if (t == null) {
             try {
@@ -39,7 +53,7 @@ public class DefaultThreadPoolExecutor extends ThreadPoolExecutor {
         }
 
         if (t != null) {
-            uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), t);
+            defaultThreadGroup.uncaughtException(Thread.currentThread(), t);
         }
     }
 }

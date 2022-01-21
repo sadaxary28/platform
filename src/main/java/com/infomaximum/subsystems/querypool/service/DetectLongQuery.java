@@ -1,6 +1,7 @@
 package com.infomaximum.subsystems.querypool.service;
 
 import com.infomaximum.platform.sdk.context.Context;
+import com.infomaximum.platform.sdk.context.ContextUtils;
 import com.infomaximum.subsystems.querypool.QueryPool;
 import com.infomaximum.utils.DefaultThreadFactory;
 import org.slf4j.Logger;
@@ -67,7 +68,7 @@ public class DetectLongQuery implements Runnable {
 
 				if (duration.compareTo(WARN_LOG_DETECTED_PERIOD) < 0) {
 					log.debug("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
-							context.getTrace(),
+							ContextUtils.toTrace(context),
 							queryWrapper.getTimeStart(),
 							duration.toMillis(),
 							toStringResources(resources),
@@ -75,7 +76,7 @@ public class DetectLongQuery implements Runnable {
 					);
 				} else {
 					log.warn("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
-							context.getTrace(),
+							ContextUtils.toTrace(context),
 							queryWrapper.getTimeStart(),
 							duration.toMillis(),
 							toStringResources(resources),
