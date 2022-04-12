@@ -7,8 +7,8 @@ import com.infomaximum.platform.update.annotation.Update;
 
 @Update(
         componentUUID = TestSubsystem.UUID,
-        version = "1.0.4",
-        previousVersion = "1.0.5"
+        version = "1.0.4.x",
+        previousVersion = "1.0.5.x"
 )
 public class TestUpdate1_0_5IncorrectVersionOrder extends UpdateTask<TestSubsystem> {
 

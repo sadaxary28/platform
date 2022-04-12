@@ -10,8 +10,8 @@ import com.infomaximum.platform.update.exception.UpdateException;
 
 @Update(
         componentUUID = TestSubsystem.UUID,
-        version = "1.0.1",
-        previousVersion = "1.0.0"
+        version = "1.0.1.x",
+        previousVersion = "1.0.0.x"
 )
 public class TestUpdate1_0_1 extends UpdateTask<TestSubsystem> {
 

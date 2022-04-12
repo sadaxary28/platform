@@ -57,8 +57,8 @@ public abstract class UpdateTask<T extends Component> {
         Version currentCodeVersion = getComponentInfo().getVersion();
 
         final Update taskAnnotation = UpdateUtil.getUpdateAnnotation(this.getClass());
-        Version previousTaskVersion = Version.parse(taskAnnotation.previousVersion());
-        Version nextTaskVersion = Version.parse(taskAnnotation.version());
+        Version previousTaskVersion = UpdateUtil.parseVersion(taskAnnotation.previousVersion());
+        Version nextTaskVersion = UpdateUtil.parseVersion(taskAnnotation.version());
 
         if (Version.compare(lastModuleVersion, previousTaskVersion) != 0) {
             throw new UpdateException(getComponentInfo().getUuid(), "Previous module version: " + lastModuleVersion + " doesn't equal to update task previous version: " + previousTaskVersion);
@@ -98,7 +98,7 @@ public abstract class UpdateTask<T extends Component> {
         if (dependenceModule == null) {
             throw new UpdateException(getComponentInfo().getUuid(), "Can't find dependence module in system " + dependency.componentUUID());
         }
-        Version expectedDependenceModule = Version.parse(dependency.version());
+        Version expectedDependenceModule = UpdateUtil.parseVersion(dependency.version());
         if (!dependenceModule.getVersion().equals(expectedDependenceModule)) {
             throw new UpdateException(getComponentInfo().getUuid(), "Wrong dependence module version. Current version: " + dependenceModule.getVersion() + ", expected: " + expectedDependenceModule
                     + ". Dependence on module: " + dependency.componentUUID());

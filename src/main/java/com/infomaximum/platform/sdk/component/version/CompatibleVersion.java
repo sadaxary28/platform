@@ -16,7 +16,7 @@ public class CompatibleVersion {
     }
 
     public CompatibleVersion(Version target) {
-        this(new Version(target.major, target.minor, 0), target);
+        this(new Version(target.product, target.major, target.minor, 0), target);
     }
 
     public Version getMinimum() {
@@ -38,6 +38,9 @@ public class CompatibleVersion {
             return true;
         }
 
+        if (version.product != target.product) {
+            return false;
+        }
         if (version.major != target.major) {
             return false;
         }

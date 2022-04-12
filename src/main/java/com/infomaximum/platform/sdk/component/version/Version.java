@@ -2,38 +2,61 @@ package com.infomaximum.platform.sdk.component.version;
 
 public class Version {
 
+    public final int product;
     public final int major;
     public final int minor;
     public final int patch;
 
     private final String toString;
 
-    public Version(int major, int minor, int patch) {
-        if (major < 0 || minor < 0 || patch < 0) {
+    public Version(int product, int major, int minor, int patch) {
+        if (product < 0 || major < 0 || minor < 0 || patch < 0) {
             throw new IllegalArgumentException();
         }
 
+        this.product = product;
         this.major = major;
         this.minor = minor;
         this.patch = patch;
 
-        this.toString = major + "." + minor + "." + patch;
+        this.toString = product + "." + major + "." + minor + "." + patch;
     }
 
     public static Version parse(String source) throws IllegalArgumentException {
         String[] parts = source.split("\\.");
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Version string must be contains 3 parts: " + source);
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Version string must be contains 4 parts: " + source);
         }
 
         return new Version(
                 Integer.parseInt(parts[0]),
                 Integer.parseInt(parts[1]),
-                Integer.parseInt(parts[2])
+                Integer.parseInt(parts[2]),
+                Integer.parseInt(parts[3])
         );
     }
 
+    //TODO Удалить после 01.06.022
+    public static Version parseWithMigration(String source) throws IllegalArgumentException {
+        String[] parts = source.split("\\.");
+        if (parts.length == 4) {
+            return parse(source);
+        } else if (parts.length == 3) {
+            return new Version(
+                    Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1]),
+                    Integer.parseInt(parts[2]),
+                    0
+            );
+        } else {
+            throw new IllegalArgumentException("Version string must be contains 4 or 3 parts: " + source);
+        }
+    }
+
     public static int compare(Version left, Version right) {
+        if (left.product != right.product) {
+            return Integer.compare(left.product, right.product);
+        }
         if (left.major != right.major) {
             return Integer.compare(left.major, right.major);
         }
@@ -50,6 +73,7 @@ public class Version {
 
         Version version = (Version) o;
 
+        if (product != version.product) return false;
         if (major != version.major) return false;
         if (minor != version.minor) return false;
         return patch == version.patch;
@@ -57,7 +81,8 @@ public class Version {
 
     @Override
     public int hashCode() {
-        int result = major;
+        int result = product;
+        result = 31 * result + major;
         result = 31 * result + minor;
         result = 31 * result + patch;
         return result;
