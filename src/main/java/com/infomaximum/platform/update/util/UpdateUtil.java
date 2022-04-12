@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class UpdateUtil {
 
-    private final static Version START_VERSION = new Version(1, 0, 0);
+    private final static Version START_VERSION = new Version(1, 0, 0, 0);
 
     @SuppressWarnings("unchecked")
     public static <T extends UpdateTask<? extends Component>> Update getUpdateAnnotation(Class<T> clazz) {
@@ -42,8 +42,8 @@ public class UpdateUtil {
             if (!componentUuid.equals(annotationEntity.componentUUID())) {
                 throw new UpdateException("Subsystem uuid of task set isn't same");
             }
-            Version prevVersion = Version.parse(annotationEntity.previousVersion());
-            Version nextVersion = Version.parse(annotationEntity.version());
+            Version prevVersion = parseVersion(annotationEntity.previousVersion());
+            Version nextVersion = parseVersion(annotationEntity.version());
             if (Version.compare(prevVersion, nextVersion) != -1) {
                 throw new UpdateException("Integrity error. Update version: " + nextVersion + " is less or equal to previous: " + prevVersion);
             }
@@ -138,6 +138,23 @@ public class UpdateUtil {
             }
         }
         throw new UpdateException("Can't find update task "+ oldVersion + "->" + newVersion + " for " + component);
+    }
+
+    public static Version parseVersion(String source) throws IllegalArgumentException {
+        String[] parts = source.split("\\.");
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Version string must be contains 4 parts: " + source);
+        }
+        if (!"x".equals(parts[3])) {
+            throw new IllegalArgumentException("In version string field patch not equal 'x': " + source);
+        }
+
+        return new Version(
+                Integer.parseInt(parts[0]),
+                Integer.parseInt(parts[1]),
+                Integer.parseInt(parts[2]),
+                0
+        );
     }
 
     private static class Module {

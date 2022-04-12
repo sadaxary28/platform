@@ -7,8 +7,8 @@ import com.infomaximum.platform.update.annotation.Update;
 
 @Update(
         componentUUID = TestSubsystem.UUID,
-        version = "1.1.0",
-        previousVersion = "1.0.4"
+        version = "1.1.0.x",
+        previousVersion = "1.0.4.x"
 )
 public class TestUpdate1_1_0 extends UpdateTask<TestSubsystem> {
 
