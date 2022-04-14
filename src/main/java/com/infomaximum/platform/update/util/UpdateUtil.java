@@ -42,8 +42,8 @@ public class UpdateUtil {
             if (!componentUuid.equals(annotationEntity.componentUUID())) {
                 throw new UpdateException("Subsystem uuid of task set isn't same");
             }
-            Version prevVersion = parseVersion(annotationEntity.previousVersion());
-            Version nextVersion = parseVersion(annotationEntity.version());
+            Version prevVersion = Version.parseTaskUpdate(annotationEntity.previousVersion());
+            Version nextVersion = Version.parseTaskUpdate(annotationEntity.version());
             if (Version.compare(prevVersion, nextVersion) != -1) {
                 throw new UpdateException("Integrity error. Update version: " + nextVersion + " is less or equal to previous: " + prevVersion);
             }
@@ -66,53 +66,58 @@ public class UpdateUtil {
 
 
     //todo V.Bukharkin нужно покрыть тестами
-    public static List<UpdateTask<? extends Component>> getUpdatesInCorrectOrder(ModuleUpdateEntity[] updates) {
+    public static List<ModuleTaskUpdate> getUpdatesInCorrectOrder(ModuleUpdateEntity[] updates) {
         checkUniqueModule(updates);
-        List<Module> result = new ArrayList<>(updates.length);
+        List<ModuleTaskUpdate> result = new ArrayList<>(updates.length);
         Map<String, ModuleUpdateEntity> subsystemUuids = Arrays.stream(updates).collect(Collectors.toMap(ModuleUpdateEntity::getComponentUuid, mu -> mu));
         Set<String> passedMds = new HashSet<>();
         for (ModuleUpdateEntity update : updates) {
-            if (!passedMds.contains(update.getComponentUuid())){
+            if (!passedMds.contains(update.getComponentUuid())) {
                 buildModuleDependency(update, subsystemUuids, passedMds, result);
             }
         }
-        return result.stream().map(Module::getUpdateTask).collect(Collectors.toList());
+        return result;
     }
 
-    public static <T extends Component> UpdateTask<T> getUpdateTaskObj(Version oldVersion, Version newVersion, T subsystem) {
-        Class<UpdateTask<T>> updateTaskClass = getUpdateTaskClass(oldVersion, newVersion, subsystem);
-        return getUpdateTaskObj(updateTaskClass, subsystem);
+    public static <T extends Component> ModuleTaskUpdate getUpdateTaskObj(Version oldVersion, Version newVersion, T component) {
+        Class<UpdateTask<T>> updateTaskClass = getUpdateTaskClass(oldVersion, newVersion, component);
+        return getUpdateTaskObj(updateTaskClass, component);
     }
 
-    private static void buildModuleDependency(ModuleUpdateEntity update, Map<String, ModuleUpdateEntity> subsystemUpdates, Set<String> passedMds, List<Module> result) {
+    private static void buildModuleDependency(ModuleUpdateEntity update, Map<String, ModuleUpdateEntity> subsystemUpdates, Set<String> passedMds, List<ModuleTaskUpdate> result) {
         if (passedMds.contains(update.getComponentUuid())) {
             return;
         }
         Class<UpdateTask<Component>> updateTaskClass = getUpdateTaskClass(update.getOldVersion(), update.getNewVersion(), update.getComponent());
-        final Update annotationEntity = UpdateUtil.getUpdateAnnotation(updateTaskClass);
-        UpdateTask<? extends Component> updateTask = getUpdateTaskObj(updateTaskClass, update.getComponent());
-        if (annotationEntity.dependencies().length != 0) {
-            Set<String> notCyclicDependencies = new HashSet<>();
-            notCyclicDependencies.add(update.getComponentUuid());
-            for (Dependency dependency : annotationEntity.dependencies()) {
-                if (notCyclicDependencies.contains(dependency.componentUUID())) {
-                    throw new UpdateException("Cyclic dependency error. Dependency: " + dependency.componentUUID());
+
+        ModuleTaskUpdate moduleTaskUpdate;
+        if (updateTaskClass==null) {
+            moduleTaskUpdate = new ModuleTaskUpdate(update.getComponent(), null);
+        } else {
+            final Update annotationEntity = UpdateUtil.getUpdateAnnotation(updateTaskClass);
+            moduleTaskUpdate = getUpdateTaskObj(updateTaskClass, update.getComponent());
+            if (annotationEntity.dependencies().length != 0) {
+                Set<String> notCyclicDependencies = new HashSet<>();
+                notCyclicDependencies.add(update.getComponentUuid());
+                for (Dependency dependency : annotationEntity.dependencies()) {
+                    if (notCyclicDependencies.contains(dependency.componentUUID())) {
+                        throw new UpdateException("Cyclic dependency error. Dependency: " + dependency.componentUUID());
+                    }
+                    if (!subsystemUpdates.containsKey(dependency.componentUUID())) {
+                        continue;
+                    }
+                    notCyclicDependencies.add(dependency.componentUUID());
+                    buildModuleDependency(subsystemUpdates.get(dependency.componentUUID()), subsystemUpdates, passedMds, result);
                 }
-                if (!subsystemUpdates.containsKey(dependency.componentUUID())) {
-                    continue;
-                }
-                notCyclicDependencies.add(dependency.componentUUID());
-                buildModuleDependency(subsystemUpdates.get(dependency.componentUUID()), subsystemUpdates, passedMds, result);
             }
         }
-        Module md = new Module(updateTask, update.getComponentUuid());
-        result.add(md);
+        result.add(moduleTaskUpdate);
         passedMds.add(update.getComponentUuid());
     }
 
     private static void checkUniqueModule(ModuleUpdateEntity[] updates) {
         for (int i = 0; i < updates.length; i++) {
-            for (int j = i+1; j < updates.length; j++) {
+            for (int j = i + 1; j < updates.length; j++) {
                 if (updates[i].getComponentUuid().equals(updates[j].getComponentUuid())) {
                     throw new UpdateException("Updates have duplicate module: " + updates[i].getComponentUuid());
                 }
@@ -120,50 +125,51 @@ public class UpdateUtil {
         }
     }
 
-    private static <T extends Component> UpdateTask<T> getUpdateTaskObj(Class<UpdateTask<T>> updateTaskClass, Component component) {
+    private static <T extends Component> ModuleTaskUpdate getUpdateTaskObj(Class<UpdateTask<T>> updateTaskClass, Component component) {
+        UpdateTask<T> updateTask;
         try {
-            return updateTaskClass.getConstructor(component.getClass()).newInstance(component);
+            updateTask = updateTaskClass.getConstructor(component.getClass()).newInstance(component);
         } catch (ReflectiveOperationException e) {
             throw new UpdateException(e);
         }
+        return new ModuleTaskUpdate(component, updateTask);
     }
 
     @SuppressWarnings("unchecked")
     private static <T extends Component> Class<UpdateTask<T>> getUpdateTaskClass(Version oldVersion, Version newVersion, T component) {
+        if (equalsUpdateVersion(oldVersion, newVersion)) {
+            return null;
+        }
+
         for (Class updateTask : new Reflections(component.getInfo().getUuid()).getTypesAnnotatedWith(Update.class, true)) {
             final Update annotationEntity = UpdateUtil.getUpdateAnnotation(updateTask);
-            if (Version.parse(annotationEntity.previousVersion()).equals(oldVersion)
-                    && Version.parse(annotationEntity.version()).equals(newVersion)) {
+            if (equalsUpdateVersion(Version.parseTaskUpdate(annotationEntity.previousVersion()), oldVersion)
+                    && equalsUpdateVersion(Version.parseTaskUpdate(annotationEntity.version()), newVersion)) {
                 return updateTask;
             }
         }
-        throw new UpdateException("Can't find update task "+ oldVersion + "->" + newVersion + " for " + component);
+        throw new UpdateException("Can't find update task " + oldVersion + "->" + newVersion + " for " + component);
     }
 
-    public static Version parseVersion(String source) throws IllegalArgumentException {
-        String[] parts = source.split("\\.");
-        if (parts.length != 4) {
-            throw new IllegalArgumentException("Version string must be contains 4 parts: " + source);
-        }
-        if (!"x".equals(parts[3])) {
-            throw new IllegalArgumentException("In version string field patch not equal 'x': " + source);
-        }
-
-        return new Version(
-                Integer.parseInt(parts[0]),
-                Integer.parseInt(parts[1]),
-                Integer.parseInt(parts[2]),
-                0
-        );
+    private static boolean equalsUpdateVersion(Version version1, Version version2) {
+        if (version1.product != version2.product) return false;
+        if (version1.major != version2.major) return false;
+        if (version1.minor != version2.minor) return false;
+        return true;
     }
 
-    private static class Module {
+    public static class ModuleTaskUpdate {
+
+        private final Component component;
         private final UpdateTask<? extends Component> updateTask;
-        private final String componentUuid;
 
-        private Module(UpdateTask<? extends Component> updateTask, String componentUuid) {
+        private ModuleTaskUpdate(Component component, UpdateTask<? extends Component> updateTask) {
+            this.component = component;
             this.updateTask = updateTask;
-            this.componentUuid = componentUuid;
+        }
+
+        public Component getComponent() {
+            return component;
         }
 
         public UpdateTask<? extends Component> getUpdateTask() {
@@ -174,13 +180,13 @@ public class UpdateUtil {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Module md = (Module) o;
-            return Objects.equals(componentUuid, md.componentUuid);
+            ModuleTaskUpdate moduleTaskUpdate = (ModuleTaskUpdate) o;
+            return Objects.equals(component.getInfo().getUuid(), moduleTaskUpdate.component.getInfo().getUuid());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(componentUuid);
+            return Objects.hash(component.getInfo().getUuid());
         }
     }
 }
