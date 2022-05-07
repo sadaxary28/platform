@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.Executors;
@@ -64,12 +67,14 @@ public class DetectLongQuery implements Runnable {
 				Thread thread = queryWrapper.getThread();
 				if (thread == null) continue;
 
+				String sTimeStart = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(ZonedDateTime.ofInstant(timeStart, ZoneId.systemDefault()));
 				Context context = queryWrapper.getContext();
 
+				//Подумать над оптимизацияе -  не стоит формировать строки, если система нагружена и все равно не выводит лог
 				if (duration.compareTo(WARN_LOG_DETECTED_PERIOD) < 0) {
 					log.debug("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
 							ContextUtils.toTrace(context),
-							queryWrapper.getTimeStart(),
+							sTimeStart,
 							duration.toMillis(),
 							toStringResources(resources),
 							toStringStackTrace(thread.getStackTrace())
@@ -77,7 +82,7 @@ public class DetectLongQuery implements Runnable {
 				} else {
 					log.warn("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
 							ContextUtils.toTrace(context),
-							queryWrapper.getTimeStart(),
+							sTimeStart,
 							duration.toMillis(),
 							toStringResources(resources),
 							toStringStackTrace(thread.getStackTrace())
