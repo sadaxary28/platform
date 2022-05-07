@@ -47,19 +47,20 @@ public abstract class UpdateTask<T extends Component> {
     public void validateUpdateTask(ModuleEditable module, Transaction transaction) throws DatabaseException {
         Version lastModuleVersion = module.getVersion();
         Version currentCodeVersion = getComponentInfo().getVersion();
-        Version currentCodeUpdateVersion = new Version(currentCodeVersion.product, currentCodeVersion.major, currentCodeVersion.minor, 0);
 
         final Update taskAnnotation = UpdateUtil.getUpdateAnnotation(this.getClass());
         Version previousTaskVersion = Version.parseTaskUpdate(taskAnnotation.previousVersion());
         Version nextTaskVersion = Version.parseTaskUpdate(taskAnnotation.version());
 
-        if (Version.compare(lastModuleVersion, previousTaskVersion) != 0) {
+        //Проверяем, что UpdateTask может обновляться с установленной версии
+        if (compareWithIgnorePatch(lastModuleVersion, previousTaskVersion) != 0) {
             throw new UpdateException(getComponentInfo().getUuid(), "Previous module version: " + lastModuleVersion + " doesn't equal to update task previous version: " + previousTaskVersion);
         }
-        if (Version.compare(currentCodeUpdateVersion, nextTaskVersion) != 0) {
+        //Проверяем, что текущая кодовая база версия модуля равна той(UpdateTask) на которую обновляемся - т.е. это не прыжок через версию
+        if (compareWithIgnorePatch(currentCodeVersion, nextTaskVersion) != 0) {
             throw new UpdateException(getComponentInfo().getUuid(), "Current code version " + currentCodeVersion + " doesn't equal to update task next version" + nextTaskVersion);
         }
-        int cmpResult = Version.compare(nextTaskVersion, previousTaskVersion);
+        int cmpResult = compareWithIgnorePatch(nextTaskVersion, previousTaskVersion);
         if (cmpResult < 0) {
             throw new DowngradingException(getComponentInfo().getUuid(), nextTaskVersion, previousTaskVersion);
         }
@@ -68,6 +69,25 @@ public abstract class UpdateTask<T extends Component> {
             throw new UpdateException(getComponentInfo().getUuid(), "Incorrect dependency. Update with self dependence doesn't allow");
         }
         validateUpdateDependencies(taskAnnotation, transaction);
+    }
+
+    /**
+     * Сверяем версии для обновления игнорируя патч
+     * @param left
+     * @param right
+     * @return
+     */
+    private static int compareWithIgnorePatch(Version left, Version right) {
+        if (left.product != right.product) {
+            return Integer.compare(left.product, right.product);
+        }
+        if (left.major != right.major) {
+            return Integer.compare(left.major, right.major);
+        }
+        if (left.minor != right.minor) {
+            return Integer.compare(left.minor, right.minor);
+        }
+        return 0;
     }
 
     private void validateUpdateDependencies(Update taskAnnotation, Transaction transaction) throws DatabaseException {
