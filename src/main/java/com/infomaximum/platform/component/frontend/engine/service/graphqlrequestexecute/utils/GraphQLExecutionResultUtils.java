@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 
 public class GraphQLExecutionResultUtils {
 
-    public static String toLog(GRequest gRequest, ExecutionResult executionResult) {
+    public static String toLog(GRequest gRequest, ExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         String out = "query: " + gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "");
 
-        String outAccessDenied = getAccessDenied(executionResult);
+        String outAccessDenied = getAccessDenied(executionResult, uncaughtExceptionHandler);
         if (outAccessDenied != null) {
             out += ", access_denied: [ " + outAccessDenied + "]";
         }
@@ -27,7 +27,7 @@ public class GraphQLExecutionResultUtils {
 
 
     //Формируем пути по которым произошол access_denied
-    private static String getAccessDenied(ExecutionResult executionResult) {
+    private static String getAccessDenied(ExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         if (executionResult.getErrors() == null || executionResult.getErrors().isEmpty()) {
             return null;
         }
@@ -39,7 +39,12 @@ public class GraphQLExecutionResultUtils {
             }
 
             ExceptionWhileDataFetching exceptionWhileDataFetching = (ExceptionWhileDataFetching) graphQLError;
-            SubsystemRuntimeException subsystemRuntimeException = (SubsystemRuntimeException) exceptionWhileDataFetching.getException();
+            Throwable exception = exceptionWhileDataFetching.getException();
+            if (!(exception instanceof SubsystemRuntimeException)) {
+                uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), exception);
+                return null;
+            }
+            SubsystemRuntimeException subsystemRuntimeException = (SubsystemRuntimeException) exception;
             SubsystemException subsystemException = subsystemRuntimeException.getSubsystemException();
 
             if (subsystemException.getCode().equals(GeneralExceptionBuilder.ACCESS_DENIED_CODE)) {

@@ -95,7 +95,8 @@ public class FrontendEngine implements AutoCloseable {
                 component,
                 platform.getQueryPool(),
                 graphQLEngine, graphQLSubscribeEngine,
-                requestAuthorizeBuilder
+                requestAuthorizeBuilder,
+                platform.getUncaughtExceptionHandler()
         );
 
         network = builder.builderNetwork.build();

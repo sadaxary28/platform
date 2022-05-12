@@ -5,6 +5,7 @@ import com.infomaximum.cluster.graphql.GraphQLEngine;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
+import com.infomaximum.platform.exception.ClusterExceptionBuilder;
 import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.sdk.graphql.customfield.graphqlquery.GraphQLQueryCustomField;
 import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcher;
@@ -43,6 +44,7 @@ public class Platform implements AutoCloseable {
 			this.graphQLEngine = builder.graphQLEngineBuilder.build();
 			this.cluster = builder.clusterBuilder
 					.withContext(new ClusterContext(this, builder.clusterContext))
+					.withExceptionBuilder(new ClusterExceptionBuilder())
 					.withUncaughtExceptionHandler(uncaughtExceptionHandler)
 					.build();
 			this.queryPool = new QueryPool(builder.uncaughtExceptionHandler);

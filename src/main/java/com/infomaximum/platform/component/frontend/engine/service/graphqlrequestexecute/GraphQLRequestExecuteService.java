@@ -52,13 +52,20 @@ public class GraphQLRequestExecuteService {
     private final GraphQLEngine graphQLEngine;
     private final GraphQLExecutorPrepareImpl graphQLExecutorPrepare;
     private final RequestAuthorize.Builder requestAuthorizeBuilder;
+    private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-    public GraphQLRequestExecuteService(Component frontendComponent, QueryPool queryPool, GraphQLEngine graphQLEngine, GraphQLSubscribeEngine graphQLSubscribeEngine, RequestAuthorize.Builder requestAuthorizeBuilder) {
+    public GraphQLRequestExecuteService(
+            Component frontendComponent, QueryPool queryPool,
+            GraphQLEngine graphQLEngine, GraphQLSubscribeEngine graphQLSubscribeEngine,
+            RequestAuthorize.Builder requestAuthorizeBuilder,
+            Thread.UncaughtExceptionHandler uncaughtExceptionHandler
+    ) {
         this.frontendComponent = frontendComponent;
         this.queryPool = queryPool;
         this.graphQLEngine = graphQLEngine;
         this.graphQLExecutorPrepare = (GraphQLExecutorPrepareImpl) graphQLEngine.buildExecutor(frontendComponent, graphQLSubscribeEngine);
         this.requestAuthorizeBuilder = requestAuthorizeBuilder;
+        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
     }
 
     public CompletableFuture<GraphQLResponse> execute(GRequest gRequest) {
@@ -133,7 +140,7 @@ public class GraphQLRequestExecuteService {
                                     priority,
                                     instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
                                     Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),
-                                    GraphQLExecutionResultUtils.toLog(gRequest, executionResult)
+                                    GraphQLExecutionResultUtils.toLog(gRequest, executionResult, uncaughtExceptionHandler)
                             );
 
                             //Все чистим
@@ -183,7 +190,9 @@ public class GraphQLRequestExecuteService {
 
     private boolean isExceptionWithIgnoreAccessDenied(ExecutionResult executionResult) {
         if (executionResult.getErrors().isEmpty()) return false;
-        if (executionResult.getData() == null) return true;//Хак. Необходимо более глубокое иследование - это надо для подписок - когда не удалось выполнить подписку, иначе агент не узнает о ошибке подписки
+        if (executionResult.getData() == null) {
+            return true;//Хак. Необходимо более глубокое иследование - это надо для подписок - когда не удалось выполнить подписку, иначе агент не узнает о ошибке подписки
+        }
         for (GraphQLError graphQLError : executionResult.getErrors()) {
             if (!(graphQLError instanceof ExceptionWhileDataFetching)) return true;
             ExceptionWhileDataFetching exceptionWhileDataFetching = (ExceptionWhileDataFetching) graphQLError;
