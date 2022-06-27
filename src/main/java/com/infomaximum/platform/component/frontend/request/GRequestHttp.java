@@ -64,6 +64,7 @@ public class GRequestHttp extends GRequest {
 
         public final String fieldname;
         public final String filename;
+        public final String contentType;
         public final URI uri;
 
         /**
@@ -72,9 +73,10 @@ public class GRequestHttp extends GRequest {
         public final boolean isInMemory;
         public final long size;
 
-        public UploadFile(String fieldname, String filename, URI uri, boolean isInMemory, long size) {
+        public UploadFile(String fieldname, String filename, String contentType, URI uri, boolean isInMemory, long size) {
             this.fieldname = fieldname;
             this.filename = filename;
+            this.contentType = contentType;
             this.uri = uri;
             this.isInMemory = isInMemory;
             this.size = size;

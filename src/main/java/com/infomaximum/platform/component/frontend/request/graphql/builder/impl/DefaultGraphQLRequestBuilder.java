@@ -112,6 +112,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
                             uploadFiles.add(new GRequestHttp.UploadFile(
                                     entry.getKey(),
                                     multipartFile.getOriginalFilename(),
+                                    multipartFile.getContentType(),
                                     frontendMultipartSource.put(multipartFile),
                                     isInMemory,
                                     multipartFile.getSize()
