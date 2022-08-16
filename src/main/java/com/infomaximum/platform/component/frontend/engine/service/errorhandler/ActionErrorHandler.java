@@ -1,8 +1,8 @@
 package com.infomaximum.platform.component.frontend.engine.service.errorhandler;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface ActionErrorHandler {

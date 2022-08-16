@@ -1,6 +1,6 @@
 package com.infomaximum.platform.sdk.function;
 
-import com.infomaximum.subsystems.exception.SubsystemException;
+import com.infomaximum.platform.exception.PlatformException;
 
 @FunctionalInterface
 public interface Consumer<T> {
@@ -10,5 +10,5 @@ public interface Consumer<T> {
      *
      * @param t the input argument
      */
-    void accept(T t) throws SubsystemException;
+    void accept(T t) throws PlatformException;
 }

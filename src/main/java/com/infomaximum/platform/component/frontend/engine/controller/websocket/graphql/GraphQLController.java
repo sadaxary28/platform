@@ -2,18 +2,16 @@ package com.infomaximum.platform.component.frontend.engine.controller.websocket.
 
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.mvc.ResponseEntity;
-import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.protocol.standard.packet.TargetPacket;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.network.struct.RemoteAddress;
 import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
-import com.infomaximum.platform.component.frontend.engine.network.protocol.standard.subscriber.WebSocketStandardSubscriber;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.request.GRequestWebSocket;
+import com.infomaximum.platform.exception.GraphQLWrapperPlatformException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
-import com.infomaximum.subsystems.exception.GraphQLWrapperSubsystemException;
 import graphql.execution.reactive.CompletionStageMappingPublisher;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -46,7 +44,7 @@ public class GraphQLController {
         }
         String query = data.getAsString("query");
         if (query == null || query.trim().isEmpty()) {
-            GraphQLWrapperSubsystemException graphQLWrapperSubsystemException = new GraphQLWrapperSubsystemException(
+            GraphQLWrapperPlatformException graphQLWrapperSubsystemException = new GraphQLWrapperPlatformException(
                     GeneralExceptionBuilder.buildEmptyValueException("query")
             );
             JSONObject out = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException).data;
@@ -92,11 +90,13 @@ public class GraphQLController {
                         ResponseEntity.success((JSONObject) graphQLResponse.data)
                 );
             } else if (data instanceof CompletionStageMappingPublisher) {
-                CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
-                WebSocketStandardSubscriber websocketSubscriber = new WebSocketStandardSubscriber(transportSession, (RequestPacket) packet);
-                completionPublisher.subscribe(websocketSubscriber);
-                return websocketSubscriber.getFirstResponseCompletableFuture()
-                        .thenApply(iPacket -> convert((ResponsePacket) iPacket));
+                //TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
+                throw new RuntimeException("Not migration!!! (Subscriber)");
+//                CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
+//                WebSocketStandardSubscriber websocketSubscriber = new WebSocketStandardSubscriber(transportSession, (RequestPacket) packet);
+//                completionPublisher.subscribe(websocketSubscriber);
+//                return websocketSubscriber.getFirstResponseCompletableFuture()
+//                        .thenApply(iPacket -> convert((ResponsePacket) iPacket));
             } else {
                 throw new RuntimeException("Not support type out: " + data);
             }

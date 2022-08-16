@@ -4,7 +4,6 @@ import com.infomaximum.cluster.core.io.URIClusterFile;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.struct.storage.SourceClusterFile;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
@@ -70,7 +69,9 @@ public class FrontendMultipartSource implements SourceClusterFile {
 	public void deleteIfExists(String clusterFileUUID) throws IOException {
 		MultipartFile multipartFile = multipartFiles.remove(clusterFileUUID);
 		if (multipartFile == null) return;
-		CommonsMultipartFile commonsMultipartFile = (CommonsMultipartFile) multipartFile;
-		commonsMultipartFile.getFileItem().delete();
+		//TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
+		throw new RuntimeException("Not migration!!!");
+//		CommonsMultipartFile commonsMultipartFile = (CommonsMultipartFile) multipartFile;
+//		commonsMultipartFile.getFileItem().delete();
 	}
 }

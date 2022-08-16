@@ -4,12 +4,12 @@ import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.component.database.exception.DatabaseExceptionBuilder;
 import com.infomaximum.platform.component.database.utils.BackupUtils;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.AbstractQueryRController;
+import com.infomaximum.platform.querypool.QueryPool;
+import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.exception.NotAbsolutePathException;
 import com.infomaximum.platform.sdk.utils.FileUtils;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.querypool.AbstractQueryRController;
-import com.infomaximum.subsystems.querypool.QueryPool;
-import com.infomaximum.subsystems.querypool.ResourceProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
@@ -26,7 +26,7 @@ public class RControllerBackupImpl extends AbstractQueryRController<DatabaseComp
     }
 
     @Override
-    public void createBackup(String backupDirPath, String backupName) throws SubsystemException {
+    public void createBackup(String backupDirPath, String backupName) throws PlatformException {
         Path backupPath = buildBackupPath(backupDirPath, backupName);
         FileUtils.ensureDirectory(backupPath);
         try {
@@ -38,7 +38,7 @@ public class RControllerBackupImpl extends AbstractQueryRController<DatabaseComp
         }
     }
 
-    public static Path buildBackupPath(String backupDirPath, String backupName) throws SubsystemException {
+    public static Path buildBackupPath(String backupDirPath, String backupName) throws PlatformException {
         if (StringUtils.isEmpty(backupName) || !backupName.equals(new File(backupName).getName())) {
             throw DatabaseExceptionBuilder.buildInvalidBackupNameException();
         }

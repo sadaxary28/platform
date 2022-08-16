@@ -7,6 +7,7 @@ import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.exception.DowngradingException;
+import com.infomaximum.platform.querypool.Query;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.component.Info;
 import com.infomaximum.platform.sdk.component.version.Version;
@@ -16,7 +17,6 @@ import com.infomaximum.platform.update.annotation.Dependency;
 import com.infomaximum.platform.update.annotation.Update;
 import com.infomaximum.platform.update.exception.UpdateException;
 import com.infomaximum.platform.update.util.UpdateUtil;
-import com.infomaximum.subsystems.querypool.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

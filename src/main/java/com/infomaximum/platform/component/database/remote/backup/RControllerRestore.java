@@ -1,9 +1,9 @@
 package com.infomaximum.platform.component.database.remote.backup;
 
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.querypool.QueryRemoteController;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.QueryRemoteController;
 
 public interface RControllerRestore extends QueryRemoteController {
 
-    void restoreBackup(String backupDirPath, String backupName, String newDbPath) throws SubsystemException;
+    void restoreBackup(String backupDirPath, String backupName, String newDbPath) throws PlatformException;
 }

@@ -1,5 +1,7 @@
 package com.infomaximum.platform.component.frontend.engine.service.errorhandler;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.MultipartStream;
@@ -15,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.util.NestedServletException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 

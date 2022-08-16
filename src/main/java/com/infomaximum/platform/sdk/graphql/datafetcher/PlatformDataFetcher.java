@@ -7,11 +7,11 @@ import com.infomaximum.cluster.graphql.schema.datafetcher.ComponentDataFetcher;
 import com.infomaximum.cluster.graphql.schema.struct.out.RGraphQLObjectTypeField;
 import com.infomaximum.platform.component.frontend.authcontext.UnauthorizedContext;
 import com.infomaximum.platform.component.frontend.context.impl.ContextTransactionRequestImpl;
+import com.infomaximum.platform.exception.runtime.PlatformRuntimeException;
 import com.infomaximum.platform.sdk.context.ContextUtils;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.struct.FieldConfiguration;
 import com.infomaximum.platform.utils.ExceptionUtils;
-import com.infomaximum.subsystems.exception.runtime.SubsystemRuntimeException;
 import graphql.schema.DataFetchingEnvironment;
 
 /**
@@ -40,7 +40,7 @@ public class PlatformDataFetcher extends ComponentDataFetcher {
         }
 
         if (!isAccess) {
-            throw new SubsystemRuntimeException(GeneralExceptionBuilder.buildInvalidCredentialsException(rTypeGraphQLField.type, rTypeGraphQLField.name));
+            throw new PlatformRuntimeException(GeneralExceptionBuilder.buildInvalidCredentialsException(rTypeGraphQLField.type, rTypeGraphQLField.name));
         }
 
         try {

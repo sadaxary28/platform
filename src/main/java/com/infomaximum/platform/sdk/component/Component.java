@@ -13,13 +13,13 @@ import com.infomaximum.database.maintenance.SchemaService;
 import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.database.schema.StructEntity;
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.remote.QueryRemotes;
 import com.infomaximum.platform.sdk.struct.ClusterContext;
 import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.platform.sdk.subscription.GraphQLSubscribeEvent;
-import com.infomaximum.subsystems.exception.SubsystemException;
 import org.reflections.Reflections;
 
 import java.util.HashSet;
@@ -86,7 +86,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     public void onDestroy() {
     }
 
-    public void onStarting() throws SubsystemException {
+    public void onStarting() throws PlatformException {
         try {
             Set<StructEntity> domains = new HashSet<>();
             for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {

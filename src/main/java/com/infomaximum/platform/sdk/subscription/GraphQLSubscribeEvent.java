@@ -1,10 +1,10 @@
 package com.infomaximum.platform.sdk.subscription;
 
 import com.infomaximum.cluster.graphql.struct.GSubscribeEvent;
+import com.infomaximum.platform.querypool.QueryTransaction;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.context.Context;
 import com.infomaximum.platform.sdk.context.ContextTransaction;
-import com.infomaximum.subsystems.querypool.QueryTransaction;
 
 public class GraphQLSubscribeEvent {
 

@@ -1,39 +1,39 @@
 package com.infomaximum.platform.component.database.exception;
 
 import com.infomaximum.platform.component.database.DatabaseConsts;
-import com.infomaximum.subsystems.exception.ExceptionFactory;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.exception.SubsystemExceptionFactory;
+import com.infomaximum.platform.exception.ExceptionFactory;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.exception.PlatformExceptionFactory;
 
 public class DatabaseExceptionBuilder {
 
-    private static final ExceptionFactory EXCEPTION_FACTORY = new SubsystemExceptionFactory(DatabaseConsts.UUID);
+    private static final ExceptionFactory EXCEPTION_FACTORY = new PlatformExceptionFactory(DatabaseConsts.UUID);
 
-    public static SubsystemException buildBackupException(Throwable e) {
+    public static PlatformException buildBackupException(Throwable e) {
         return EXCEPTION_FACTORY.build("backup_error", e);
     }
 
-    public static SubsystemException buildRestoreException(Throwable e) {
+    public static PlatformException buildRestoreException(Throwable e) {
         return EXCEPTION_FACTORY.build("restore_error", e);
     }
 
-    public static SubsystemException buildInvalidDbPathException() {
+    public static PlatformException buildInvalidDbPathException() {
         return buildInvalidDbPathException(null);
     }
 
-    public static SubsystemException buildInvalidDbPathException(Throwable e) {
+    public static PlatformException buildInvalidDbPathException(Throwable e) {
         return EXCEPTION_FACTORY.build("invalid_db_path", e);
     }
 
-    public static SubsystemException buildInvalidBackupNameException() {
+    public static PlatformException buildInvalidBackupNameException() {
         return EXCEPTION_FACTORY.build("invalid_backup_name");
     }
 
-    public static SubsystemException buildInvalidBackupPathException() {
+    public static PlatformException buildInvalidBackupPathException() {
         return buildInvalidBackupPathException(null);
     }
 
-    public static SubsystemException buildInvalidBackupPathException(Throwable e) {
+    public static PlatformException buildInvalidBackupPathException(Throwable e) {
         return EXCEPTION_FACTORY.build("invalid_backup_path", e);
     }
 }

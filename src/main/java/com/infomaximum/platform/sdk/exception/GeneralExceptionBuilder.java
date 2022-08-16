@@ -5,9 +5,9 @@ import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.database.schema.StructEntity;
-import com.infomaximum.subsystems.exception.ExceptionFactory;
-import com.infomaximum.subsystems.exception.GeneralExceptionFactory;
-import com.infomaximum.subsystems.exception.SubsystemException;
+import com.infomaximum.platform.exception.ExceptionFactory;
+import com.infomaximum.platform.exception.GeneralExceptionFactory;
+import com.infomaximum.platform.exception.PlatformException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -30,22 +30,22 @@ public class GeneralExceptionBuilder {
     private GeneralExceptionBuilder() {
     }
 
-    public static SubsystemException buildDatabaseException(DatabaseException cause) {
+    public static PlatformException buildDatabaseException(DatabaseException cause) {
         return EXCEPTION_FACTORY.build("database_error", cause);
     }
 
-    public static SubsystemException buildDatabaseException(DatabaseException cause, Map<String, Object> params) {
+    public static PlatformException buildDatabaseException(DatabaseException cause, Map<String, Object> params) {
         return EXCEPTION_FACTORY.build("database_error", cause, params);
     }
 
-    public static SubsystemException buildNotFoundDomainObjectException(Class<? extends DomainObject> clazz, Long id) {
+    public static PlatformException buildNotFoundDomainObjectException(Class<? extends DomainObject> clazz, Long id) {
         return EXCEPTION_FACTORY.build(NOT_FOUND_DOMAIN_OBJECT_CODE, new HashMap<String, Object>() {{
             put("type", Schema.getEntity(clazz).getName());
             put("id", id);
         }});
     }
 
-    public static SubsystemException buildNotFoundDomainObjectException(Class<? extends DomainObject> clazz, int fieldNumber, Object fieldValue) {
+    public static PlatformException buildNotFoundDomainObjectException(Class<? extends DomainObject> clazz, int fieldNumber, Object fieldValue) {
         StructEntity entity = Schema.getEntity(clazz);
         return EXCEPTION_FACTORY.build(NOT_FOUND_DOMAIN_OBJECT_CODE, new HashMap<String, Object>() {{
             put("type", entity.getName());
@@ -54,14 +54,14 @@ public class GeneralExceptionBuilder {
         }});
     }
 
-    public static SubsystemException buildDomainObjectAlreadyExistsException(Class<? extends DomainObject> clazz, Long id) {
+    public static PlatformException buildDomainObjectAlreadyExistsException(Class<? extends DomainObject> clazz, Long id) {
         return EXCEPTION_FACTORY.build("domain_object_already_exists", new HashMap<String, Object>() {{
             put("type", Schema.getEntity(clazz).getName());
             put("id", id);
         }});
     }
 
-    public static SubsystemException buildNotEmptyDomainObjectException(Class<? extends DomainObject> clazz) {
+    public static PlatformException buildNotEmptyDomainObjectException(Class<? extends DomainObject> clazz) {
         return EXCEPTION_FACTORY.build(NOT_EMPTY_DOMAIN_OBJECT_CODE, new HashMap<String, Object>() {{
             put("type", Schema.getEntity(clazz).getName());
         }});
@@ -82,136 +82,136 @@ public class GeneralExceptionBuilder {
         return params;
     }
 
-    public static SubsystemException buildInvalidCredentialsException() {
+    public static PlatformException buildInvalidCredentialsException() {
         return EXCEPTION_FACTORY.build(INVALID_CREDENTIALS);
     }
 
-    public static SubsystemException buildInvalidCredentialsException(String type, String name) {
+    public static PlatformException buildInvalidCredentialsException(String type, String name) {
         return EXCEPTION_FACTORY.build(INVALID_CREDENTIALS, ImmutableMap.of("type", type, "name", name));
     }
 
-    public static SubsystemException buildInvalidJsonException() {
+    public static PlatformException buildInvalidJsonException() {
         return buildInvalidJsonException(null);
     }
 
-    public static SubsystemException buildGraphQLInvalidSyntaxException() {
+    public static PlatformException buildGraphQLInvalidSyntaxException() {
         return EXCEPTION_FACTORY.build("graphql_invalid_syntax");
     }
 
-    public static SubsystemException buildGraphQLValidationException() {
+    public static PlatformException buildGraphQLValidationException() {
         return buildGraphQLValidationException(null);
     }
 
-    public static SubsystemException buildGraphQLValidationException(String message) {
+    public static PlatformException buildGraphQLValidationException(String message) {
         return EXCEPTION_FACTORY.build("graphql_validation_error", message);
     }
 
-    public static SubsystemException buildInvalidJsonException(Throwable cause) {
+    public static PlatformException buildInvalidJsonException(Throwable cause) {
         return EXCEPTION_FACTORY.build("invalid_json", cause);
     }
 
-    public static SubsystemException buildIllegalStateException(String message) {
+    public static PlatformException buildIllegalStateException(String message) {
         return EXCEPTION_FACTORY.build("illegal_state_exception", message);
     }
 
-    public static SubsystemException buildIOErrorException(IOException e) {
+    public static PlatformException buildIOErrorException(IOException e) {
         return EXCEPTION_FACTORY.build("io_error", e);
     }
 
-    public static SubsystemException buildSecurityException(SecurityException e) {
+    public static PlatformException buildSecurityException(SecurityException e) {
         return EXCEPTION_FACTORY.build("security_exception", e);
     }
 
-    public static SubsystemException buildEmptyValueException(String fieldName) {
+    public static PlatformException buildEmptyValueException(String fieldName) {
         return EXCEPTION_FACTORY.build("empty_value", Collections.singletonMap("fieldName", fieldName));
     }
 
-    public static SubsystemException buildEmptyValueException(Class<? extends DomainObject> clazz, int fieldNumber) {
+    public static PlatformException buildEmptyValueException(Class<? extends DomainObject> clazz, int fieldNumber) {
         return EXCEPTION_FACTORY.build("empty_value", buildParams( clazz, fieldNumber));
     }
 
-    public static SubsystemException buildNotUniqueValueException(Class<? extends DomainObject> clazz, int fieldNumber, Object fieldValue) {
+    public static PlatformException buildNotUniqueValueException(Class<? extends DomainObject> clazz, int fieldNumber, Object fieldValue) {
         return EXCEPTION_FACTORY.build(NOT_UNIQUE_VALUE_CODE, buildParams(clazz, fieldNumber, fieldValue));
     }
 
-    public static SubsystemException buildNotUniqueValueException(String name, Object value) {
+    public static PlatformException buildNotUniqueValueException(String name, Object value) {
         return EXCEPTION_FACTORY.build(NOT_UNIQUE_VALUE_CODE, Collections.singletonMap(name, value));
     }
 
-    public static SubsystemException buildInvalidValueException(String fieldName) {
+    public static PlatformException buildInvalidValueException(String fieldName) {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, new HashMap<String, Object>() {{
             put("field_name", fieldName);
         }});
     }
 
-    public static SubsystemException buildInvalidValueExceptionWithCause(String cause) {
+    public static PlatformException buildInvalidValueExceptionWithCause(String cause) {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, new HashMap<String, Object>() {{
             put("cause", cause);
         }});
     }
 
-    public static SubsystemException buildInvalidValueException(String fieldName, Serializable fieldValue) {
+    public static PlatformException buildInvalidValueException(String fieldName, Serializable fieldValue) {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, new HashMap<String, Object>() {{
             put("field_name", fieldName);
             put("field_value", fieldValue);
         }});
     }
 
-    public static SubsystemException buildInvalidValueException(String fieldName, Serializable fieldValue, String comment) {
+    public static PlatformException buildInvalidValueException(String fieldName, Serializable fieldValue, String comment) {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, comment, new HashMap<String, Object>() {{
             put("field_name", fieldName);
             put("field_value", fieldValue);
         }});
     }
 
-    public static SubsystemException buildInvalidValueException(Class<? extends DomainObject> clazz, int fieldNumber, Serializable fieldValue) {
+    public static PlatformException buildInvalidValueException(Class<? extends DomainObject> clazz, int fieldNumber, Serializable fieldValue) {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, buildParams(clazz, fieldNumber, fieldValue));
     }
 
-    public static SubsystemException buildInvalidValueException(Class<? extends DomainObject> clazz, int fieldNumber, Serializable fieldValue, String comment) {
+    public static PlatformException buildInvalidValueException(Class<? extends DomainObject> clazz, int fieldNumber, Serializable fieldValue, String comment) {
         return EXCEPTION_FACTORY.build(INVALID_VALUE_CODE, comment, buildParams(clazz, fieldNumber, fieldValue));
     }
 
-    public static SubsystemException buildUploadFileNotFoundException() {
+    public static PlatformException buildUploadFileNotFoundException() {
         return EXCEPTION_FACTORY.build("upload_file_not_found");
     }
 
-    public static SubsystemException buildOnlyWebsocket() {
+    public static PlatformException buildOnlyWebsocket() {
         return EXCEPTION_FACTORY.build("only_websocket");
     }
 
-    public static SubsystemException buildAccessDeniedException() {
+    public static PlatformException buildAccessDeniedException() {
         return EXCEPTION_FACTORY.build(ACCESS_DENIED_CODE);
     }
 
-    public static SubsystemException buildServerBusyException(String cause) {
+    public static PlatformException buildServerBusyException(String cause) {
         return EXCEPTION_FACTORY.build("server_busy", Collections.singletonMap("cause", cause));
     }
 
-    public static SubsystemException buildServerOverloadedException() {
+    public static PlatformException buildServerOverloadedException() {
         return EXCEPTION_FACTORY.build("server_overloaded");
     }
 
-    public static SubsystemException buildServerTimeoutException() {
+    public static PlatformException buildServerTimeoutException() {
         return EXCEPTION_FACTORY.build("server_timeout");
     }
 
-    public static SubsystemException buildServerShutsDownException() {
+    public static PlatformException buildServerShutsDownException() {
         return EXCEPTION_FACTORY.build("server_shuts_down");
     }
 
-    public static SubsystemException buildAuthAmbiguityException(String message) {
+    public static PlatformException buildAuthAmbiguityException(String message) {
         return EXCEPTION_FACTORY.build("auth_ambiguity", message);
     }
 
     /**
      * @return Не найден обязательный параметр.
      */
-    public static SubsystemException buildNotFoundObligatoryParam(Class<? extends DomainObject> clazz, int fieldNumber) {
+    public static PlatformException buildNotFoundObligatoryParam(Class<? extends DomainObject> clazz, int fieldNumber) {
         return EXCEPTION_FACTORY.build(OBLIGATORY_PARAM, GeneralExceptionBuilder.buildParams(clazz, fieldNumber));
     }
 
-    public static SubsystemException buildNotFoundObligatoryParam(String fieldName) {
+    public static PlatformException buildNotFoundObligatoryParam(String fieldName) {
         return EXCEPTION_FACTORY.build(OBLIGATORY_PARAM, fieldName);
     }
 

@@ -4,10 +4,10 @@ import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.component.database.exception.DatabaseExceptionBuilder;
 import com.infomaximum.platform.component.database.utils.BackupUtils;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.AbstractQueryRController;
+import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.exception.NotAbsolutePathException;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.querypool.AbstractQueryRController;
-import com.infomaximum.subsystems.querypool.ResourceProvider;
 
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -22,7 +22,7 @@ public class RControllerRestoreImpl extends AbstractQueryRController<DatabaseCom
     }
 
     @Override
-    public void restoreBackup(String backupDirPath, String backupName, String newDbPath) throws SubsystemException {
+    public void restoreBackup(String backupDirPath, String backupName, String newDbPath) throws PlatformException {
         Path dbPath = buildDbPath(newDbPath);
         Path backupPath = RControllerBackupImpl.buildBackupPath(backupDirPath, backupName);
         try {
@@ -32,7 +32,7 @@ public class RControllerRestoreImpl extends AbstractQueryRController<DatabaseCom
         }
     }
 
-    private static Path buildDbPath(String path) throws SubsystemException {
+    private static Path buildDbPath(String path) throws PlatformException {
         try {
             Path dbPath = Paths.get(path);
             if (!dbPath.isAbsolute()) {

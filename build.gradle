@@ -1,16 +1,33 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id ("de.jjohannes.extra-java-module-info") version "0.15"
 }
-
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/main/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '0.0.11'
+version '0.1.0'
 
-sourceCompatibility = 1.8
-compileJava.options.encoding = 'UTF-8'
+ext.moduleName = 'com.infomaximum.platform'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath
+        ]
+        classpath = files()
+    }
+}
 
 sourceSets {
     main {
@@ -24,38 +41,69 @@ sourceSets {
     test_integration {
         java.srcDir 'src/test_integration/java'
         resources.srcDir 'src/test_integration/resources'
-        compileClasspath += configurations.compile + configurations.testCompile + sourceSets.main.output + sourceSets.test.output
+        compileClasspath += sourceSets.main.output + sourceSets.test.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.test.output
     }
+}
+
+configurations {
+    test_integrationImplementation.extendsFrom(testImplementation)
+    test_integrationRuntimeOnly.extendsFrom(testRuntimeOnly)
 }
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.spring.io/libs-milestone/" }
 }
 
 dependencies {
 
-    compile 'com.infomaximum:cluster:1.0.4'
-//    compile project(':cluster')
+    implementation 'com.infomaximum:cluster:1.1.4'
+//    implementation project(':cluster')
 
-    compile 'com.infomaximum:cluster-graphql:1.0.1p5'
-//    compile project(':cluster-graphql')
+    implementation 'com.infomaximum:cluster-graphql:1.1.1'
+//    implementation project(':cluster-graphql')
 
-    compile 'com.infomaximum:rdao:1.13.2'
+    implementation 'com.infomaximum:rdao:1.14.2'
+//    implementation project(':rdao')
 
-    compile 'com.infomaximum:network:1.0.1p1'
-//    compile project(':network')
-    compile ('commons-fileupload:commons-fileupload:1.4') {
+    implementation 'com.infomaximum:network:1.1.1'
+//    implementation project(':network')
+
+    implementation 'org.reflections:reflections:0.10.2'
+    implementation 'net.minidev:json-smart:2.4.8'
+    implementation 'org.apache.commons:commons-lang3:3.10'
+
+    //----------Транзитивные зависимости----------------
+    implementation 'org.rocksdb:rocksdbjni:6.8.1'
+    implementation ('com.graphql-java:graphql-java:15.0') {
+        exclude group: 'org.reactivestreams', module: 'reactive-streams'
+    }
+    implementation 'org.reactivestreams:reactive-streams:1.0.4'
+    implementation 'org.eclipse.jetty:jetty-server:11.0.11'
+    implementation 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.11'
+    implementation 'org.springframework:spring-core:6.0.0-M5'
+    implementation 'org.springframework:spring-web:6.0.0-M5'
+    //--------------------------------------------------
+
+    implementation ('commons-fileupload:commons-fileupload:1.4') {
         exclude group: 'commons-io', module: 'commons-io'
     }
-    compile 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.11.0'
 
-    compile 'org.apache.commons:commons-lang3:3.10'
-    compile 'net.minidev:json-smart:2.4.8'
+    implementation('com.google.guava:guava:31.1-jre') {
+        exclude group: 'com.google.guava', module: 'failureaccess'
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+        exclude group: 'com.google.j2objc', module: 'j2objc-annotations'
+    }
 
-    compile 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.2'
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
-    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.13.2'
 }
+
+task test_integration(type: Test, description: 'Integration test', group: 'Verification') {}
+
+tasks.withType(Copy).all { duplicatesStrategy 'exclude' }

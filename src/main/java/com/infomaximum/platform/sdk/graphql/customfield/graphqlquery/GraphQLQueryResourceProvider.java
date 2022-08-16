@@ -1,8 +1,8 @@
 package com.infomaximum.platform.sdk.graphql.customfield.graphqlquery;
 
+import com.infomaximum.platform.querypool.QueryPool;
+import com.infomaximum.platform.querypool.ResourceProviderImpl;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.subsystems.querypool.QueryPool;
-import com.infomaximum.subsystems.querypool.ResourceProviderImpl;
 
 import java.util.HashMap;
 

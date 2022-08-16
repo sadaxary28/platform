@@ -2,13 +2,12 @@ package com.infomaximum.platform.component.frontend.request.graphql.builder;
 
 import com.infomaximum.platform.component.frontend.engine.uploadfile.FrontendMultipartSource;
 import com.infomaximum.platform.component.frontend.request.graphql.GraphQLRequest;
-import com.infomaximum.subsystems.exception.SubsystemException;
-
-import javax.servlet.http.HttpServletRequest;
+import com.infomaximum.platform.exception.PlatformException;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface GraphQLRequestBuilder {
 
-    GraphQLRequest build(HttpServletRequest request) throws SubsystemException;
+    GraphQLRequest build(HttpServletRequest request) throws PlatformException;
 
     abstract class Builder {
 

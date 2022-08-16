@@ -4,10 +4,10 @@ import com.infomaximum.cluster.graphql.exception.GraphQLExecutorDataFetcherExcep
 import com.infomaximum.cluster.graphql.executor.GraphQLExecutorPrepareImpl;
 import com.infomaximum.cluster.graphql.schema.struct.out.RGraphQLObjectTypeField;
 import com.infomaximum.platform.component.frontend.authcontext.UnauthorizedContext;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.QueryPool;
+import com.infomaximum.platform.querypool.ResourceProviderImpl;
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.struct.FieldConfiguration;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.querypool.QueryPool;
-import com.infomaximum.subsystems.querypool.ResourceProviderImpl;
 import graphql.ExecutionInput;
 
 import java.util.HashMap;
@@ -18,7 +18,7 @@ public class PrepareGraphQLDocument {
     private HashMap<String, QueryPool.LockType> waitLockResources;
     private GraphQLExecutorPrepareImpl.PrepareDocumentRequest prepareDocumentRequest;
 
-    public PrepareGraphQLDocument(GraphQLExecutorPrepareImpl graphQLExecutorPrepare, ExecutionInput executionInput) throws SubsystemException {
+    public PrepareGraphQLDocument(GraphQLExecutorPrepareImpl graphQLExecutorPrepare, ExecutionInput executionInput) throws PlatformException {
         waitLockResources = new HashMap<>();
         boolean[] resultQueryPoolRequest = new boolean[1];
         try {
@@ -48,8 +48,8 @@ public class PrepareGraphQLDocument {
                     }
             );
         } catch (GraphQLExecutorDataFetcherException exception) {
-            if (exception.getCause() instanceof SubsystemException) {
-                throw (SubsystemException) exception.getCause();
+            if (exception.getCause() instanceof PlatformException) {
+                throw (PlatformException) exception.getCause();
             } else {
                 throw exception;
             }

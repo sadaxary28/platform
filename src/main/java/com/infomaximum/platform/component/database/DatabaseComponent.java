@@ -5,11 +5,11 @@ import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.platform.Platform;
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.component.Info;
 import com.infomaximum.rocksdb.RocksDBProvider;
 import com.infomaximum.rocksdb.RocksDataBaseBuilder;
-import com.infomaximum.subsystems.exception.SubsystemException;
 
 public class DatabaseComponent extends Component {
 
@@ -45,7 +45,7 @@ public class DatabaseComponent extends Component {
         }
     }
 
-    public void onStarting() throws SubsystemException {
+    public void onStarting() throws PlatformException {
         super.onStarting();
 
         this.extension = Platform.get().getDatabaseConfigure().extension;

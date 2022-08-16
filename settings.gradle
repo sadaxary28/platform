@@ -6,5 +6,8 @@ rootProject.name = 'platform'
 //include ':cluster-graphql'
 //project(':cluster-graphql').projectDir = new File(settingsDir, '../cluster-graphql')
 
+//include ':rdao'
+//project(':rdao').projectDir = new File(settingsDir, '../rdao')
+
 //include ':network'
 //project(':network').projectDir = new File(settingsDir, '../network')

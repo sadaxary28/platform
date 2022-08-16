@@ -1,9 +1,9 @@
 package com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.utils;
 
 import com.infomaximum.cluster.graphql.struct.GRequest;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.exception.runtime.PlatformRuntimeException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.exception.runtime.SubsystemRuntimeException;
 import graphql.ExceptionWhileDataFetching;
 import graphql.ExecutionResult;
 import graphql.GraphQLError;
@@ -40,12 +40,12 @@ public class GraphQLExecutionResultUtils {
 
             ExceptionWhileDataFetching exceptionWhileDataFetching = (ExceptionWhileDataFetching) graphQLError;
             Throwable exception = exceptionWhileDataFetching.getException();
-            if (!(exception instanceof SubsystemRuntimeException)) {
+            if (!(exception instanceof PlatformRuntimeException)) {
                 uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), exception);
                 return null;
             }
-            SubsystemRuntimeException subsystemRuntimeException = (SubsystemRuntimeException) exception;
-            SubsystemException subsystemException = subsystemRuntimeException.getSubsystemException();
+            PlatformRuntimeException subsystemRuntimeException = (PlatformRuntimeException) exception;
+            PlatformException subsystemException = subsystemRuntimeException.getPlatformException();
 
             if (subsystemException.getCode().equals(GeneralExceptionBuilder.ACCESS_DENIED_CODE)) {
                 String path = "/" + graphQLError.getPath().stream()

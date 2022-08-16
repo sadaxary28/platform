@@ -1,18 +1,15 @@
 package com.infomaximum.platform.sdk.querypool;
 
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.exception.runtime.ClosedObjectException;
+import com.infomaximum.platform.querypool.*;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.function.Consumer;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.exception.runtime.ClosedObjectException;
-import com.infomaximum.subsystems.querypool.*;
 import com.infomaximum.testcomponent.TestComponent;
 import com.infomaximum.testcomponent.domainobject.employee.EmployeeEditable;
 import com.infomaximum.testcomponent.domainobject.employee.EmployeeReadable;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.HashMap;
 import java.util.concurrent.*;
@@ -21,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class QueryPoolTest {
 
     private static final long QUERY_DURATION_MILLIS = TimeUnit.SECONDS.toMillis(2);
@@ -60,13 +58,13 @@ public class QueryPoolTest {
 
     private Throwable uncaughtException = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void checkPlatform() {
         final int minThreadCount = 3;
-        Assert.assertTrue("Physical thread must be greater or equal than " + minThreadCount, QueryPool.MAX_THREAD_COUNT >= minThreadCount);
+        Assertions.assertTrue(QueryPool.MAX_THREAD_COUNT >= minThreadCount, "Physical thread must be greater or equal than " + minThreadCount);
     }
 
-    @After
+    @AfterAll
     public void checkException() throws Throwable {
         if (uncaughtException != null) {
             Throwable e = uncaughtException;
@@ -84,22 +82,22 @@ public class QueryPoolTest {
         QueryPool pool = buildPool();
         pool.shutdownAwait();
 
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
     @Test
-    public void executeOneQueryWithoutResources() throws SubsystemException, InterruptedException {
+    public void executeOneQueryWithoutResources() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
         //TODO Ulitin V.
 //        pool.execute(component, createQuery(null)).thenApply(res);
         pool.shutdownAwait();
 
-        Assert.assertTrue(res.isSuccess(1));
+        Assertions.assertTrue(res.isSuccess(1));
     }
 
     @Test
-    public void executeOneQueryWithOneResource() throws SubsystemException, InterruptedException {
+    public void executeOneQueryWithOneResource() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
         pool.execute(component, createQuery(Object.class, QueryPool.LockType.SHARED, null))
@@ -108,18 +106,18 @@ public class QueryPoolTest {
         ;
         pool.shutdownAwait();
 
-        Assert.assertTrue(res.isSuccess(1));
+        Assertions.assertTrue(res.isSuccess(1));
     }
 
     @Test
-    public void executeQueryForShutdownPool() throws SubsystemException, InterruptedException {
+    public void executeQueryForShutdownPool() throws PlatformException, InterruptedException {
         QueryPool pool = buildPool();
         pool.shutdownAwait();
 
         ExecutionException exception = null;
         try {
             pool.execute(component, createQuery(null)).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (ExecutionException ex) {
             exception = ex;
         }
@@ -128,7 +126,7 @@ public class QueryPoolTest {
     }
 
     @Test
-    public void executeParalleledQuery() throws SubsystemException, InterruptedException {
+    public void executeParalleledQuery() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
         final int queryCount = QueryPool.MAX_THREAD_COUNT;
@@ -153,12 +151,12 @@ public class QueryPoolTest {
         }
         pool.shutdownAwait();
 
-        Assert.assertTrue("Не все запросы выполнены успешно.", res.isSuccess(queryCount));
-        Assert.assertTrue(isParallelShared.get());
+        Assertions.assertTrue(res.isSuccess(queryCount), "Не все запросы выполнены успешно.");
+        Assertions.assertTrue(isParallelShared.get());
     }
 
     @Test
-    public void executeSerialQuery1() throws SubsystemException, InterruptedException {
+    public void executeSerialQuery1() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
         final int queryCount = QueryPool.MAX_THREAD_COUNT;
@@ -185,12 +183,12 @@ public class QueryPoolTest {
         }
         pool.await();
 
-        Assert.assertTrue("Не все запросы выполнены успешно.", res.isSuccess(queryCount));
-        Assert.assertFalse(isParallelExclusive.get());
+        Assertions.assertTrue(res.isSuccess(queryCount), "Не все запросы выполнены успешно.");
+        Assertions.assertFalse(isParallelExclusive.get());
     }
 
     @Test
-    public void executeSerialQuery2() throws SubsystemException, InterruptedException {
+    public void executeSerialQuery2() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
         final int queryCount = 3;
@@ -214,12 +212,12 @@ public class QueryPoolTest {
         ;
         pool.await();
 
-        Assert.assertTrue("Не все запросы выполнены успешно.", res.isSuccess(queryCount));
-        Assert.assertFalse(isParallelExclusive.get());
+        Assertions.assertTrue(res.isSuccess(queryCount), "Не все запросы выполнены успешно.");
+        Assertions.assertFalse(isParallelExclusive.get());
     }
 
     @Test
-    public void executeSerialQueryWithBorrowAllDomainObjects() throws SubsystemException, InterruptedException {
+    public void executeSerialQueryWithBorrowAllDomainObjects() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
         final int queryCount = 3;
@@ -239,7 +237,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
                 function.run();
                 return new SuccessResult();
             }
@@ -256,7 +254,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
                 function.run();
                 return new SuccessResult();
             }
@@ -275,7 +273,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
                 function.run();
                 return new SuccessResult();
             }
@@ -286,12 +284,12 @@ public class QueryPoolTest {
 
         pool.await();
 
-        Assert.assertTrue("Не все запросы выполнены успешно.", res.isSuccess(queryCount));
-        Assert.assertFalse(isParallelExclusive.get());
+        Assertions.assertTrue(res.isSuccess(queryCount), "Не все запросы выполнены успешно.");
+        Assertions.assertFalse(isParallelExclusive.get());
     }
 
     @Test
-    public void executeSerialQueryWithEditableResource() throws SubsystemException, InterruptedException {
+    public void executeSerialQueryWithEditableResource() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
         final int queryCount = 3;
@@ -311,7 +309,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
                 function.run();
                 return new SuccessResult();
             }
@@ -330,7 +328,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
                 function.run();
                 return new SuccessResult();
             }
@@ -349,7 +347,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
                 function.run();
                 return new SuccessResult();
             }
@@ -360,8 +358,8 @@ public class QueryPoolTest {
 
         pool.await();
 
-        Assert.assertTrue("Не все запросы выполнены успешно.", res.isSuccess(queryCount));
-        Assert.assertFalse(isParallelExclusive.get());
+        Assertions.assertTrue(res.isSuccess(queryCount), "Не все запросы выполнены успешно.");
+        Assertions.assertFalse(isParallelExclusive.get());
     }
 
     private static Runnable buildSerialControlFunction(AtomicBoolean isExecuted, AtomicBoolean isParallelExclusive) {
@@ -380,7 +378,7 @@ public class QueryPoolTest {
     }
 
     @Test
-    public void executeSerialThanParalleledQuery1() throws SubsystemException, InterruptedException {
+    public void executeSerialThanParalleledQuery1() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
 
@@ -407,9 +405,9 @@ public class QueryPoolTest {
         ;
         pool.await();
 
-        Assert.assertTrue("Не все запросы выполнены успешно.", res.isSuccess(3));
-        Assert.assertFalse(isParallelExclusive.get());
-        Assert.assertTrue(isParallelShared.get());
+        Assertions.assertTrue(res.isSuccess(3), "Не все запросы выполнены успешно.");
+        Assertions.assertFalse(isParallelExclusive.get());
+        Assertions.assertTrue(isParallelShared.get());
     }
 
     private static Runnable buildSharedControlFunction(AtomicBoolean isExecutedExclusive, AtomicBoolean isExecutedShared,
@@ -455,7 +453,7 @@ public class QueryPoolTest {
     }
 
     @Test
-    public void executeSerialThanParalleledQuery2() throws SubsystemException, InterruptedException {
+    public void executeSerialThanParalleledQuery2() throws PlatformException, InterruptedException {
         ResultCallback res = new ResultCallback();
         QueryPool pool = buildPool();
 
@@ -491,13 +489,13 @@ public class QueryPoolTest {
         ;
         pool.await();
 
-        Assert.assertTrue("Не все запросы выполнены успешно.", res.isSuccess(3));
-        Assert.assertFalse(isParallelExclusive.get());
-        Assert.assertTrue(isParallelShared.get());
+        Assertions.assertTrue(res.isSuccess(3), "Не все запросы выполнены успешно.");
+        Assertions.assertFalse(isParallelExclusive.get());
+        Assertions.assertTrue(isParallelShared.get());
     }
 
     @Test
-    public void overloadWorkedQueue() throws SubsystemException, InterruptedException {
+    public void overloadWorkedQueue() throws PlatformException, InterruptedException {
         QueryPool pool = buildPool();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -513,7 +511,7 @@ public class QueryPoolTest {
 
         try {
             pool.execute(component, createQuery(null)).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (ExecutionException ex) {
             assertEquals(GeneralExceptionBuilder.buildServerOverloadedException(), ex.getCause());
         } finally {
@@ -522,7 +520,7 @@ public class QueryPoolTest {
     }
 
     @Test
-    public void overloadWaitingHighQueue() throws SubsystemException, InterruptedException {
+    public void overloadWaitingHighQueue() throws PlatformException, InterruptedException {
         QueryPool pool = buildPool();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -540,7 +538,7 @@ public class QueryPoolTest {
         try {
             pool.execute(component, createQuery(
                     Object.class, QueryPool.LockType.EXCLUSIVE, QueryPool.Priority.HIGH, null)).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (ExecutionException ex) {
             assertEquals(GeneralExceptionBuilder.buildServerOverloadedException(), ex.getCause());
         } finally {
@@ -549,7 +547,7 @@ public class QueryPoolTest {
     }
 
     @Test
-    public void overloadWaitingLowQueue() throws SubsystemException, InterruptedException {
+    public void overloadWaitingLowQueue() throws PlatformException, InterruptedException {
         QueryPool pool = buildPool();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -567,7 +565,7 @@ public class QueryPoolTest {
         try {
             pool.execute(component, createQuery(
                     Object.class, QueryPool.LockType.EXCLUSIVE, QueryPool.Priority.LOW, null)).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (ExecutionException ex) {
             assertEquals(GeneralExceptionBuilder.buildServerOverloadedException(), ex.getCause());
         } finally {
@@ -576,7 +574,7 @@ public class QueryPoolTest {
     }
 
     @Test
-    public void overloadMaintananceQueue() throws SubsystemException, InterruptedException {
+    public void overloadMaintananceQueue() throws PlatformException, InterruptedException {
         final String marker = "loading";
         QueryPool pool = buildPool();
 
@@ -594,7 +592,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
                 try {
                     countDownLatch.await();
                 } catch (InterruptedException e) {
@@ -606,7 +604,7 @@ public class QueryPoolTest {
 
         try {
             pool.execute(component, createQuery(Object.class, QueryPool.LockType.EXCLUSIVE, null)).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (ExecutionException ex) {
             assertEquals(GeneralExceptionBuilder.buildServerBusyException(marker), ex.getCause());
         } finally {
@@ -624,11 +622,11 @@ public class QueryPoolTest {
             }
 
             @Override
-            public Object execute(QueryTransaction transaction) throws SubsystemException {
+            public Object execute(QueryTransaction transaction) throws PlatformException {
                 throw GeneralExceptionBuilder.buildAccessDeniedException();
             }
         }).exceptionally(throwable -> {
-            Assert.assertEquals(throwable.getClass(), SubsystemException.class);
+            Assertions.assertEquals(throwable.getClass(), PlatformException.class);
             return null;
         }).get();
 
@@ -648,12 +646,12 @@ public class QueryPoolTest {
             }
 
             @Override
-            public Void execute(QueryTransaction transaction) throws SubsystemException {
+            public Void execute(QueryTransaction transaction) throws PlatformException {
                 lock.lock();
                 return null;
             }
         });
-        Assert.assertNotNull(fut1);
+        Assertions.assertNotNull(fut1);
 
         QueryFuture fut2 = pool.tryExecuteImmediately(component, new Query<Void>() {
             @Override
@@ -662,22 +660,22 @@ public class QueryPoolTest {
             }
 
             @Override
-            public Void execute(QueryTransaction transaction) throws SubsystemException {
+            public Void execute(QueryTransaction transaction) throws PlatformException {
                 return null;
             }
         });
-        Assert.assertNull(fut2);
+        Assertions.assertNull(fut2);
 
         QueryFuture fut3 = pool.tryExecuteImmediately(component, new Query<Void>() {
             @Override
             public void prepare(ResourceProvider resources) {}
 
             @Override
-            public Void execute(QueryTransaction transaction) throws SubsystemException {
+            public Void execute(QueryTransaction transaction) throws PlatformException {
                 return null;
             }
         });
-        Assert.assertNotNull(fut3);
+        Assertions.assertNotNull(fut3);
 
         lock.unlock();
         fut1.get();
@@ -699,31 +697,31 @@ public class QueryPoolTest {
             }
 
             @Override
-            public Void execute(QueryTransaction transaction) throws SubsystemException {
+            public Void execute(QueryTransaction transaction) throws PlatformException {
                 lock.lock();
                 return null;
             }
         });
 
-        Assert.assertFalse(pool.waitingQueryExists(QueryPool.Priority.LOW));
-        Assert.assertFalse(pool.waitingQueryExists(QueryPool.Priority.HIGH));
+        Assertions.assertFalse(pool.waitingQueryExists(QueryPool.Priority.LOW));
+        Assertions.assertFalse(pool.waitingQueryExists(QueryPool.Priority.HIGH));
 
         QueryFuture fut1 = pool.execute(component, createQuery(
                 Object.class, QueryPool.LockType.SHARED, QueryPool.Priority.HIGH, null));
-        Assert.assertFalse(pool.waitingQueryExists(QueryPool.Priority.LOW));
-        Assert.assertTrue(pool.waitingQueryExists(QueryPool.Priority.HIGH));
+        Assertions.assertFalse(pool.waitingQueryExists(QueryPool.Priority.LOW));
+        Assertions.assertTrue(pool.waitingQueryExists(QueryPool.Priority.HIGH));
 
         QueryFuture fut2 = pool.execute(component, createQuery(
                 Object.class, QueryPool.LockType.SHARED, QueryPool.Priority.LOW, null));
-        Assert.assertTrue(pool.waitingQueryExists(QueryPool.Priority.LOW));
-        Assert.assertTrue(pool.waitingQueryExists(QueryPool.Priority.HIGH));
+        Assertions.assertTrue(pool.waitingQueryExists(QueryPool.Priority.LOW));
+        Assertions.assertTrue(pool.waitingQueryExists(QueryPool.Priority.HIGH));
 
         lock.unlock();
         fut1.get();
         fut2.get();
 
-        Assert.assertFalse(pool.waitingQueryExists(QueryPool.Priority.LOW));
-        Assert.assertFalse(pool.waitingQueryExists(QueryPool.Priority.HIGH));
+        Assertions.assertFalse(pool.waitingQueryExists(QueryPool.Priority.LOW));
+        Assertions.assertFalse(pool.waitingQueryExists(QueryPool.Priority.HIGH));
 
         pool.shutdownAwait();
     }
@@ -745,9 +743,9 @@ public class QueryPoolTest {
             public Void execute(QueryTransaction transaction) {
                 try {
                     provider.getReadableResource(EmployeeReadable.class);
-                    Assert.fail();
+                    Assertions.fail();
                 } catch (ClosedObjectException e) {
-                    Assert.assertTrue(ResourceProvider.class.isAssignableFrom(e.getCauseClass()));
+                    Assertions.assertTrue(ResourceProvider.class.isAssignableFrom(e.getCauseClass()));
                 }
                 return null;
             }
@@ -766,7 +764,7 @@ public class QueryPoolTest {
             pool.execute(component, createEmptyQuery());
 
             pool.await();
-            Assert.assertEquals(1, fireCount.intValue());
+            Assertions.assertEquals(1, fireCount.intValue());
         }
 
         {
@@ -790,8 +788,8 @@ public class QueryPoolTest {
             fut.get();
             pool.await();
 
-            Assert.assertTrue(res.isSuccess(2));
-            Assert.assertEquals(1, fireCount.intValue());
+            Assertions.assertTrue(res.isSuccess(2));
+            Assertions.assertEquals(1, fireCount.intValue());
         }
 
         {
@@ -805,8 +803,8 @@ public class QueryPoolTest {
             pool.execute(component, createEmptyQuery());
 
             pool.await();
-            Assert.assertEquals(1, fireCount1.intValue());
-            Assert.assertEquals(1, fireCount2.intValue());
+            Assertions.assertEquals(1, fireCount1.intValue());
+            Assertions.assertEquals(1, fireCount2.intValue());
         }
     }
 
@@ -823,7 +821,7 @@ public class QueryPoolTest {
             pool.execute(component, createEmptyQuery());
 
             pool.await();
-            Assert.assertEquals(0, fireCount.intValue());
+            Assertions.assertEquals(0, fireCount.intValue());
         }
 
         {
@@ -837,8 +835,8 @@ public class QueryPoolTest {
             pool.execute(component, createEmptyQuery());
 
             pool.await();
-            Assert.assertEquals(0, fireCount.intValue());
-            Assert.assertEquals(1, fireCount1.intValue());
+            Assertions.assertEquals(0, fireCount.intValue());
+            Assertions.assertEquals(1, fireCount1.intValue());
         }
     }
 
@@ -853,7 +851,7 @@ public class QueryPoolTest {
             pool.tryFireEmptyReachedListener();
 
             pool.await();
-            Assert.assertEquals(1, fireCount.intValue());
+            Assertions.assertEquals(1, fireCount.intValue());
         }
 
         {
@@ -871,7 +869,7 @@ public class QueryPoolTest {
                 }
 
                 @Override
-                public Object execute(QueryTransaction transaction) throws SubsystemException {
+                public Object execute(QueryTransaction transaction) throws PlatformException {
                     lock.lock();
                     return null;
                 }
@@ -881,7 +879,7 @@ public class QueryPoolTest {
             lock.unlock();
 
             pool.await();
-            Assert.assertEquals(1, fireCount.intValue());
+            Assertions.assertEquals(1, fireCount.intValue());
         }
     }
 
@@ -907,8 +905,8 @@ public class QueryPoolTest {
             testUncaughtExceptionHandler(transaction -> {
                 throw GeneralExceptionBuilder.buildAccessDeniedException();
             }, null);
-            Assert.fail();
-        } catch (SubsystemException e) {
+            Assertions.fail();
+        } catch (PlatformException e) {
             // do nothing
         }
     }
@@ -924,7 +922,7 @@ public class QueryPoolTest {
                 }
 
                 @Override
-                public Object execute(QueryTransaction transaction) throws SubsystemException {
+                public Object execute(QueryTransaction transaction) throws PlatformException {
                     execute.accept(transaction);
                     return null;
                 }
@@ -936,7 +934,7 @@ public class QueryPoolTest {
 
         pool.await();
 
-        Assert.assertEquals(uncaughtException, expected);
+        Assertions.assertEquals(uncaughtException, expected);
         uncaughtException = null;
 
         if (ee != null) {
@@ -951,7 +949,7 @@ public class QueryPoolTest {
             }
 
             @Override
-            public Object execute(QueryTransaction transaction) throws SubsystemException {
+            public Object execute(QueryTransaction transaction) throws PlatformException {
                 return null;
             }
         };}
@@ -990,7 +988,7 @@ public class QueryPoolTest {
 
             @Override
             public void prepare(ResourceProvider resources) {
-                Assert.assertTrue("Prepare executed twice", !prepareExecuted);
+                Assertions.assertTrue(!prepareExecuted, "Prepare executed twice");
                 prepareExecuted = true;
 
                 if (res != null) {
@@ -999,8 +997,8 @@ public class QueryPoolTest {
             }
 
             @Override
-            public SuccessResult execute(QueryTransaction transaction) throws SubsystemException {
-                Assert.assertTrue("Execute executed twice", !executeExecuted);
+            public SuccessResult execute(QueryTransaction transaction) throws PlatformException {
+                Assertions.assertTrue(!executeExecuted, "Execute executed twice");
                 executeExecuted = true;
                 if (function != null) {
                     function.run();
@@ -1010,8 +1008,8 @@ public class QueryPoolTest {
         };
     }
 
-    private static void assertEquals(SubsystemException expected, Throwable actual) {
-        Assert.assertTrue(SubsystemException.equals(expected, (SubsystemException) actual));
+    private static void assertEquals(PlatformException expected, Throwable actual) {
+        Assertions.assertTrue(PlatformException.equals(expected, (PlatformException) actual));
     }
 
     private static class UncaughtException extends RuntimeException {

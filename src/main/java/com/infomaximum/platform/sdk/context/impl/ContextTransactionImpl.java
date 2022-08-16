@@ -1,9 +1,9 @@
 package com.infomaximum.platform.sdk.context.impl;
 
+import com.infomaximum.platform.querypool.QueryTransaction;
 import com.infomaximum.platform.sdk.context.ContextTransaction;
 import com.infomaximum.platform.sdk.context.ContextTransactionInternal;
 import com.infomaximum.platform.sdk.context.source.SourceSystem;
-import com.infomaximum.subsystems.querypool.QueryTransaction;
 
 public class ContextTransactionImpl implements ContextTransaction, ContextTransactionInternal {
 

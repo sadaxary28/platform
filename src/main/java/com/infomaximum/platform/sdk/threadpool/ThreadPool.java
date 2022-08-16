@@ -1,7 +1,7 @@
 package com.infomaximum.platform.sdk.threadpool;
 
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.utils.DefaultThreadPoolExecutor;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.utils.DefaultThreadPoolExecutor;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -54,7 +54,7 @@ public class ThreadPool {
      * The results of this method are undefined if the given
      * collection is modified while this operation is in progress.
      */
-    public void invokeAll(List<Callable<Void>> tasks) throws SubsystemException, CancellationException {
+    public void invokeAll(List<Callable<Void>> tasks) throws PlatformException, CancellationException {
         if (tasks.isEmpty()) {
             return;
         }
@@ -99,7 +99,7 @@ public class ThreadPool {
             if (firstException != null) {
                 throw firstException;
             }
-        } catch (SubsystemException e) {
+        } catch (PlatformException e) {
             throw e;
         } catch (Throwable e) {
             if (currentThreadException) {

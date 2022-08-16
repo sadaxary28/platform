@@ -6,6 +6,8 @@ import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
 import com.infomaximum.platform.exception.ClusterExceptionBuilder;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.QueryPool;
 import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.sdk.graphql.customfield.graphqlquery.GraphQLQueryCustomField;
 import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcher;
@@ -13,8 +15,6 @@ import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcherExcep
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.TypeGraphQLFieldConfigurationBuilderImpl;
 import com.infomaximum.platform.sdk.graphql.scalartype.GraphQLScalarTypePlatform;
 import com.infomaximum.platform.sdk.struct.ClusterContext;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.querypool.QueryPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class Platform implements AutoCloseable {
 		}
 	}
 
-	public void install() throws SubsystemException {
+	public void install() throws PlatformException {
         new PlatformUpgrade(this).install();
 	}
 
@@ -61,11 +61,11 @@ public class Platform implements AutoCloseable {
         new PlatformUpgrade(this).upgrade();
 	}
 
-	public void start() throws SubsystemException {
+	public void start() throws PlatformException {
         new PlatformStartStop(this).start(false);
 	}
 
-    public void stop() throws SubsystemException {
+    public void stop() throws PlatformException {
         new PlatformStartStop(this).stop();
     }
 

@@ -2,7 +2,6 @@ package com.infomaximum.platform.component.frontend.engine.controller.http.graph
 
 import com.google.common.net.UrlEscapers;
 import com.infomaximum.cluster.graphql.struct.GRequest;
-import com.infomaximum.cluster.graphql.subscription.SingleSubscriber;
 import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
@@ -10,10 +9,11 @@ import com.infomaximum.platform.component.frontend.engine.service.requestcomplet
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
 import com.infomaximum.platform.component.frontend.request.graphql.GraphQLRequest;
 import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
+import com.infomaximum.platform.exception.GraphQLWrapperPlatformException;
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
-import com.infomaximum.subsystems.exception.GraphQLWrapperSubsystemException;
-import com.infomaximum.subsystems.exception.SubsystemException;
 import graphql.execution.reactive.CompletionStageMappingPublisher;
+import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import org.eclipse.jetty.server.Request;
 import org.slf4j.Logger;
@@ -24,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -46,8 +45,8 @@ public class GraphQLController {
         GraphQLRequest graphQLRequest;
         try {
             graphQLRequest = frontendEngine.getGraphQLRequestBuilder().build(request);
-        } catch (SubsystemException e) {
-            GraphQLWrapperSubsystemException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLSubsystemException(e);
+        } catch (PlatformException e) {
+            GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLSubsystemException(e);
             return CompletableFuture.completedFuture(buildResponseEntity(null, graphQLWrapperSubsystemException));
         }
 
@@ -69,14 +68,16 @@ public class GraphQLController {
                                 buildResponseEntity(gRequest, out)
                         );
                     } else if (data instanceof CompletionStageMappingPublisher) {
-                        CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
-                        SingleSubscriber singleSubscriber = new SingleSubscriber();
-                        completionPublisher.subscribe(singleSubscriber);
-                        return singleSubscriber.getCompletableFuture().thenApply(executionResult -> {
-                            GraphQLResponse graphQLResponse =
-                                    GraphQLRequestExecuteService.buildResponse(executionResult);
-                            return buildResponseEntity(gRequest, graphQLResponse);
-                        });
+                        //TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
+                        throw new RuntimeException("Not migration!!! (Subscriber)");
+//                        CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
+//                        SingleSubscriber singleSubscriber = new SingleSubscriber();
+//                        completionPublisher.subscribe(singleSubscriber);
+//                        return singleSubscriber.getCompletableFuture().thenApply(executionResult -> {
+//                            GraphQLResponse graphQLResponse =
+//                                    GraphQLRequestExecuteService.buildResponse(executionResult);
+//                            return buildResponseEntity(gRequest, graphQLResponse);
+//                        });
                     } else if (data instanceof GOutputFile) {
                         GOutputFile gOutputFile = (GOutputFile) data;
 
@@ -124,7 +125,7 @@ public class GraphQLController {
                 });
     }
 
-    public ResponseEntity buildResponseEntity(GRequest gRequest, GraphQLWrapperSubsystemException graphQLWrapperSubsystemException) {
+    public ResponseEntity buildResponseEntity(GRequest gRequest, GraphQLWrapperPlatformException graphQLWrapperSubsystemException) {
         GraphQLRequestExecuteService graphQLRequestExecuteService = frontendEngine.getGraphQLRequestExecuteService();
 
         GraphQLResponse<JSONObject> graphQLResponse = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException);

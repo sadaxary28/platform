@@ -8,21 +8,19 @@ import com.infomaximum.platform.component.frontend.request.graphql.builder.Clear
 import com.infomaximum.platform.component.frontend.request.graphql.builder.GraphQLRequestBuilder;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.impl.attribute.GraphQLRequestAttributeBuilder;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.impl.attribute.GraphQLRequestAttributeBuilderEmpty;
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
-import com.infomaximum.subsystems.exception.SubsystemException;
+import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.BadMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -53,7 +51,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
     }
 
     @Override
-    public GraphQLRequest build(HttpServletRequest request) throws SubsystemException {
+    public GraphQLRequest build(HttpServletRequest request) throws PlatformException {
         ArrayList<GRequestHttp.UploadFile> uploadFiles = null;//Если есть сохраняем ссылки на загруженные файлы
 
         String rawRemoteAddress = request.getRemoteAddr();
@@ -108,15 +106,17 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
 
                     for (Map.Entry<String, List<MultipartFile>> entry : multipartFiles.entrySet()) {
                         for (MultipartFile multipartFile : entry.getValue()) {
-                            boolean isInMemory = ((CommonsMultipartFile) multipartFile).getFileItem().isInMemory();
-                            uploadFiles.add(new GRequestHttp.UploadFile(
-                                    entry.getKey(),
-                                    multipartFile.getOriginalFilename(),
-                                    multipartFile.getContentType(),
-                                    frontendMultipartSource.put(multipartFile),
-                                    isInMemory,
-                                    multipartFile.getSize()
-                            ));
+                            //TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
+                            throw new RuntimeException("Not migration!!!");
+//                            boolean isInMemory = ((CommonsMultipartFile) multipartFile).getFileItem().isInMemory();
+//                            uploadFiles.add(new GRequestHttp.UploadFile(
+//                                    entry.getKey(),
+//                                    multipartFile.getOriginalFilename(),
+//                                    multipartFile.getContentType(),
+//                                    frontendMultipartSource.put(multipartFile),
+//                                    isInMemory,
+//                                    multipartFile.getSize()
+//                            ));
                         }
                     }
                 }
@@ -147,7 +147,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
                 }
             }
 
-            if (StringUtils.isBlank(query)) {
+            if (query==null || query.isBlank()) {
                 throw GeneralExceptionBuilder.buildEmptyValueException(QUERY_PARAM);
             }
 
@@ -176,7 +176,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
         }
     }
 
-    private static JSONObject parseJSONObject(Reader in) throws SubsystemException {
+    private static JSONObject parseJSONObject(Reader in) throws PlatformException {
         try {
             Object parseData = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(in);
             return castToJSONObject(parseData);
@@ -185,7 +185,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
         }
     }
 
-    private static JSONObject parseJSONObject(String in) throws SubsystemException {
+    private static JSONObject parseJSONObject(String in) throws PlatformException {
         try {
             Object parseData = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(in);
             return castToJSONObject(parseData);
@@ -194,7 +194,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
         }
     }
 
-    private static JSONObject castToJSONObject(Object obj) throws SubsystemException {
+    private static JSONObject castToJSONObject(Object obj) throws PlatformException {
         if (obj instanceof JSONObject) {
             return (JSONObject) obj;
         } else if (obj instanceof String) {

@@ -16,6 +16,7 @@ import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.exception.DowngradingException;
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.component.Info;
 import com.infomaximum.platform.sdk.component.version.Version;
@@ -25,7 +26,6 @@ import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.update.core.ModuleUpdateEntity;
 import com.infomaximum.platform.update.core.UpdateService;
 import com.infomaximum.platform.update.core.UpgradeAction;
-import com.infomaximum.subsystems.exception.SubsystemException;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public class PlatformUpgrade {
 		this.platform = platform;
 	}
 
-	public void install() throws SubsystemException {
+	public void install() throws PlatformException {
 		try {
 			DatabaseComponent databaseSubsystem = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
             databaseSubsystem.initialize();

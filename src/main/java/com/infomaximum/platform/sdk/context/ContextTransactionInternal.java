@@ -1,6 +1,6 @@
 package com.infomaximum.platform.sdk.context;
 
-import com.infomaximum.subsystems.querypool.QueryTransaction;
+import com.infomaximum.platform.querypool.QueryTransaction;
 
 public interface ContextTransactionInternal {
 

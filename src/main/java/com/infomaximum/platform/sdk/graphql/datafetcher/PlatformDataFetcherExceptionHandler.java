@@ -1,9 +1,9 @@
 package com.infomaximum.platform.sdk.graphql.datafetcher;
 
 import com.infomaximum.platform.Platform;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.exception.runtime.PlatformRuntimeException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.exception.runtime.SubsystemRuntimeException;
 import graphql.ExceptionWhileDataFetching;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
@@ -25,7 +25,7 @@ public class PlatformDataFetcherExceptionHandler implements DataFetcherException
 
         ExceptionWhileDataFetching error = new ExceptionWhileDataFetching(path, exception, sourceLocation);
 
-        SubsystemException extractSubsystemException = extractSubsystemException(exception);
+        PlatformException extractSubsystemException = extractSubsystemException(exception);
         String code = (extractSubsystemException != null) ? extractSubsystemException.getCode() : null;
         if (GeneralExceptionBuilder.ACCESS_DENIED_CODE.equals(code) || GeneralExceptionBuilder.INVALID_CREDENTIALS.equals(code)) {
             //ничего в лог не выводим
@@ -35,9 +35,9 @@ public class PlatformDataFetcherExceptionHandler implements DataFetcherException
         return DataFetcherExceptionHandlerResult.newResult().error(error).build();
     }
 
-    private SubsystemException extractSubsystemException(Throwable exception) {
-        if (exception instanceof SubsystemRuntimeException) {
-            return ((SubsystemRuntimeException) exception).getSubsystemException();
+    private PlatformException extractSubsystemException(Throwable exception) {
+        if (exception instanceof PlatformRuntimeException) {
+            return ((PlatformRuntimeException) exception).getPlatformException();
         } else {
             return null;
         }

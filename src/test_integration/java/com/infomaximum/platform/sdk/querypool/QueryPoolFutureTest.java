@@ -1,17 +1,17 @@
 package com.infomaximum.platform.sdk.querypool;
 
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.Query;
+import com.infomaximum.platform.querypool.QueryPool;
+import com.infomaximum.platform.querypool.QueryTransaction;
+import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.querypool.Query;
-import com.infomaximum.subsystems.querypool.QueryPool;
-import com.infomaximum.subsystems.querypool.QueryTransaction;
-import com.infomaximum.subsystems.querypool.ResourceProvider;
 import com.infomaximum.testcomponent.TestComponent;
 import com.infomaximum.testcomponent.exception.TestExceptionBuilder;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
 
@@ -21,7 +21,7 @@ public class QueryPoolFutureTest {
 
     private Throwable uncaughtException = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void initialize() {
         component = new TestComponent(null);
         component.initialize();
@@ -40,7 +40,7 @@ public class QueryPoolFutureTest {
                         }
 
                         @Override
-                        public Boolean execute(QueryTransaction transaction) throws SubsystemException {
+                        public Boolean execute(QueryTransaction transaction) throws PlatformException {
                             throw TestExceptionBuilder.buildTrueAssetException();
                         }
                     })
@@ -48,11 +48,11 @@ public class QueryPoolFutureTest {
                             new Query<Void>() {
 
                                 @Override
-                                public void prepare(ResourceProvider resources) throws SubsystemException {
+                                public void prepare(ResourceProvider resources) throws PlatformException {
                                 }
 
                                 @Override
-                                public Void execute(QueryTransaction transaction) throws SubsystemException {
+                                public Void execute(QueryTransaction transaction) throws PlatformException {
                                     return null;
                                 }
                             })
@@ -60,19 +60,19 @@ public class QueryPoolFutureTest {
                             new Query<Void>() {
 
                                 @Override
-                                public void prepare(ResourceProvider resources) throws SubsystemException {
+                                public void prepare(ResourceProvider resources) throws PlatformException {
                                 }
 
                                 @Override
-                                public Void execute(QueryTransaction transaction) throws SubsystemException {
+                                public Void execute(QueryTransaction transaction) throws PlatformException {
                                     return null;
                                 }
                             }).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (ExecutionException ee) {
-            if (ee.getCause() instanceof SubsystemException) {
-                SubsystemException se = (SubsystemException) ee.getCause();
-                Assert.assertEquals(TestExceptionBuilder.CODE_TRUE_ASSET, se.getCode());
+            if (ee.getCause() instanceof PlatformException) {
+                PlatformException se = (PlatformException) ee.getCause();
+                Assertions.assertEquals(TestExceptionBuilder.CODE_TRUE_ASSET, se.getCode());
             } else {
                 throw ee;
             }
@@ -91,7 +91,7 @@ public class QueryPoolFutureTest {
                     }
 
                     @Override
-                    public Integer execute(QueryTransaction transaction) throws SubsystemException {
+                    public Integer execute(QueryTransaction transaction) throws PlatformException {
                         return testResult;
                     }
                 })
@@ -99,12 +99,12 @@ public class QueryPoolFutureTest {
                         new Query<Void>() {
 
                             @Override
-                            public void prepare(ResourceProvider resources) throws SubsystemException {
-                                Assert.assertEquals(testResult, (int)aInteger);
+                            public void prepare(ResourceProvider resources) throws PlatformException {
+                                Assertions.assertEquals(testResult, (int)aInteger);
                             }
 
                             @Override
-                            public Void execute(QueryTransaction transaction) throws SubsystemException {
+                            public Void execute(QueryTransaction transaction) throws PlatformException {
                                 return null;
                             }
                         })
@@ -115,7 +115,7 @@ public class QueryPoolFutureTest {
         return new QueryPool((t, e) -> uncaughtException = e);
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroying() {
         component.destroy();
     }

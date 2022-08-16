@@ -7,7 +7,7 @@ import com.infomaximum.cluster.graphql.struct.ContextRequest;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.platform.component.frontend.context.ContextTransactionRequest;
-import com.infomaximum.subsystems.exception.SubsystemException;
+import com.infomaximum.platform.exception.PlatformException;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -61,7 +61,7 @@ public class GraphQLQueryCustomField implements PrepareCustomField<GraphQLQuery>
                     source,
                     contextTransactionRequest
             );
-        } catch (SubsystemException e) {
+        } catch (PlatformException e) {
             throw new GraphQLExecutorDataFetcherException(e);
         }
     }

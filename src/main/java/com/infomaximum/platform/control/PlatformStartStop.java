@@ -4,6 +4,10 @@ import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.database.DatabaseComponent;
+import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.Query;
+import com.infomaximum.platform.querypool.QueryTransaction;
+import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.component.ComponentType;
 import com.infomaximum.platform.sdk.context.ContextTransaction;
@@ -12,10 +16,6 @@ import com.infomaximum.platform.sdk.context.source.impl.SourceSystemImpl;
 import com.infomaximum.platform.sdk.domainobject.module.ModuleReadable;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import com.infomaximum.subsystems.querypool.Query;
-import com.infomaximum.subsystems.querypool.QueryTransaction;
-import com.infomaximum.subsystems.querypool.ResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +39,9 @@ public class PlatformStartStop {
      * 2) onStart - Все необходимые фазы пройденны - пользовательский запуск
      *
      * checkUpgrade - флаг указывающий что старт "урезанный", для проверки обновления
-     * @throws SubsystemException
+     * @throws PlatformException
      */
-    public void start(boolean checkUpgrade) throws SubsystemException {
+    public void start(boolean checkUpgrade) throws PlatformException {
         //initialize
         for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
             if (component.getDbProvider() == null) {
@@ -92,14 +92,14 @@ public class PlatformStartStop {
             platform.getQueryPool().execute(databaseComponent, new Query<Void>() {
 
                 @Override
-                public void prepare(ResourceProvider resources) throws SubsystemException {
+                public void prepare(ResourceProvider resources) throws PlatformException {
                     for (QuerySystem<Void> query : startQueries) {
                         query.prepare(resources);
                     }
                 }
 
                 @Override
-                public Void execute(QueryTransaction transaction) throws SubsystemException {
+                public Void execute(QueryTransaction transaction) throws PlatformException {
                     ContextTransaction contextTransaction = new ContextTransactionImpl(new SourceSystemImpl(), transaction);
                     for (QuerySystem<Void> query : startQueries) {
                         query.execute(contextTransaction);
@@ -109,8 +109,8 @@ public class PlatformStartStop {
             }).get();
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof SubsystemException) {
-                throw (SubsystemException) cause;
+            if (cause instanceof PlatformException) {
+                throw (PlatformException) cause;
             } else {
                 throw new RuntimeException(e);
             }
@@ -119,7 +119,7 @@ public class PlatformStartStop {
         }
     }
 
-    public void stop() throws SubsystemException {
+    public void stop() throws PlatformException {
 
     }
 }

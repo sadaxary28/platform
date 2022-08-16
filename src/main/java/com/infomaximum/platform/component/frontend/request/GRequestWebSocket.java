@@ -2,8 +2,8 @@ package com.infomaximum.platform.component.frontend.request;
 
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.struct.HandshakeData;
+import jakarta.servlet.http.Cookie;
 
-import javax.servlet.http.Cookie;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collections;

@@ -1,9 +1,9 @@
 package com.infomaximum.platform.sdk.remote;
 
 import com.infomaximum.cluster.core.remote.utils.RemoteControllerAnalysis;
+import com.infomaximum.platform.querypool.QueryRemoteController;
+import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.subsystems.querypool.QueryRemoteController;
-import com.infomaximum.subsystems.querypool.ResourceProvider;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,10 +1,11 @@
 package com.infomaximum.platform.sdk.threadpool;
 
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
-import com.infomaximum.subsystems.exception.SubsystemException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -17,12 +18,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ThreadPoolTest {
 
     private volatile Throwable uncaughtException = null;
     private CountDownLatch uncaughtExceptionSync = null;
 
-    @After
+    @AfterAll
     public void checkException() throws Throwable {
         if (uncaughtException != null) {
             Throwable e = uncaughtException;
@@ -45,11 +47,12 @@ public class ThreadPoolTest {
         ThreadPool pool = buildPool();
         pool.invokeAll(Collections.emptyList());
 
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
     @Test
-    public void invokeOneTask() throws Exception {
+    public void
+    invokeOneTask() throws Exception {
         final Thread currentThread = Thread.currentThread();
         final Boolean[] execThreadIsCurrentThread = new Boolean[1];
 
@@ -59,15 +62,15 @@ public class ThreadPoolTest {
             execThreadIsCurrentThread[0] = currentThread == Thread.currentThread();
             return null;
         }));
-        Assert.assertTrue(execThreadIsCurrentThread[0]);
+        Assertions.assertTrue(execThreadIsCurrentThread[0]);
 
         try {
             pool.invokeAll(Collections.singletonList(() -> {
                 throw GeneralExceptionBuilder.buildAccessDeniedException();
             }));
-            Assert.fail();
-        } catch (SubsystemException e) {
-            Assert.assertTrue(SubsystemException.equals(GeneralExceptionBuilder.buildAccessDeniedException(), e));
+            Assertions.fail();
+        } catch (PlatformException e) {
+            Assertions.assertTrue(PlatformException.equals(GeneralExceptionBuilder.buildAccessDeniedException(), e));
         }
     }
 
@@ -85,7 +88,7 @@ public class ThreadPoolTest {
             return null;
         }));
         pool.invokeAll(tasks);
-        Assert.assertArrayEquals(new Boolean[] {
+        Assertions.assertArrayEquals(new Boolean[] {
                 true, false, false, false, false
         }, execThreadIsCurrentThread);
 
@@ -103,7 +106,7 @@ public class ThreadPoolTest {
             return null;
         }));
         pool.invokeAll(tasks);
-        Assert.assertFalse(exitByTimeout.get());
+        Assertions.assertFalse(exitByTimeout.get());
     }
 
     @Test
@@ -130,12 +133,12 @@ public class ThreadPoolTest {
 
         try {
             pool.invokeAll(tasks);
-            Assert.fail();
-        } catch (SubsystemException e) {
-            Assert.assertArrayEquals(new Boolean[] {
+            Assertions.fail();
+        } catch (PlatformException e) {
+            Assertions.assertArrayEquals(new Boolean[] {
                     true, false, false, false, false
             }, execThreadIsCurrentThread);
-            Assert.assertTrue(SubsystemException.equals(GeneralExceptionBuilder.buildAccessDeniedException(), e));
+            Assertions.assertTrue(PlatformException.equals(GeneralExceptionBuilder.buildAccessDeniedException(), e));
         }
 
         uncaughtException = null;
@@ -180,22 +183,22 @@ public class ThreadPoolTest {
             pool.invokeAll(Arrays.asList(() -> null, () -> {
                 throw new UncaughtException();
             }));
-            Assert.fail();
+            Assertions.fail();
         } catch (CancellationException ignore) {
         }
         Thread.sleep(Duration.ofSeconds(5).toMillis());
-        Assert.assertEquals(1, invokeCount.get());
+        Assertions.assertEquals(1, invokeCount.get());
 
         invokeCount.set(0);
         try {
             pool.invokeAll(Arrays.asList(() -> {
                 throw new UncaughtException();
             }, () -> null));
-            Assert.fail();
+            Assertions.fail();
         } catch (CancellationException ignore) {
         }
         Thread.sleep(Duration.ofSeconds(5).toMillis());
-        Assert.assertEquals(1, invokeCount.get());
+        Assertions.assertEquals(1, invokeCount.get());
     }
 
     @Test
@@ -207,7 +210,7 @@ public class ThreadPoolTest {
             pool.runAsync(() -> {
                 throw new UncaughtException();
             }).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (CancellationException ignore) {
         }
         assertUncaughtException();
@@ -217,7 +220,7 @@ public class ThreadPoolTest {
             pool.supplyAsync(() -> {
                 throw new UncaughtException();
             }).get();
-            Assert.fail();
+            Assertions.fail();
         } catch (CancellationException ignore) {
         }
         assertUncaughtException();
@@ -227,7 +230,7 @@ public class ThreadPoolTest {
             pool.invokeAll(Collections.singletonList(() -> {
                 throw new UncaughtException();
             }));
-            Assert.fail();
+            Assertions.fail();
         } catch (CancellationException ignore) {
         }
         assertUncaughtException();
@@ -237,7 +240,7 @@ public class ThreadPoolTest {
             pool.invokeAll(Arrays.asList(() -> null, () -> {
                 throw new UncaughtException();
             }));
-            Assert.fail();
+            Assertions.fail();
         } catch (CancellationException ignore) {
         }
         assertUncaughtException();
@@ -247,10 +250,10 @@ public class ThreadPoolTest {
             pool.invokeAll(Collections.singletonList(() -> {
                 throw GeneralExceptionBuilder.buildAccessDeniedException();
             }));
-            Assert.fail();
-        } catch (SubsystemException ignore) {
+            Assertions.fail();
+        } catch (PlatformException ignore) {
         }
-        Assert.assertEquals(uncaughtException, null);
+        Assertions.assertEquals(uncaughtException, null);
     }
 
     private void assertUncaughtException() {
@@ -259,7 +262,7 @@ public class ThreadPoolTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        Assert.assertEquals(new UncaughtException(), uncaughtException);
+        Assertions.assertEquals(new UncaughtException(), uncaughtException);
         uncaughtException = null;
     }
 

@@ -2,8 +2,8 @@ package com.infomaximum.platform.component.frontend.request;
 
 import com.infomaximum.cluster.core.remote.struct.RemoteObject;
 import com.infomaximum.cluster.graphql.struct.GRequest;
+import jakarta.servlet.http.Cookie;
 
-import javax.servlet.http.Cookie;
 import java.io.Serializable;
 import java.net.URI;
 import java.time.Instant;

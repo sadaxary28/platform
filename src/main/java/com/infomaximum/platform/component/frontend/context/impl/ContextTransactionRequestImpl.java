@@ -5,8 +5,8 @@ import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.platform.component.frontend.context.ContextTransactionRequest;
 import com.infomaximum.platform.component.frontend.context.source.SourceGRequestAuth;
 import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
+import com.infomaximum.platform.querypool.QueryTransaction;
 import com.infomaximum.platform.sdk.context.ContextTransactionInternal;
-import com.infomaximum.subsystems.querypool.QueryTransaction;
 
 public class ContextTransactionRequestImpl implements ContextTransactionRequest, ContextRequest, ContextTransactionInternal {
 
