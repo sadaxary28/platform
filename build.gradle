@@ -4,13 +4,13 @@ plugins {
     id 'signing'
     id ("de.jjohannes.extra-java-module-info") version "0.15"
 }
-apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/main/com.infomaximum.platform-java-module-info.gradle'
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.1/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '0.1.0f1'
+version '0.1.0f2'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -67,7 +67,7 @@ dependencies {
     implementation 'com.infomaximum:rdao:1.14.2'
 //    implementation project(':rdao')
 
-    implementation 'com.infomaximum:network:1.1.1'
+    implementation 'com.infomaximum:network:1.1.1f1'
 //    implementation project(':network')
 
     implementation 'org.reflections:reflections:0.10.2'
