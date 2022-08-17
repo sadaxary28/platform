@@ -10,7 +10,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.1.0'
+version '0.1.0f1'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.infomaximum:cluster:1.1.4'
 //    implementation project(':cluster')
 
-    implementation 'com.infomaximum:cluster-graphql:1.1.1'
+    implementation 'com.infomaximum:cluster-graphql:1.1.1f1'
 //    implementation project(':cluster-graphql')
 
     implementation 'com.infomaximum:rdao:1.14.2'
