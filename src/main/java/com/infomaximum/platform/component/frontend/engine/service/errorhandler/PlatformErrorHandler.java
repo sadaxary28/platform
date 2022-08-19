@@ -2,9 +2,6 @@ package com.infomaximum.platform.component.frontend.engine.service.errorhandler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileUploadBase;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.Dispatcher;
@@ -14,11 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.util.NestedServletException;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 public class PlatformErrorHandler extends ErrorHandler {
 
@@ -36,7 +31,7 @@ public class PlatformErrorHandler extends ErrorHandler {
     }
 
     @Override
-    public void doError(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
+    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
             if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
                 actionErrorHandler.handlerNotFound(response);
@@ -66,37 +61,38 @@ public class PlatformErrorHandler extends ErrorHandler {
     private void processingException(Throwable ex, Request baseRequest, HttpServletResponse response) {
         List<Throwable> chainThrowables = ExceptionUtils.getThrowableList(ex);
 
+        //TODO JDK17
         if (ex instanceof EofException) {
             //Обычный разрыв соединения во время передачи данных
             return;
-        } else if (chainThrowables.size() > 4
-                && chainThrowables.get(3) instanceof FileUploadBase.IOFileUploadException
-                && chainThrowables.get(4) instanceof EofException
-        ) {
-            //Ошибки вида разрыва соединения во время upload файлв
-            return;
-        } else if (chainThrowables.size() == 5
-                && chainThrowables.get(3) instanceof FileUploadException
-                && chainThrowables.get(4) instanceof EofException
-        ) {
-            //Если поставить скорость передачи в 1 кб и сразу отменить передачу
-            return;
-        } else if (chainThrowables.size() == 6
-                && chainThrowables.get(3) instanceof FileUploadException
-                && chainThrowables.get(5) instanceof TimeoutException
-        ) {
-            //Если поставить скорость передачи в 1 кб и через некоторое время отменить передачу
-            return;
-        } else if (chainThrowables.get(chainThrowables.size() - 2) instanceof FileUploadException
-                && chainThrowables.get(chainThrowables.size() - 1) instanceof MultipartStream.MalformedStreamException
-        ) {
-            //Этот exception постоянно кидается в газпромбанке(при большой нагрузки агентов) https://jira.office.infomaximum.com/browse/PLATFORM-7857
-            return;
-        } else if (chainThrowables.get(chainThrowables.size() - 1) instanceof FileUploadException
-                && chainThrowables.get(chainThrowables.size() - 2) instanceof MultipartException
-        ) {
-            //the request was rejected because no multipart boundary was found
-            return;
+//        } else if (chainThrowables.size() > 4
+//                && chainThrowables.get(3) instanceof FileUploadBase.IOFileUploadException
+//                && chainThrowables.get(4) instanceof EofException
+//        ) {
+//            //Ошибки вида разрыва соединения во время upload файлв
+//            return;
+//        } else if (chainThrowables.size() == 5
+//                && chainThrowables.get(3) instanceof FileUploadException
+//                && chainThrowables.get(4) instanceof EofException
+//        ) {
+//            //Если поставить скорость передачи в 1 кб и сразу отменить передачу
+//            return;
+//        } else if (chainThrowables.size() == 6
+//                && chainThrowables.get(3) instanceof FileUploadException
+//                && chainThrowables.get(5) instanceof TimeoutException
+//        ) {
+//            //Если поставить скорость передачи в 1 кб и через некоторое время отменить передачу
+//            return;
+//        } else if (chainThrowables.get(chainThrowables.size() - 2) instanceof FileUploadException
+//                && chainThrowables.get(chainThrowables.size() - 1) instanceof MultipartStream.MalformedStreamException
+//        ) {
+//            //Этот exception постоянно кидается в газпромбанке(при большой нагрузки агентов) https://jira.office.infomaximum.com/browse/PLATFORM-7857
+//            return;
+//        } else if (chainThrowables.get(chainThrowables.size() - 1) instanceof FileUploadException
+//                && chainThrowables.get(chainThrowables.size() - 2) instanceof MultipartException
+//        ) {
+//            //the request was rejected because no multipart boundary was found
+//            return;
         } else if (chainThrowables.size() == 3
                 && chainThrowables.get(1) instanceof NestedServletException
                 && chainThrowables.get(2) instanceof IllegalArgumentException

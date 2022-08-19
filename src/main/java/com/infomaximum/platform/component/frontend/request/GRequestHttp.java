@@ -66,19 +66,13 @@ public class GRequestHttp extends GRequest {
         public final String filename;
         public final String contentType;
         public final URI uri;
-
-        /**
-         * Если файл небольших размеров, то он будет хранить в оперативке, без скидывания на диск
-         */
-        public final boolean isInMemory;
         public final long size;
 
-        public UploadFile(String fieldname, String filename, String contentType, URI uri, boolean isInMemory, long size) {
+        public UploadFile(String fieldname, String filename, String contentType, URI uri, long size) {
             this.fieldname = fieldname;
             this.filename = filename;
             this.contentType = contentType;
             this.uri = uri;
-            this.isInMemory = isInMemory;
             this.size = size;
         }
     }

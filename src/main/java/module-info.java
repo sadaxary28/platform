@@ -1,36 +1,19 @@
-module platform {
+module com.infomaximum.platform {
     requires com.infomaximum.rdao;
-//    requires org.apache.commons.lang3;
     requires com.infomaximum.cluster;
     requires com.infomaximum.cluster.graphql;
-//    requires org.reflections;
     requires org.slf4j;
-//    requires json.smart;
     requires com.graphqljava.graphqljava;
-//    requires rocksdbjni;
-//    requires spring.core;
-//    requires org.eclipse.jetty.server;
-//    requires javax.servlet.api;
-//    requires com.google.common;
     requires com.infomaximum.network;
-//    requires org.reactivestreams.reactivestreams;
     requires org.reflections.reflections;
     requires net.minidev.jsonsmart;
-//    requires org.eclipse.jetty.websocket.api;
-//    requires transitive spring.web;
-//    requires transitive spring.webmvc;
-//    requires commons.fileupload;
-//    requires org.eclipse.jetty.io;
     requires org.eclipse.jetty.server;
     requires spring.core;
     requires spring.web;
     requires org.eclipse.jetty.websocket.jetty.api;
-    requires commonsio.commonsio;
-    requires commonsfileupload.commonsfileupload;
     requires org.apache.commons.commonslang3;
     requires org.rocksdb.rocksdbjni;
     requires com.google.guava.guava;
-//    requires org.reactivestreams.reactivestreams;
 
     exports com.infomaximum.platform.sdk.context;
     exports com.infomaximum.platform.querypool.iterator;
@@ -83,4 +66,10 @@ module platform {
     exports com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
     exports com.infomaximum.platform.component.frontend.engine.controller.websocket.graphql;
     exports com.infomaximum.platform.sdk.subscription;
+
+    exports com.infomaximum.platform.sdk.domainobject.module to com.infomaximum.rdao;
+
+    exports com.infomaximum.platform.sdk.graphql.datafetcher to com.infomaximum.cluster.graphql;
+    exports com.infomaximum.platform.component.database.remote.dbprovider to com.infomaximum.cluster;
+    exports com.infomaximum.platform.sdk.dbprovider.remote to com.infomaximum.cluster;
 }

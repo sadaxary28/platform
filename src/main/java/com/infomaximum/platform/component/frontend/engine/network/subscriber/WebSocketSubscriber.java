@@ -1,20 +1,20 @@
 package com.infomaximum.platform.component.frontend.engine.network.subscriber;
 
+import com.infomaximum.cluster.graphql.executor.struct.GExecutionResult;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import graphql.ExecutionResult;
 import net.minidev.json.JSONObject;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Flow;
 
-public abstract class WebSocketSubscriber implements Subscriber {
+public abstract class WebSocketSubscriber implements Flow.Subscriber {
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketSubscriber.class);
 
@@ -23,7 +23,7 @@ public abstract class WebSocketSubscriber implements Subscriber {
 
     protected final CompletableFuture<IPacket> firstResponseCompletableFuture;
 
-    private Subscription subscription;
+    private Flow.Subscription subscription;
 
     public WebSocketSubscriber(Serializable packetId, TransportSession transportSession) {
         this.packetId = packetId;
@@ -33,30 +33,35 @@ public abstract class WebSocketSubscriber implements Subscriber {
     }
 
     @Override
-    public void onSubscribe(Subscription subscription) {
+    public void onSubscribe(Flow.Subscription subscription) {
         this.subscription = subscription;
         subscription.request(1);
     }
 
     @Override
     public void onNext(Object nextExecutionResult) {
-        GraphQLResponse nextGraphQLResponse =
-                GraphQLRequestExecuteService.buildResponse((ExecutionResult) nextExecutionResult);
+        try {
+            GraphQLResponse nextGraphQLResponse = GraphQLRequestExecuteService.buildResponse(
+                    new GExecutionResult((ExecutionResult) nextExecutionResult)
+            );
 
-        IPacket responsePacket = buildPacket(nextGraphQLResponse);
+            IPacket responsePacket = buildPacket(nextGraphQLResponse);
 
-        if (firstResponseCompletableFuture.isDone()) {
-                 try {
-                transportSession.send(responsePacket);
-            } catch (Throwable e) {
-                log.error("Exception", e);
-                subscription.cancel();
+            if (firstResponseCompletableFuture.isDone()) {
+                try {
+                    transportSession.send(responsePacket);
+                } catch (Throwable e) {
+                    log.error("Exception", e);
+                    subscription.cancel();
+                }
+            } else {
+                firstResponseCompletableFuture.complete(responsePacket);
             }
-        } else {
-            firstResponseCompletableFuture.complete(responsePacket);
-        }
 
-        subscription.request(1);
+            subscription.request(1);
+        } catch (Exception e) {
+            transportSession.getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
+        }
     }
 
     public abstract IPacket buildPacket(GraphQLResponse<JSONObject> nextGraphQLResponse);

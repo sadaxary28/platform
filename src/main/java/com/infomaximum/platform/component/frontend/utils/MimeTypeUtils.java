@@ -1,7 +1,6 @@
 package com.infomaximum.platform.component.frontend.utils;
 
 import com.infomaximum.platform.component.frontend.struct.MimeType;
-import org.apache.commons.io.FilenameUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +23,12 @@ public class MimeTypeUtils {
     }
 
     public static MimeType findAutoMimeType(String fileName) {
-        String extension = FilenameUtils.getExtension(fileName);
-        return mimeTypes.getOrDefault(extension, new MimeType("application/octet-stream") );
+        String extension = null;
+        int idx = fileName.lastIndexOf(".");
+        if (idx != -1) {
+            extension = fileName.substring(idx + 1).toLowerCase();
+        }
+        return mimeTypes.getOrDefault(extension, new MimeType("application/octet-stream"));
     }
 
 }

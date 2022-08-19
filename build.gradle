@@ -5,13 +5,13 @@ plugins {
     id ("de.jjohannes.extra-java-module-info") version "0.15"
     id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
 }
-apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.2/com.infomaximum.platform-java-module-info.gradle'
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.8/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '0.1.0f3'
+version '0.1.0f4'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -59,16 +59,16 @@ repositories {
 
 dependencies {
 
-    implementation 'com.infomaximum:cluster:1.1.4f1'
+    implementation 'com.infomaximum:cluster:1.1.4f2'
 //    implementation project(':cluster')
 
-    implementation 'com.infomaximum:cluster-graphql:1.1.1f2'
+    implementation 'com.infomaximum:cluster-graphql:1.1.1f7'
 //    implementation project(':cluster-graphql')
 
     implementation 'com.infomaximum:rdao:1.14.2f1'
 //    implementation project(':rdao')
 
-    implementation 'com.infomaximum:network:1.1.1f2'
+    implementation 'com.infomaximum:network:1.1.1f8'
 //    implementation project(':network')
 
     implementation('org.reflections:reflections:0.10.2') {
@@ -88,11 +88,6 @@ dependencies {
     implementation 'org.springframework:spring-core:6.0.0-M5'
     implementation 'org.springframework:spring-web:6.0.0-M5'
     //--------------------------------------------------
-
-    implementation ('commons-fileupload:commons-fileupload:1.4') {
-        exclude group: 'commons-io', module: 'commons-io'
-    }
-    implementation 'commons-io:commons-io:2.11.0'
 
     implementation('com.google.guava:guava:31.1-jre') {
         exclude group: 'com.google.guava', module: 'failureaccess'

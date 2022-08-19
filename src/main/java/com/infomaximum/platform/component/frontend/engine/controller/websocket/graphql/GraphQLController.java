@@ -1,18 +1,20 @@
 package com.infomaximum.platform.component.frontend.engine.controller.websocket.graphql;
 
+import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.mvc.ResponseEntity;
+import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.protocol.standard.packet.TargetPacket;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.network.struct.RemoteAddress;
 import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.standard.subscriber.WebSocketStandardSubscriber;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.request.GRequestWebSocket;
 import com.infomaximum.platform.exception.GraphQLWrapperPlatformException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
-import graphql.execution.reactive.CompletionStageMappingPublisher;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,14 +91,11 @@ public class GraphQLController {
                 return CompletableFuture.completedFuture(
                         ResponseEntity.success((JSONObject) graphQLResponse.data)
                 );
-            } else if (data instanceof CompletionStageMappingPublisher) {
-                //TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
-                throw new RuntimeException("Not migration!!! (Subscriber)");
-//                CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
-//                WebSocketStandardSubscriber websocketSubscriber = new WebSocketStandardSubscriber(transportSession, (RequestPacket) packet);
-//                completionPublisher.subscribe(websocketSubscriber);
-//                return websocketSubscriber.getFirstResponseCompletableFuture()
-//                        .thenApply(iPacket -> convert((ResponsePacket) iPacket));
+            } else if (data instanceof GCompletionStageMappingPublisher completionPublisher) {
+                WebSocketStandardSubscriber websocketSubscriber = new WebSocketStandardSubscriber(transportSession, (RequestPacket) packet);
+                completionPublisher.subscribe(websocketSubscriber);
+                return websocketSubscriber.getFirstResponseCompletableFuture()
+                        .thenApply(iPacket -> convert((ResponsePacket) iPacket));
             } else {
                 throw new RuntimeException("Not support type out: " + data);
             }

@@ -1,7 +1,9 @@
 package com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
 
 import com.google.common.net.UrlEscapers;
+import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
+import com.infomaximum.cluster.graphql.subscription.SingleSubscriber;
 import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
@@ -12,7 +14,6 @@ import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
 import com.infomaximum.platform.exception.GraphQLWrapperPlatformException;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
-import graphql.execution.reactive.CompletionStageMappingPublisher;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import org.eclipse.jetty.server.Request;
@@ -67,17 +68,14 @@ public class GraphQLController {
                         return CompletableFuture.completedFuture(
                                 buildResponseEntity(gRequest, out)
                         );
-                    } else if (data instanceof CompletionStageMappingPublisher) {
-                        //TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
-                        throw new RuntimeException("Not migration!!! (Subscriber)");
-//                        CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
-//                        SingleSubscriber singleSubscriber = new SingleSubscriber();
-//                        completionPublisher.subscribe(singleSubscriber);
-//                        return singleSubscriber.getCompletableFuture().thenApply(executionResult -> {
-//                            GraphQLResponse graphQLResponse =
-//                                    GraphQLRequestExecuteService.buildResponse(executionResult);
-//                            return buildResponseEntity(gRequest, graphQLResponse);
-//                        });
+                    } else if (data instanceof GCompletionStageMappingPublisher completionPublisher) {
+                        SingleSubscriber singleSubscriber = new SingleSubscriber();
+                        completionPublisher.subscribe(singleSubscriber);
+                        return singleSubscriber.getCompletableFuture().thenApply(executionResult -> {
+                            GraphQLResponse graphQLResponse =
+                                    GraphQLRequestExecuteService.buildResponse(executionResult);
+                            return buildResponseEntity(gRequest, graphQLResponse);
+                        });
                     } else if (data instanceof GOutputFile) {
                         GOutputFile gOutputFile = (GOutputFile) data;
 

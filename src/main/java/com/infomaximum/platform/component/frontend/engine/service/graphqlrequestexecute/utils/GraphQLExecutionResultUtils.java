@@ -1,11 +1,11 @@
 package com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.utils;
 
+import com.infomaximum.cluster.graphql.executor.struct.GExecutionResult;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.exception.runtime.PlatformRuntimeException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import graphql.ExceptionWhileDataFetching;
-import graphql.ExecutionResult;
 import graphql.GraphQLError;
 
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class GraphQLExecutionResultUtils {
 
-    public static String toLog(GRequest gRequest, ExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    public static String toLog(GRequest gRequest, GExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         String out = "query: " + gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "");
 
         String outAccessDenied = getAccessDenied(executionResult, uncaughtExceptionHandler);
@@ -27,7 +27,7 @@ public class GraphQLExecutionResultUtils {
 
 
     //Формируем пути по которым произошол access_denied
-    private static String getAccessDenied(ExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    private static String getAccessDenied(GExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         if (executionResult.getErrors() == null || executionResult.getErrors().isEmpty()) {
             return null;
         }

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,9 +82,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
                 parameters.put(parameterName, request.getParameterValues(parameterName));
             }
 
-            if (request instanceof MultipartHttpServletRequest) {//Проверяем возможно это Multipart request
-                MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-
+            if (request instanceof StandardMultipartHttpServletRequest multipartRequest) {//Проверяем возможно это Multipart request
                 Map<String, String[]> multipartParameters = multipartRequest.getParameterMap();
                 String[] queryArray = multipartParameters.get(QUERY_PARAM);
                 if (queryArray != null && queryArray.length > 0) {
@@ -106,17 +104,13 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
 
                     for (Map.Entry<String, List<MultipartFile>> entry : multipartFiles.entrySet()) {
                         for (MultipartFile multipartFile : entry.getValue()) {
-                            //TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
-                            throw new RuntimeException("Not migration!!!");
-//                            boolean isInMemory = ((CommonsMultipartFile) multipartFile).getFileItem().isInMemory();
-//                            uploadFiles.add(new GRequestHttp.UploadFile(
-//                                    entry.getKey(),
-//                                    multipartFile.getOriginalFilename(),
-//                                    multipartFile.getContentType(),
-//                                    frontendMultipartSource.put(multipartFile),
-//                                    isInMemory,
-//                                    multipartFile.getSize()
-//                            ));
+                            uploadFiles.add(new GRequestHttp.UploadFile(
+                                    entry.getKey(),
+                                    multipartFile.getOriginalFilename(),
+                                    multipartFile.getContentType(),
+                                    frontendMultipartSource.put(multipartFile),
+                                    multipartFile.getSize()
+                            ));
                         }
                     }
                 }
@@ -147,7 +141,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
                 }
             }
 
-            if (query==null || query.isBlank()) {
+            if (query == null || query.isBlank()) {
                 throw GeneralExceptionBuilder.buildEmptyValueException(QUERY_PARAM);
             }
 

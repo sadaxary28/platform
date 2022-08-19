@@ -1,5 +1,6 @@
 package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.graphql;
 
+import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
@@ -8,11 +9,11 @@ import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.struct.RemoteAddress;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.TypePacket;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.subscriber.WebSocketGraphQLWSSubscriber;
 import com.infomaximum.platform.component.frontend.engine.provider.ProviderGraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.request.GRequestWebSocket;
 import com.infomaximum.platform.sdk.utils.StreamUtils;
-import graphql.execution.reactive.CompletionStageMappingPublisher;
 import jakarta.servlet.http.Cookie;
 import net.minidev.json.JSONObject;
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
@@ -107,13 +108,10 @@ public class GraphQLHandler implements PacketHandler {
                 return CompletableFuture.completedFuture(
                         new Packet(requestPacket.id, TypePacket.GQL_DATA, jPayload)
                 );
-            } else if (data instanceof CompletionStageMappingPublisher) {
-                //TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
-                throw new RuntimeException("Not migration!!! (Subscriber)");
-//                CompletionStageMappingPublisher completionPublisher = (CompletionStageMappingPublisher) data;
-//                WebSocketGraphQLWSSubscriber websocketSubscriber = new WebSocketGraphQLWSSubscriber(requestPacket.id, ((SessionImpl)session).getTransportSession());
-//                completionPublisher.subscribe(websocketSubscriber);
-//                return websocketSubscriber.getFirstResponseCompletableFuture();
+            } else if (data instanceof GCompletionStageMappingPublisher completionPublisher) {
+                WebSocketGraphQLWSSubscriber websocketSubscriber = new WebSocketGraphQLWSSubscriber(requestPacket.id, ((SessionImpl)session).getTransportSession());
+                completionPublisher.subscribe(websocketSubscriber);
+                return websocketSubscriber.getFirstResponseCompletableFuture();
             } else {
                 throw new RuntimeException("Not support type out: " + data);
             }

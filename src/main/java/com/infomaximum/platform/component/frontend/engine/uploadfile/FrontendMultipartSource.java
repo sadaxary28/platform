@@ -61,17 +61,12 @@ public class FrontendMultipartSource implements SourceClusterFile {
 	}
 
 	@Override
-	public void delete(String clusterFileUUID) throws IOException {
+	public void delete(String clusterFileUUID) {
 		deleteIfExists(clusterFileUUID);
 	}
 
 	@Override
-	public void deleteIfExists(String clusterFileUUID) throws IOException {
-		MultipartFile multipartFile = multipartFiles.remove(clusterFileUUID);
-		if (multipartFile == null) return;
-		//TODO !!! НЕОБХОДИМА МИГРАЦИЯ!!!
-		throw new RuntimeException("Not migration!!!");
-//		CommonsMultipartFile commonsMultipartFile = (CommonsMultipartFile) multipartFile;
-//		commonsMultipartFile.getFileItem().delete();
+	public void deleteIfExists(String clusterFileUUID)  {
+		throw new RuntimeException("Not support!");
 	}
 }

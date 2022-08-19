@@ -2,6 +2,8 @@ package com.infomaximum.platform.component.frontend.engine.service.graphqlreques
 
 import com.infomaximum.cluster.graphql.GraphQLEngine;
 import com.infomaximum.cluster.graphql.executor.GraphQLExecutorPrepareImpl;
+import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
+import com.infomaximum.cluster.graphql.executor.struct.GExecutionResult;
 import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEngine;
 import com.infomaximum.cluster.graphql.schema.GraphQLSchemaType;
 import com.infomaximum.cluster.graphql.schema.scalartype.GraphQLTypeScalar;
@@ -25,7 +27,6 @@ import com.infomaximum.platform.utils.ExceptionUtils;
 import graphql.*;
 import graphql.execution.ExecutionId;
 import graphql.execution.NonNullableValueCoercedAsNullException;
-import graphql.execution.reactive.CompletionStageMappingPublisher;
 import graphql.language.SourceLocation;
 import graphql.schema.CoercingParseValueException;
 import net.minidev.json.JSONArray;
@@ -132,7 +133,7 @@ public class GraphQLRequestExecuteService {
                             UnauthorizedContext authContext = requestAuthorize.authorize(context);
                             source.setAuthContext(authContext);
 
-                            ExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
+                            GExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
                             log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {}, {}",
                                     ContextUtils.toTrace(context),
@@ -164,7 +165,7 @@ public class GraphQLRequestExecuteService {
             try {
                 Instant instantStartExecute = Instant.now();
 
-                ExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
+                GExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
                 log.debug("Request {}, auth: {}, priority: null, wait: {}, exec: {}, query: {}",
                         ContextUtils.toTrace(context),
@@ -188,7 +189,7 @@ public class GraphQLRequestExecuteService {
         }
     }
 
-    private boolean isExceptionWithIgnoreAccessDenied(ExecutionResult executionResult) {
+    private boolean isExceptionWithIgnoreAccessDenied(GExecutionResult executionResult) {
         if (executionResult.getErrors().isEmpty()) return false;
         if (executionResult.getData() == null) {
             return true;//Хак. Необходимо более глубокое иследование - это надо для подписок - когда не удалось выполнить подписку, иначе агент не узнает о ошибке подписки
@@ -295,12 +296,12 @@ public class GraphQLRequestExecuteService {
         return new GraphQLWrapperPlatformException(subsystemException, graphQLError.getLocations());
     }
 
-    public static GraphQLResponse buildResponse(ExecutionResult executionResult) {
+    public static GraphQLResponse buildResponse(GExecutionResult executionResult) {
         GOutputFile gOutputFile = findOutputFile(executionResult.getData());
         if (gOutputFile != null) {
             return new GraphQLResponse(gOutputFile, false);
         } else {
-            if (executionResult.getData() instanceof CompletionStageMappingPublisher) {
+            if (executionResult.getData() instanceof GCompletionStageMappingPublisher) {
                 return new GraphQLResponse(executionResult.getData(), false);
             } else {
                 return new GraphQLResponse(new JSONObject(executionResult.getData()), false);

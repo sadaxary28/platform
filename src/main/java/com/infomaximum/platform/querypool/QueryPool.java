@@ -102,7 +102,7 @@ public class QueryPool {
                     future.completeExceptionally(e);
                 }
             } catch (Throwable e) {
-                future.cancel(true);
+                future.completeExceptionally(e);
                 throw e;
             } finally {
                 timeComplete = Instant.now();
