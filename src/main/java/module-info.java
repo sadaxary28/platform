@@ -1,7 +1,7 @@
 module com.infomaximum.platform {
-    requires com.infomaximum.rdao;
-    requires com.infomaximum.cluster;
-    requires com.infomaximum.cluster.graphql;
+    requires transitive com.infomaximum.rdao;
+    requires transitive com.infomaximum.cluster;
+    requires transitive com.infomaximum.cluster.graphql;
     requires org.slf4j;
     requires com.graphqljava.graphqljava;
     requires com.infomaximum.network;

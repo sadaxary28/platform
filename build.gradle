@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
     id 'signing'
     id ("de.jjohannes.extra-java-module-info") version "0.15"
@@ -11,7 +12,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.1.0f4'
+version '0.1.0f5'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -59,16 +60,16 @@ repositories {
 
 dependencies {
 
-    implementation 'com.infomaximum:cluster:1.1.4f2'
-//    implementation project(':cluster')
+    api 'com.infomaximum:cluster:1.1.4f2'
+//    api project(':cluster')
 
-    implementation 'com.infomaximum:cluster-graphql:1.1.1f7'
-//    implementation project(':cluster-graphql')
+    api 'com.infomaximum:cluster-graphql:1.1.2'
+//    api project(':cluster-graphql')
 
-    implementation 'com.infomaximum:rdao:1.14.2f1'
-//    implementation project(':rdao')
+    api 'com.infomaximum:rdao:1.14.4'
+//    api project(':rdao')
 
-    implementation 'com.infomaximum:network:1.1.1f8'
+    api 'com.infomaximum:network:1.1.2p1'
 //    implementation project(':network')
 
     implementation('org.reflections:reflections:0.10.2') {
@@ -76,18 +77,6 @@ dependencies {
     }
     implementation 'net.minidev:json-smart:2.4.8'
     implementation 'org.apache.commons:commons-lang3:3.10'
-
-    //----------Транзитивные зависимости----------------
-    implementation 'org.rocksdb:rocksdbjni:6.8.1'
-    implementation ('com.graphql-java:graphql-java:15.0') {
-        exclude group: 'org.reactivestreams', module: 'reactive-streams'
-    }
-    implementation 'org.reactivestreams:reactive-streams:1.0.4'
-    implementation 'org.eclipse.jetty:jetty-server:11.0.11'
-    implementation 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.11'
-    implementation 'org.springframework:spring-core:6.0.0-M5'
-    implementation 'org.springframework:spring-web:6.0.0-M5'
-    //--------------------------------------------------
 
     implementation('com.google.guava:guava:31.1-jre') {
         exclude group: 'com.google.guava', module: 'failureaccess'
