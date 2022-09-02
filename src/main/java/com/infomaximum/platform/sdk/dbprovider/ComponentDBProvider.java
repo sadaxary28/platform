@@ -7,6 +7,7 @@ import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.database.provider.DBTransaction;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.sdk.component.Component;
+import com.infomaximum.rocksdb.options.columnfamily.ColumnFamilyConfig;
 
 public class ComponentDBProvider implements DBProvider {
 
@@ -51,6 +52,11 @@ public class ComponentDBProvider implements DBProvider {
     @Override
     public void createColumnFamily(String name) throws DatabaseException {
         dbProvider.createColumnFamily(name);
+    }
+
+    @Override
+    public void createColumnFamily(String name, ColumnFamilyConfig options) throws DatabaseException {
+        dbProvider.createColumnFamily(name, options);
     }
 
     @Override

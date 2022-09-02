@@ -8,6 +8,7 @@ import com.infomaximum.database.provider.KeyPattern;
 import com.infomaximum.database.provider.KeyValue;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.sdk.dbprovider.remote.RControllerDBProvider;
+import com.infomaximum.rocksdb.options.columnfamily.ColumnFamilyConfig;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -59,6 +60,11 @@ public class RControllerDBProviderImpl extends AbstractRController<DatabaseCompo
     @Override
     public void createColumnFamily(String name) throws DatabaseException {
         component.getRocksDBProvider().createColumnFamily(name);
+    }
+
+    @Override
+    public void createColumnFamily(String name, ColumnFamilyConfig options) throws DatabaseException {
+        component.getRocksDBProvider().createColumnFamily(name, options);
     }
 
     @Override
@@ -171,9 +177,9 @@ public class RControllerDBProviderImpl extends AbstractRController<DatabaseCompo
     }
 
     private DBIterator getIterator(long iteratorId) throws DatabaseException {
-	    DBIterator iterator = iterators.get(iteratorId);
-	    if (iterator != null) {
-	        return iterator;
+        DBIterator iterator = iterators.get(iteratorId);
+        if (iterator != null) {
+            return iterator;
         }
         throw new DatabaseException("Iterator №" + iteratorId + " not found.");
     }
