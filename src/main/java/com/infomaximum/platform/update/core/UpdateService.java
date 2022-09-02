@@ -17,29 +17,27 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class UpdateService {
 
     private final static Logger log = LoggerFactory.getLogger(UpdateService.class);
 
-    public static void updateComponents(Transaction transaction, ModuleUpdateEntity... updates) throws DatabaseException {
+    public static void updateComponents(Transaction transaction, HashMap<String, ArrayList<String>> excludedIntegrityTables, ModuleUpdateEntity... updates) throws DatabaseException {
         Schema.resolve(ModuleEditable.class); //todo V.Bukharkin вынести отсюда
         List<UpdateUtil.ModuleTaskUpdate> moduleTaskUpdates = UpdateUtil.getUpdatesInCorrectOrder(updates);
         for (UpdateUtil.ModuleTaskUpdate moduleTaskUpdate : moduleTaskUpdates) {
-            updateComponent(moduleTaskUpdate, transaction);
+            updateComponent(moduleTaskUpdate, excludedIntegrityTables, transaction);
         }
     }
 
     public static <T extends Component> void updateComponent(Version prevVersion, Version nextVersion, T component, Transaction transaction) throws DatabaseException {
         UpdateUtil.ModuleTaskUpdate moduleTaskUpdate = UpdateUtil.getUpdateTaskObj(prevVersion, nextVersion, component);
-        updateComponent(moduleTaskUpdate, transaction);
+        updateComponent(moduleTaskUpdate, component.getExcludedIntegrityTables(), transaction);
     }
 
-    private static void updateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate, Transaction transaction) throws DatabaseException {
+    private static void updateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate, HashMap<String, ArrayList<String>> excludedIntegrityTables, Transaction transaction) throws DatabaseException {
         Info componentInfo = (Info) moduleTaskUpdate.getComponent().getInfo();
 
         try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, componentInfo.getUuid()))) {
@@ -58,11 +56,10 @@ public class UpdateService {
                 transaction.save(moduleEditable);
             }
         }
-
         Set<StructEntity> domains = new HashSet<>();
         for (Class domainObjectClass : new Reflections(componentInfo.getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
             domains.add(Schema.getEntity(domainObjectClass));
         }
-        Schema.read(transaction.getDbProvider()).checkSubsystemIntegrity(domains, componentInfo.getUuid());
+        Schema.read(transaction.getDbProvider()).checkSubsystemIntegrity(domains, componentInfo.getUuid(), excludedIntegrityTables);
     }
 }

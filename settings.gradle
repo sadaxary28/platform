@@ -1,5 +1,8 @@
 rootProject.name = 'platform'
 
+include ':rdao'
+project(':rdao').projectDir = new File(settingsDir, '../rdao')
+
 //include ':cluster'
 //project(':cluster').projectDir = new File(settingsDir, '../cluster')
 
