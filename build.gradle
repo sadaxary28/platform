@@ -7,7 +7,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.0.12'
+version '0.0.13'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
@@ -40,11 +40,12 @@ dependencies {
     compile 'com.infomaximum:cluster-graphql:1.0.1p5'
 //    compile project(':cluster-graphql')
 
-    compile 'com.infomaximum:rdao:1.13.3'
+//    compile project(':rdao')
+    compile 'com.infomaximum:rdao:1.13.4'
 
     compile 'com.infomaximum:network:1.0.1p1'
 //    compile project(':network')
-    compile ('commons-fileupload:commons-fileupload:1.4') {
+    compile('commons-fileupload:commons-fileupload:1.4') {
         exclude group: 'commons-io', module: 'commons-io'
     }
     compile 'commons-io:commons-io:2.11.0'

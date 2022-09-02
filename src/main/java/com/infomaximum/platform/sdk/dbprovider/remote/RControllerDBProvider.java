@@ -5,6 +5,7 @@ import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.DBIterator;
 import com.infomaximum.database.provider.KeyPattern;
 import com.infomaximum.database.provider.KeyValue;
+import com.infomaximum.rocksdb.options.columnfamily.ColumnFamilyConfig;
 
 public interface RControllerDBProvider extends RController {
 
@@ -13,7 +14,11 @@ public interface RControllerDBProvider extends RController {
     byte[] getValue(String columnFamily, byte[] key) throws DatabaseException;
     boolean containsColumnFamily(String name) throws DatabaseException;
     String[] getColumnFamilies() throws DatabaseException;
+
     void createColumnFamily(String name) throws DatabaseException;
+
+    void createColumnFamily(String name, ColumnFamilyConfig options) throws DatabaseException;
+
     void dropColumnFamily(String name) throws DatabaseException;
     boolean containsSequence(String name) throws DatabaseException;
     void createSequence(String name) throws DatabaseException;

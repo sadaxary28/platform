@@ -4,6 +4,7 @@ import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.*;
 import com.infomaximum.platform.sdk.dbprovider.remote.RControllerDBProvider;
+import com.infomaximum.rocksdb.options.columnfamily.ColumnFamilyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,12 @@ class RemoteDBProvider implements DBProvider {
     public void createColumnFamily(String name) throws DatabaseException {
         getRemoteProvider().createColumnFamily(name);
     }
+
+    @Override
+    public void createColumnFamily(String name, ColumnFamilyConfig options) throws DatabaseException {
+        getRemoteProvider().createColumnFamily(name);
+    }
+
 
     @Override
     public void dropColumnFamily(String name) throws DatabaseException {
