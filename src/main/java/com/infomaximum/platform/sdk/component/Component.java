@@ -17,11 +17,14 @@ import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.dbprovider.ComponentDBProvider;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.sdk.remote.QueryRemotes;
+import com.infomaximum.platform.sdk.remote.excludeintegrity.ExcludeIntegrityTableService;
 import com.infomaximum.platform.sdk.struct.ClusterContext;
 import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.platform.sdk.subscription.GraphQLSubscribeEvent;
 import org.reflections.Reflections;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +38,8 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 
     private GraphQLSubscribeEvent graphQLSubscribeEvent;
     private RControllerGraphQLExecutorImpl rControllerGraphQLExecutor;
+    @Deprecated
+    private final HashMap<String, ArrayList<String>> excludedIntegrityTables = new HashMap<>();
 
     public Component(Cluster cluster) {
         super(cluster);
@@ -92,7 +97,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
             for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
                 domains.add(Schema.getEntity(domainObjectClass));
             }
-            schema.checkSubsystemIntegrity(domains, getInfo().getUuid());
+            schema.checkSubsystemIntegrity(domains, getInfo().getUuid(), excludedIntegrityTables);
             buildSchemaService()
                     .setChangeMode(ChangeMode.CREATION)
                     .setValidationMode(false)
@@ -127,6 +132,8 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
             throw new RuntimeException(getClass() + " is not correspond to uuid: " + getInfo().getUuid());
         }
 
+        new ExcludeIntegrityTableService(this)
+                .initExcludeIntegrityTables(excludedIntegrityTables);
         this.dbProvider = initDBProvider();
         this.schema = initializeSchema(dbProvider);
 
@@ -169,5 +176,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         }
     }
 
-
+    public HashMap<String, ArrayList<String>> getExcludedIntegrityTables() {
+        return excludedIntegrityTables;
+    }
 }

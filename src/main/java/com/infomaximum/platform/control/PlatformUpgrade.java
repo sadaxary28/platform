@@ -30,10 +30,7 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PlatformUpgrade {
@@ -82,9 +79,9 @@ public class PlatformUpgrade {
 		log.info("Database initialized...");
 
 		new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> {
-			ensureSchema(transaction.getDbProvider());
-			updateInstallModules(modules, transaction);
-			removeRedundantModules(modules, transaction);
+            ensureSchema(transaction.getDbProvider());
+            updateInstallModules(modules, databaseComponent.getExcludedIntegrityTables(), transaction);
+            removeRedundantModules(modules, transaction);
 
 			//После обновления - перечитываем схему
 			for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
@@ -131,17 +128,17 @@ public class PlatformUpgrade {
         }
 	}
 
-	private void updateInstallModules(List<Component> modules, Transaction transaction) throws Exception {
-		Schema.resolve(ModuleReadable.class);
+    private void updateInstallModules(List<Component> modules, HashMap<String, ArrayList<String>> excludedIntegrityTables, Transaction transaction) throws Exception {
+        Schema.resolve(ModuleReadable.class);
 
-		List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
-		for (Component module : modules) {
-			ModuleEditable moduleInDB = getModuleByUuid(module.getInfo().getUuid(), transaction);
-			UpgradeAction upgradeAction = getUpgradeAction(module, moduleInDB);
-			switch (upgradeAction) {
-				case NONE:
-					log.warn("Module " + module.getInfo().getUuid() + " has actual version");
-					break;
+        List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
+        for (Component module : modules) {
+            ModuleEditable moduleInDB = getModuleByUuid(module.getInfo().getUuid(), transaction);
+            UpgradeAction upgradeAction = getUpgradeAction(module, moduleInDB);
+            switch (upgradeAction) {
+                case NONE:
+                    log.warn("Module " + module.getInfo().getUuid() + " has actual version");
+                    break;
 				case INSTALL:
 					log.warn("Module " + module.getInfo().getUuid() + " installing");
 					new PlatformUpgrade(platform).installComponent(module, transaction);
@@ -159,16 +156,16 @@ public class PlatformUpgrade {
 		for (Component module : modules) {
 			module.initialize();
 		}
-		update(modulesForUpdate, transaction);
+        update(modulesForUpdate, excludedIntegrityTables, transaction);
 	}
 
-	public void update(List<ModuleUpdateEntity> updates, Transaction transaction) throws Exception {
-		log.warn("Updating versions: " + updates);
-		if (updates == null || updates.size() == 0) {
-			return;
-		}
-		UpdateService.updateComponents(transaction, updates.toArray(new ModuleUpdateEntity[0]));
-	}
+    public void update(List<ModuleUpdateEntity> updates, HashMap<String, ArrayList<String>> excludedIntegrityTables, Transaction transaction) throws Exception {
+        log.warn("Updating versions: " + updates);
+        if (updates == null || updates.size() == 0) {
+            return;
+        }
+        UpdateService.updateComponents(transaction, excludedIntegrityTables, updates.toArray(new ModuleUpdateEntity[0]));
+    }
 
 	private ModuleEditable getModuleByUuid(String uuid, Transaction transaction) throws DatabaseException {
 		try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, uuid))) {
