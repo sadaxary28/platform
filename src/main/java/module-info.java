@@ -31,6 +31,7 @@ module com.infomaximum.platform {
     exports com.infomaximum.platform.sdk.graphql.customfield.graphqlquery;
     exports com.infomaximum.platform.sdk.graphql.annotation;
     exports com.infomaximum.platform.sdk.struct.querypool;
+    exports com.infomaximum.platform.sdk.remote.excludeintegrity;
     exports com.infomaximum.platform.exception.runtime;
     exports com.infomaximum.platform.exception;
     exports com.infomaximum.platform.sdk.exception;
