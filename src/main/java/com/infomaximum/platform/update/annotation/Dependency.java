@@ -11,4 +11,5 @@ public @interface Dependency {
 
     String componentUUID();
     String version();
+    boolean optional() default false;
 }
