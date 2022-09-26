@@ -28,7 +28,7 @@ public abstract class UpdateTask<T extends Component> {
 
     private final static Logger log = LoggerFactory.getLogger(UpdateTask.class);
 
-    private T component;
+    private final T component;
 
     public UpdateTask(T component) {
         this.component = component;
