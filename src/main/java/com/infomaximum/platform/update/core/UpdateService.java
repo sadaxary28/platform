@@ -24,7 +24,9 @@ public class UpdateService {
 
     private final static Logger log = LoggerFactory.getLogger(UpdateService.class);
 
-    public static void updateComponents(Transaction transaction, HashMap<String, ArrayList<String>> excludedIntegrityTables, ModuleUpdateEntity... updates) throws DatabaseException {
+    public static void updateComponents(Transaction transaction,
+                                        HashMap<String, ArrayList<String>> excludedIntegrityTables,
+                                        ModuleUpdateEntity... updates) throws DatabaseException {
         Schema.resolve(ModuleEditable.class); //todo V.Bukharkin вынести отсюда
         List<UpdateUtil.ModuleTaskUpdate> moduleTaskUpdates = UpdateUtil.getUpdatesInCorrectOrder(updates);
         for (UpdateUtil.ModuleTaskUpdate moduleTaskUpdate : moduleTaskUpdates) {
@@ -32,12 +34,17 @@ public class UpdateService {
         }
     }
 
-    public static <T extends Component> void updateComponent(Version prevVersion, Version nextVersion, T component, Transaction transaction) throws DatabaseException {
+    public static <T extends Component> void updateComponent(Version prevVersion,
+                                                             Version nextVersion,
+                                                             T component,
+                                                             Transaction transaction) throws DatabaseException {
         UpdateUtil.ModuleTaskUpdate moduleTaskUpdate = UpdateUtil.getUpdateTaskObj(prevVersion, nextVersion, component);
         updateComponent(moduleTaskUpdate, component.getExcludedIntegrityTables(), transaction);
     }
 
-    private static void updateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate, HashMap<String, ArrayList<String>> excludedIntegrityTables, Transaction transaction) throws DatabaseException {
+    private static void updateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate,
+                                        HashMap<String, ArrayList<String>> excludedIntegrityTables,
+                                        Transaction transaction) throws DatabaseException {
         Info componentInfo = (Info) moduleTaskUpdate.getComponent().getInfo();
 
         try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, componentInfo.getUuid()))) {

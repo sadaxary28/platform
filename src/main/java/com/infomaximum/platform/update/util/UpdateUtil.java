@@ -69,7 +69,8 @@ public class UpdateUtil {
     public static List<ModuleTaskUpdate> getUpdatesInCorrectOrder(ModuleUpdateEntity[] updates) {
         checkUniqueModule(updates);
         List<ModuleTaskUpdate> result = new ArrayList<>(updates.length);
-        Map<String, ModuleUpdateEntity> subsystemUuids = Arrays.stream(updates).collect(Collectors.toMap(ModuleUpdateEntity::getComponentUuid, mu -> mu));
+        Map<String, ModuleUpdateEntity> subsystemUuids = Arrays.stream(updates)
+                .collect(Collectors.toMap(ModuleUpdateEntity::getComponentUuid, mu -> mu));
         Set<String> passedMds = new HashSet<>();
         for (ModuleUpdateEntity update : updates) {
             if (!passedMds.contains(update.getComponentUuid())) {
@@ -84,14 +85,18 @@ public class UpdateUtil {
         return getUpdateTaskObj(updateTaskClass, component);
     }
 
-    private static void buildModuleDependency(ModuleUpdateEntity update, Map<String, ModuleUpdateEntity> subsystemUpdates, Set<String> passedMds, List<ModuleTaskUpdate> result) {
+    private static void buildModuleDependency(ModuleUpdateEntity update,
+                                              Map<String, ModuleUpdateEntity> subsystemUpdates,
+                                              Set<String> passedMds,
+                                              List<ModuleTaskUpdate> result) {
         if (passedMds.contains(update.getComponentUuid())) {
             return;
         }
-        Class<UpdateTask<Component>> updateTaskClass = getUpdateTaskClass(update.getOldVersion(), update.getNewVersion(), update.getComponent());
+        Class<UpdateTask<Component>> updateTaskClass = getUpdateTaskClass(
+                update.getOldVersion(), update.getNewVersion(), update.getComponent());
 
         ModuleTaskUpdate moduleTaskUpdate;
-        if (updateTaskClass==null) {
+        if (updateTaskClass == null) {
             moduleTaskUpdate = new ModuleTaskUpdate(update.getComponent(), null);
         } else {
             final Update annotationEntity = UpdateUtil.getUpdateAnnotation(updateTaskClass);
@@ -100,13 +105,17 @@ public class UpdateUtil {
                 Set<String> notCyclicDependencies = new HashSet<>();
                 notCyclicDependencies.add(update.getComponentUuid());
                 for (Dependency dependency : annotationEntity.dependencies()) {
-                    if (notCyclicDependencies.contains(dependency.componentUUID())) {
+                    if (!notCyclicDependencies.add(dependency.componentUUID())) {
                         throw new UpdateException("Cyclic dependency error. Dependency: " + dependency.componentUUID());
                     }
                     if (!subsystemUpdates.containsKey(dependency.componentUUID())) {
-                        continue;
+                        if (dependency.optional()) {
+                            continue;
+                        } else {
+                            throw new UpdateException("Not found required dependency. Dependency: "
+                                    + dependency.componentUUID());
+                        }
                     }
-                    notCyclicDependencies.add(dependency.componentUUID());
                     buildModuleDependency(subsystemUpdates.get(dependency.componentUUID()), subsystemUpdates, passedMds, result);
                 }
             }
@@ -125,7 +134,8 @@ public class UpdateUtil {
         }
     }
 
-    private static <T extends Component> ModuleTaskUpdate getUpdateTaskObj(Class<UpdateTask<T>> updateTaskClass, Component component) {
+    private static <T extends Component> ModuleTaskUpdate getUpdateTaskObj(Class<UpdateTask<T>> updateTaskClass,
+                                                                           Component component) {
         UpdateTask<T> updateTask;
         try {
             updateTask = updateTaskClass.getConstructor(component.getClass()).newInstance(component);
@@ -136,7 +146,9 @@ public class UpdateUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends Component> Class<UpdateTask<T>> getUpdateTaskClass(Version oldVersion, Version newVersion, T component) {
+    private static <T extends Component> Class<UpdateTask<T>> getUpdateTaskClass(Version oldVersion,
+                                                                                 Version newVersion,
+                                                                                 T component) {
         if (equalsUpdateVersion(oldVersion, newVersion)) {
             return null;
         }
@@ -152,10 +164,9 @@ public class UpdateUtil {
     }
 
     private static boolean equalsUpdateVersion(Version version1, Version version2) {
-        if (version1.product != version2.product) return false;
-        if (version1.major != version2.major) return false;
-        if (version1.minor != version2.minor) return false;
-        return true;
+        return version1.product == version2.product
+                && version1.major == version2.major
+                && version1.minor == version2.minor;
     }
 
     public static class ModuleTaskUpdate {
