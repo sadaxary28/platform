@@ -109,7 +109,11 @@ public abstract class UpdateTask<T extends Component> {
             }
         }
         if (dependenceModule == null) {
-            throw new UpdateException(getComponentInfo().getUuid(), "Can't find dependence module in system " + dependency.componentUUID());
+            if (dependency.optional()) {
+                return;//Зависимость опциональная и ее нет - пропускаем
+            } else {
+                throw new UpdateException(getComponentInfo().getUuid(), "Can't find dependence module in system " + dependency.componentUUID());
+            }
         }
         Version expectedDependenceModule = Version.parseWithMigration(dependency.version());
         if (!dependenceModule.getVersion().equals(expectedDependenceModule)) {
