@@ -3,9 +3,9 @@ module com.infomaximum.platform {
     requires transitive com.infomaximum.cluster;
     requires transitive com.infomaximum.cluster.graphql;
     requires org.slf4j;
-    requires com.graphqljava.graphqljava;
+    requires com.graphqljava;
     requires com.infomaximum.network;
-    requires org.reflections.reflections;
+    requires org.reflections;
     requires net.minidev.jsonsmart;
     requires org.eclipse.jetty.server;
     requires spring.core;

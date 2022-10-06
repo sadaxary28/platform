@@ -8,7 +8,7 @@ import graphql.ExceptionWhileDataFetching;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
 import graphql.execution.DataFetcherExceptionHandlerResult;
-import graphql.execution.ExecutionPath;
+import graphql.execution.ResultPath;
 import graphql.language.SourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class PlatformDataFetcherExceptionHandler implements DataFetcherException
     public DataFetcherExceptionHandlerResult onException(DataFetcherExceptionHandlerParameters handlerParameters) {
         Throwable exception = handlerParameters.getException();
         SourceLocation sourceLocation = handlerParameters.getSourceLocation();
-        ExecutionPath path = handlerParameters.getPath();
+        ResultPath path = handlerParameters.getPath();
 
         ExceptionWhileDataFetching error = new ExceptionWhileDataFetching(path, exception, sourceLocation);
 
