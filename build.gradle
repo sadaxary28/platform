@@ -12,7 +12,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.1.4'
+version '0.1.4f1'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -69,7 +69,7 @@ dependencies {
     api 'com.infomaximum:rdao:1.14.6'
 //    api project(':rdao')
 
-    api 'com.infomaximum:network:1.1.2p2'
+    api 'com.infomaximum:network:1.1.2p3'
 //    implementation project(':network')
 
     implementation('org.reflections:reflections:0.10.2') {
