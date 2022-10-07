@@ -1,6 +1,6 @@
 package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.graphql;
 
-import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
+import com.infomaximum.cluster.graphql.executor.struct.GSubscriptionPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
@@ -108,7 +108,7 @@ public class GraphQLHandler implements PacketHandler {
                 return CompletableFuture.completedFuture(
                         new Packet(requestPacket.id, TypePacket.GQL_DATA, jPayload)
                 );
-            } else if (data instanceof GCompletionStageMappingPublisher completionPublisher) {
+            } else if (data instanceof GSubscriptionPublisher completionPublisher) {
                 WebSocketGraphQLWSSubscriber websocketSubscriber = new WebSocketGraphQLWSSubscriber(requestPacket.id, ((SessionImpl)session).getTransportSession());
                 completionPublisher.subscribe(websocketSubscriber);
                 return websocketSubscriber.getFirstResponseCompletableFuture();

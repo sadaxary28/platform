@@ -1,6 +1,6 @@
 package com.infomaximum.platform.component.frontend.engine.controller.websocket.graphql;
 
-import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
+import com.infomaximum.cluster.graphql.executor.struct.GSubscriptionPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.network.mvc.ResponseEntity;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
@@ -91,7 +91,7 @@ public class GraphQLController {
                 return CompletableFuture.completedFuture(
                         ResponseEntity.success((JSONObject) graphQLResponse.data)
                 );
-            } else if (data instanceof GCompletionStageMappingPublisher completionPublisher) {
+            } else if (data instanceof GSubscriptionPublisher completionPublisher) {
                 WebSocketStandardSubscriber websocketSubscriber = new WebSocketStandardSubscriber(transportSession, (RequestPacket) packet);
                 completionPublisher.subscribe(websocketSubscriber);
                 return websocketSubscriber.getFirstResponseCompletableFuture()

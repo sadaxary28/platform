@@ -1,7 +1,7 @@
 package com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
 
 import com.google.common.net.UrlEscapers;
-import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
+import com.infomaximum.cluster.graphql.executor.struct.GSubscriptionPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.cluster.graphql.subscription.SingleSubscriber;
 import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
@@ -68,7 +68,7 @@ public class GraphQLController {
                         return CompletableFuture.completedFuture(
                                 buildResponseEntity(gRequest, out)
                         );
-                    } else if (data instanceof GCompletionStageMappingPublisher completionPublisher) {
+                    } else if (data instanceof GSubscriptionPublisher completionPublisher) {
                         SingleSubscriber singleSubscriber = new SingleSubscriber();
                         completionPublisher.subscribe(singleSubscriber);
                         return singleSubscriber.getCompletableFuture().thenApply(executionResult -> {

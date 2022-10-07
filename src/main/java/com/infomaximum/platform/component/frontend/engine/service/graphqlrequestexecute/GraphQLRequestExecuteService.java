@@ -2,8 +2,8 @@ package com.infomaximum.platform.component.frontend.engine.service.graphqlreques
 
 import com.infomaximum.cluster.graphql.GraphQLEngine;
 import com.infomaximum.cluster.graphql.executor.GraphQLExecutorPrepareImpl;
-import com.infomaximum.cluster.graphql.executor.struct.GCompletionStageMappingPublisher;
 import com.infomaximum.cluster.graphql.executor.struct.GExecutionResult;
+import com.infomaximum.cluster.graphql.executor.struct.GSubscriptionPublisher;
 import com.infomaximum.cluster.graphql.executor.subscription.GraphQLSubscribeEngine;
 import com.infomaximum.cluster.graphql.schema.GraphQLSchemaType;
 import com.infomaximum.cluster.graphql.schema.scalartype.GraphQLTypeScalar;
@@ -301,7 +301,7 @@ public class GraphQLRequestExecuteService {
         if (gOutputFile != null) {
             return new GraphQLResponse(gOutputFile, false);
         } else {
-            if (executionResult.getData() instanceof GCompletionStageMappingPublisher) {
+            if (executionResult.getData() instanceof GSubscriptionPublisher) {
                 return new GraphQLResponse(executionResult.getData(), false);
             } else {
                 return new GraphQLResponse(new JSONObject(executionResult.getData()), false);
