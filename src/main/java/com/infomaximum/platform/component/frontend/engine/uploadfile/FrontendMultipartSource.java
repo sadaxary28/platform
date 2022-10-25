@@ -67,6 +67,6 @@ public class FrontendMultipartSource implements SourceClusterFile {
 
 	@Override
 	public void deleteIfExists(String clusterFileUUID)  {
-		throw new RuntimeException("Not support!");
+		multipartFiles.remove(clusterFileUUID);
 	}
 }
