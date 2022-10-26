@@ -11,9 +11,8 @@ module com.infomaximum.platform {
     requires spring.core;
     requires spring.web;
     requires org.eclipse.jetty.websocket.jetty.api;
-    requires org.apache.commons.commonslang3;
-    requires org.rocksdb.rocksdbjni;
-    requires com.google.guava.guava;
+    requires rocksdbjni;
+    requires com.google.common;
 
     exports com.infomaximum.platform.sdk.context;
     exports com.infomaximum.platform.querypool.iterator;

@@ -10,7 +10,7 @@ import com.infomaximum.platform.querypool.QueryPool;
 import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.exception.NotAbsolutePathException;
 import com.infomaximum.platform.sdk.utils.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.infomaximum.platform.utils.StringUtils;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 

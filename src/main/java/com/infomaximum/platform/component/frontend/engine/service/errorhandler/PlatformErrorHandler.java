@@ -1,8 +1,8 @@
 package com.infomaximum.platform.component.frontend.engine.service.errorhandler;
 
+import com.infomaximum.platform.utils.ExceptionUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.Dispatcher;
 import org.eclipse.jetty.server.Request;
