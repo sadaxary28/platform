@@ -3,11 +3,11 @@ package com.infomaximum.platform.component.database.remote.backup;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.component.database.exception.DatabaseExceptionBuilder;
-import com.infomaximum.platform.component.database.utils.BackupUtils;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.querypool.AbstractQueryRController;
 import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.exception.NotAbsolutePathException;
+import com.infomaximum.rocksdb.backup.RocksDBRestoreBackup;
 
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -26,7 +26,7 @@ public class RControllerRestoreImpl extends AbstractQueryRController<DatabaseCom
         Path dbPath = buildDbPath(newDbPath);
         Path backupPath = RControllerBackupImpl.buildBackupPath(backupDirPath, backupName);
         try {
-            BackupUtils.restoreFromBackup(backupPath, dbPath);
+            RocksDBRestoreBackup.restore(backupPath, dbPath);
         } catch (DatabaseException e) {
             throw DatabaseExceptionBuilder.buildRestoreException(e);
         }

@@ -3,7 +3,6 @@ package com.infomaximum.platform.component.database.remote.backup;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.component.database.exception.DatabaseExceptionBuilder;
-import com.infomaximum.platform.component.database.utils.BackupUtils;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.querypool.AbstractQueryRController;
 import com.infomaximum.platform.querypool.QueryPool;
@@ -11,8 +10,7 @@ import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.exception.NotAbsolutePathException;
 import com.infomaximum.platform.sdk.utils.FileUtils;
 import com.infomaximum.platform.utils.StringUtils;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
+import com.infomaximum.rocksdb.backup.RocksDBCreateBackup;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -30,10 +28,9 @@ public class RControllerBackupImpl extends AbstractQueryRController<DatabaseComp
         Path backupPath = buildBackupPath(backupDirPath, backupName);
         FileUtils.ensureDirectory(backupPath);
         try {
-            RocksDB rocksDB = component.getRocksDBProvider().getRocksDB();
-            BackupUtils.createBackup(backupPath, rocksDB);
-            rocksDB.compactRange();
-        } catch (DatabaseException | RocksDBException e) {
+            RocksDBCreateBackup rocksDBBackup =  component.getRocksDBProvider().getRocksDBBackup();
+            rocksDBBackup.create(backupPath);
+        } catch (DatabaseException e) {
             throw DatabaseExceptionBuilder.buildBackupException(e);
         }
     }
