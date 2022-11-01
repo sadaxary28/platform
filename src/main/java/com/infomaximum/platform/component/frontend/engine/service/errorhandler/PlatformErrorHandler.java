@@ -61,38 +61,34 @@ public class PlatformErrorHandler extends ErrorHandler {
     private void processingException(Throwable ex, Request baseRequest, HttpServletResponse response) {
         List<Throwable> chainThrowables = ExceptionUtils.getThrowableList(ex);
 
-        //TODO JDK17
         if (ex instanceof EofException) {
             //Обычный разрыв соединения во время передачи данных
             return;
-//        } else if (chainThrowables.size() > 4
-//                && chainThrowables.get(3) instanceof FileUploadBase.IOFileUploadException
-//                && chainThrowables.get(4) instanceof EofException
-//        ) {
-//            //Ошибки вида разрыва соединения во время upload файлв
-//            return;
-//        } else if (chainThrowables.size() == 5
-//                && chainThrowables.get(3) instanceof FileUploadException
-//                && chainThrowables.get(4) instanceof EofException
-//        ) {
-//            //Если поставить скорость передачи в 1 кб и сразу отменить передачу
-//            return;
-//        } else if (chainThrowables.size() == 6
-//                && chainThrowables.get(3) instanceof FileUploadException
-//                && chainThrowables.get(5) instanceof TimeoutException
-//        ) {
-//            //Если поставить скорость передачи в 1 кб и через некоторое время отменить передачу
-//            return;
-//        } else if (chainThrowables.get(chainThrowables.size() - 2) instanceof FileUploadException
-//                && chainThrowables.get(chainThrowables.size() - 1) instanceof MultipartStream.MalformedStreamException
-//        ) {
-//            //Этот exception постоянно кидается в газпромбанке(при большой нагрузки агентов) https://jira.office.infomaximum.com/browse/PLATFORM-7857
-//            return;
-//        } else if (chainThrowables.get(chainThrowables.size() - 1) instanceof FileUploadException
-//                && chainThrowables.get(chainThrowables.size() - 2) instanceof MultipartException
-//        ) {
-//            //the request was rejected because no multipart boundary was found
-//            return;
+        } else if (chainThrowables.size() == 4
+                && chainThrowables.get(0) instanceof jakarta.servlet.ServletException
+                && chainThrowables.get(1) instanceof jakarta.servlet.ServletException
+                && chainThrowables.get(2) instanceof org.springframework.web.multipart.MultipartException
+                && chainThrowables.get(3) instanceof java.io.IOException
+        ) {
+            //Missing initial multi part boundary
+            return;
+        } else if (chainThrowables.size() == 5
+                && chainThrowables.get(0) instanceof jakarta.servlet.ServletException
+                && chainThrowables.get(1) instanceof jakarta.servlet.ServletException
+                && chainThrowables.get(2) instanceof org.springframework.web.multipart.MultipartException
+                && chainThrowables.get(3) instanceof java.io.IOException
+                && chainThrowables.get(4) instanceof java.util.concurrent.TimeoutException
+        ) {
+            //поставил низкую скорость, начал импортировать в пространство таблицу, "выдернул" сетевой кабель.
+            return;
+        } else if (chainThrowables.size() == 4
+                && chainThrowables.get(0) instanceof jakarta.servlet.ServletException
+                && chainThrowables.get(1) instanceof jakarta.servlet.ServletException
+                && chainThrowables.get(2) instanceof org.springframework.web.multipart.MultipartException
+                && chainThrowables.get(3) instanceof org.eclipse.jetty.io.EofException
+        ) {
+            //поставил на клиенте медленную скорость, выбрал файл для импорта в то же пространство нажал кнопку загрузки и сразу же кнопку отмены.
+            return;
         } else if (chainThrowables.size() == 3
                 && chainThrowables.get(1) instanceof NestedServletException
                 && chainThrowables.get(2) instanceof IllegalArgumentException
