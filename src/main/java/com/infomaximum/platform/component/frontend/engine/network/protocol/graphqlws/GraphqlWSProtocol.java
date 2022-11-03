@@ -1,8 +1,8 @@
 package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws;
 
-import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.transport.Transport;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.graphql.GraphQLWSHandler;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.handshake.Handshake;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.session.GraphqlWSTransportSession;
 
@@ -11,9 +11,9 @@ import java.lang.reflect.InvocationTargetException;
 public class GraphqlWSProtocol extends Protocol {
 
     public final Handshake handshake;
-    public final PacketHandler packetHandler;
+    public final GraphQLWSHandler packetHandler;
 
-    public GraphqlWSProtocol(Handshake handshake, PacketHandler packetHandler, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    public GraphqlWSProtocol(Handshake handshake, GraphQLWSHandler packetHandler, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         super(uncaughtExceptionHandler);
         this.handshake = handshake;
         this.packetHandler = packetHandler;

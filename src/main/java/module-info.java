@@ -72,4 +72,6 @@ module com.infomaximum.platform {
     exports com.infomaximum.platform.sdk.domainobject.module to com.infomaximum.rdao;
     exports com.infomaximum.platform.sdk.graphql.datafetcher to com.infomaximum.cluster.graphql;
     exports com.infomaximum.platform.sdk.dbprovider.remote to com.infomaximum.cluster;
+    exports com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws;
+    exports com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.handler.graphql;
 }

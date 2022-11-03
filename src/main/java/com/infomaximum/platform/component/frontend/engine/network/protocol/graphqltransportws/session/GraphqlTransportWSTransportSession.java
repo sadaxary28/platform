@@ -1,4 +1,4 @@
-package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.session;
+package com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.session;
 
 import com.infomaximum.network.exception.ParsePacketNetworkException;
 import com.infomaximum.network.packet.IPacket;
@@ -7,8 +7,8 @@ import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
-import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.GraphqlWSProtocol;
-import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.GraphqlTransportWSProtocol;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.packet.Packet;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -17,14 +17,14 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class GraphqlWSTransportSession extends TransportSession {
+public class GraphqlTransportWSTransportSession extends TransportSession {
 
-    private final static Logger log = LoggerFactory.getLogger(GraphqlWSTransportSession.class);
+    private final static Logger log = LoggerFactory.getLogger(GraphqlTransportWSTransportSession.class);
 
     //Флаг определяеющий что мы в фазе рукопожатия
     private volatile boolean phaseHandshake;
 
-    public GraphqlWSTransportSession(GraphqlWSProtocol protocol, final Transport transport, final Object channel) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public GraphqlTransportWSTransportSession(GraphqlTransportWSProtocol protocol, final Transport transport, final Object channel) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         super(protocol, transport, channel);
 
         //Проверяем наличие фазы рукопожатия
@@ -70,7 +70,7 @@ public class GraphqlWSTransportSession extends TransportSession {
      */
     @Override
     public PacketHandler getPacketHandler() {
-        GraphqlWSProtocol graphqlWSProtocol = (GraphqlWSProtocol) protocol;
+        GraphqlTransportWSProtocol graphqlWSProtocol = (GraphqlTransportWSProtocol) protocol;
         if (phaseHandshake) {
             return graphqlWSProtocol.handshake;
         } else {

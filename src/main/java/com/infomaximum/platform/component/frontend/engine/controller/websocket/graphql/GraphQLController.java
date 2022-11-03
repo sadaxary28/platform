@@ -9,6 +9,7 @@ import com.infomaximum.network.protocol.standard.packet.TargetPacket;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.network.struct.RemoteAddress;
 import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.GraphQLSubscriber;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.standard.subscriber.WebSocketStandardSubscriber;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
@@ -31,9 +32,11 @@ public class GraphQLController {
     private final static Logger log = LoggerFactory.getLogger(GraphQLController.class);
 
     private final FrontendEngine frontendEngine;
+    private final GraphQLSubscriber graphQLSubscriber;
 
     public GraphQLController(FrontendEngine frontendEngine) {
         this.frontendEngine = frontendEngine;
+        this.graphQLSubscriber = new GraphQLSubscriber();
     }
 
     public CompletableFuture<ResponseEntity> exec(StandardTransportSession transportSession, TargetPacket targetPacket) {
@@ -77,7 +80,7 @@ public class GraphQLController {
                 .thenCompose(graphQLResponse -> buildResponseEntity(graphQLResponse, transportSession, targetPacket));
     }
 
-    private static CompletableFuture<ResponseEntity> buildResponseEntity(
+    private CompletableFuture<ResponseEntity> buildResponseEntity(
             GraphQLResponse graphQLResponse,
             StandardTransportSession transportSession, TargetPacket packet
     ) {
@@ -92,7 +95,7 @@ public class GraphQLController {
                         ResponseEntity.success((JSONObject) graphQLResponse.data)
                 );
             } else if (data instanceof GSubscriptionPublisher completionPublisher) {
-                WebSocketStandardSubscriber websocketSubscriber = new WebSocketStandardSubscriber(transportSession, (RequestPacket) packet);
+                WebSocketStandardSubscriber websocketSubscriber = new WebSocketStandardSubscriber(graphQLSubscriber, transportSession, (RequestPacket) packet);
                 completionPublisher.subscribe(websocketSubscriber);
                 return websocketSubscriber.getFirstResponseCompletableFuture()
                         .thenApply(iPacket -> convert((ResponsePacket) iPacket));

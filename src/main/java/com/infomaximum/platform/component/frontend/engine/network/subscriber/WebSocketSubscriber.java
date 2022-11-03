@@ -3,6 +3,7 @@ package com.infomaximum.platform.component.frontend.engine.network.subscriber;
 import com.infomaximum.cluster.graphql.executor.struct.GExecutionResult;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.session.TransportSession;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.GraphQLSubscriber;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import graphql.ExecutionResult;
@@ -18,16 +19,17 @@ public abstract class WebSocketSubscriber implements Flow.Subscriber {
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketSubscriber.class);
 
-    protected final Serializable packetId;
-    protected final TransportSession transportSession;
+    public final Serializable packetId;
+    public final TransportSession transportSession;
 
     protected final CompletableFuture<IPacket> firstResponseCompletableFuture;
 
     private Flow.Subscription subscription;
 
-    public WebSocketSubscriber(Serializable packetId, TransportSession transportSession) {
+    public WebSocketSubscriber(GraphQLSubscriber graphQLSubscriber, Serializable packetId, TransportSession transportSession) {
         this.packetId = packetId;
         this.transportSession = transportSession;
+        graphQLSubscriber.registry(this);
 
         this.firstResponseCompletableFuture = new CompletableFuture<>();
     }
@@ -36,6 +38,10 @@ public abstract class WebSocketSubscriber implements Flow.Subscriber {
     public void onSubscribe(Flow.Subscription subscription) {
         this.subscription = subscription;
         subscription.request(1);
+    }
+
+    public Flow.Subscription getSubscription() {
+        return subscription;
     }
 
     @Override
@@ -77,6 +83,7 @@ public abstract class WebSocketSubscriber implements Flow.Subscriber {
 
     @Override
     public void onComplete() {
+        transportSession.getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), new RuntimeException("Not implemented"));
     }
 
     public CompletableFuture<IPacket> getFirstResponseCompletableFuture() {

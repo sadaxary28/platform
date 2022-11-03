@@ -5,6 +5,7 @@ import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
+import com.infomaximum.platform.component.frontend.engine.network.protocol.GraphQLSubscriber;
 import com.infomaximum.platform.component.frontend.engine.network.subscriber.WebSocketSubscriber;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import net.minidev.json.JSONObject;
@@ -19,8 +20,8 @@ public class WebSocketStandardSubscriber extends WebSocketSubscriber {
 
     private final static Logger log = LoggerFactory.getLogger(WebSocketStandardSubscriber.class);
 
-    public WebSocketStandardSubscriber(StandardTransportSession transportSession, RequestPacket requestPacket) {
-        super(requestPacket.getId(), transportSession);
+    public WebSocketStandardSubscriber(GraphQLSubscriber graphQLSubscriber, StandardTransportSession transportSession, RequestPacket requestPacket) {
+        super(graphQLSubscriber, requestPacket.getId(), transportSession);
     }
 
     @Override
