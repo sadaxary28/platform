@@ -20,6 +20,7 @@ public class MimeTypeUtils {
         mimeTypes.put("msi", MimeType.MSI);
         mimeTypes.put("dmg", MimeType.DMG);
         mimeTypes.put("zip", MimeType.ZIP);
+        mimeTypes.put("deb", MimeType.DEB);
     }
 
     public static MimeType findAutoMimeType(String fileName) {
