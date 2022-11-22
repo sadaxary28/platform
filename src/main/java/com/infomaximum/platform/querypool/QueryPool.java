@@ -1,7 +1,7 @@
 package com.infomaximum.platform.querypool;
 
 import com.infomaximum.platform.exception.PlatformException;
-import com.infomaximum.platform.querypool.service.DetectEndingWorker;
+import com.infomaximum.platform.querypool.service.DetectHighLoad;
 import com.infomaximum.platform.querypool.service.DetectLongQuery;
 import com.infomaximum.platform.querypool.service.threadcontext.ThreadContext;
 import com.infomaximum.platform.querypool.service.threadcontext.ThreadContextImpl;
@@ -127,7 +127,7 @@ public class QueryPool {
     }
 
     //TODO Удалить костыль
-    public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 80;
+    public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 40;
     public static final int MAX_WORKED_QUERY_COUNT = MAX_THREAD_COUNT * 5;
 
     /**
@@ -135,10 +135,10 @@ public class QueryPool {
      */
     public static final int MAX_WAITING_HIGH_QUERY_COUNT = MAX_THREAD_COUNT * 20;
     /**
-     * Очередь для низко приоритетных запросов в два раза меньше пула потоков данных, сделана для того,
+     * Очередь для низко приоритетных запросов в четыре раза меньше пула потоков данных, сделана для того,
      * что бы сервер не захлебывался в моменты пиковой нагрузки
      */
-    public static final int MAX_WAITING_LOW_QUERY_COUNT = MAX_THREAD_COUNT / 2;
+    public static final int MAX_WAITING_LOW_QUERY_COUNT = MAX_THREAD_COUNT / 4;
 
     private final ThreadPoolExecutor threadPool;
 
@@ -149,7 +149,7 @@ public class QueryPool {
     private final ArrayList<Callback> emptyPoolListners = new ArrayList<>();
 
     private final DetectLongQuery detectLongQuery;
-    private final DetectEndingWorker detectEndingWorker;
+    private final DetectHighLoad detectHighLoad;
     private final ThreadContextImpl threadContext;
 
     private volatile int highPriorityWaitingQueryCount = 0;
@@ -168,7 +168,7 @@ public class QueryPool {
                 defaultThreadGroup
         );
         this.detectLongQuery = new DetectLongQuery(this, uncaughtExceptionHandler);
-        this.detectEndingWorker = new DetectEndingWorker(threadPool, uncaughtExceptionHandler);
+        this.detectHighLoad = new DetectHighLoad(this, threadPool, uncaughtExceptionHandler);
         this.threadContext = new ThreadContextImpl(defaultThreadGroup);
     }
 
@@ -306,7 +306,7 @@ public class QueryPool {
 
     public void shutdownAwait() throws InterruptedException {
         detectLongQuery.shutdownAwait();
-        detectEndingWorker.shutdownAwait();
+        detectHighLoad.shutdownAwait();
 
         threadPool.shutdown();
 
@@ -459,14 +459,12 @@ public class QueryPool {
 
         switch (newQueryPriority) {
             case LOW:
-                //Низкоприоритетные запросы не должны создавать нагрузку на сервер
-                //Не допускаем рост очереди:
-                //1) Если запросы требуют блокирующие друг друга ресурсы и формируется очередь
-                //2) Пул потоков загружен больше чем на половину - сразу откидываем низкоприоритетные запросы
-                return ((lowPriorityWaitingQueryCount >= MAX_WAITING_LOW_QUERY_COUNT)
-                        ||
-                        //Эквивалент: threadPool.getActiveCount() * 2 > threadPool.getMaximumPoolSize()
-                        ((threadPool.getActiveCount() << 1) > threadPool.getMaximumPoolSize())
+                //В случа низкоприоритетных запросов смотрим так же и на очередь высокоприоритетных - и если там растет нагрузка,
+                // то низкоприоритетные мы сразу откидываем
+                return (
+                        //Аналог highPriorityWaitingQueryCount >= (MAX_WAITING_HIGH_QUERY_COUNT/4)
+                        (highPriorityWaitingQueryCount >= (MAX_WAITING_HIGH_QUERY_COUNT >> 2)) ||
+                                (lowPriorityWaitingQueryCount >= MAX_WAITING_LOW_QUERY_COUNT)
                 );
             case HIGH:
                 return highPriorityWaitingQueryCount >= MAX_WAITING_HIGH_QUERY_COUNT;
@@ -506,6 +504,14 @@ public class QueryPool {
             }
         }
         return false;
+    }
+
+    public int getHighPriorityWaitingQueryCount() {
+        return highPriorityWaitingQueryCount;
+    }
+
+    public int getLowPriorityWaitingQueryCount() {
+        return lowPriorityWaitingQueryCount;
     }
 
     private static void appendResources(QueryWrapper<?> query, ResourceMap destination) {
