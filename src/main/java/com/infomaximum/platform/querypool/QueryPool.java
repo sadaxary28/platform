@@ -127,7 +127,7 @@ public class QueryPool {
     }
 
     //TODO Удалить костыль
-    public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 40;
+    public static final int MAX_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 80;
     public static final int MAX_WORKED_QUERY_COUNT = MAX_THREAD_COUNT * 5;
 
     /**
