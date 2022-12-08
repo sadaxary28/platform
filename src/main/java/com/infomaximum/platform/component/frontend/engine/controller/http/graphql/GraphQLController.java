@@ -148,14 +148,15 @@ public class GraphQLController {
         headers.setExpires(0);
 
         String sout = out.toString();
+        byte[] bout = sout.getBytes(StandardCharsets.UTF_8);
 
         log.debug("Request {}, http code: {}, response: {}",
                 (gRequest != null) ? GRequestUtils.getTraceRequest(gRequest) : null,
                 httpStatus.value(),
-                (graphQLResponse.error) ? sout : "hide"
+                (graphQLResponse.error) ? sout : "hide(" + bout + " bytes)"
         );
 
-        return new ResponseEntity(sout.getBytes(StandardCharsets.UTF_8), headers, httpStatus);
+        return new ResponseEntity(bout, headers, httpStatus);
     }
 
 }
