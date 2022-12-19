@@ -79,10 +79,13 @@ public class GraphQLWSHandler implements PacketHandler {
         }
 
         RemoteAddress remoteAddress = ((SessionImpl)session).getTransportSession().buildRemoteAddress();
+        String xTraceId = ((SessionImpl) session).getTransportSession().getXTraceId();
+
         GRequestWebSocket gRequest = new GRequestWebSocket(
                 Instant.now(),
                 new GRequest.RemoteAddress(remoteAddress.getRawRemoteAddress(), remoteAddress.getEndRemoteAddress()),
                 query, variables,
+                xTraceId,
                 session.getUuid(),
                 parameters,
                 buildCookies(upgradeRequest),

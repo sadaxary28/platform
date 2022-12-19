@@ -61,6 +61,8 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
         }
         GRequest.RemoteAddress remoteAddress = new GRequest.RemoteAddress(rawRemoteAddress, endRemoteAddress);
 
+        String xTraceId = request.getHeader("X-Trace-Id");
+
         HashMap<String, String[]> parameters = new HashMap<>();
 
         try {
@@ -151,6 +153,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
                     Instant.now(),
                     remoteAddress,
                     query, queryVariables != null ? queryVariables : new HashMap<>(),
+                    xTraceId,
                     parameters,
                     attributes,
                     request.getCookies(),

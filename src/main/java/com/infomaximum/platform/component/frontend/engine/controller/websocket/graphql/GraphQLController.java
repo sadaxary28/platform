@@ -68,10 +68,13 @@ public class GraphQLController {
         Map<String, String> parameters = new HashMap<>();
 
         RemoteAddress remoteAddress = transportSession.buildRemoteAddress();
+        String xTraceId = transportSession.getXTraceId();
+
         GRequestWebSocket gRequest = new GRequestWebSocket(
                 Instant.now(),
                 new GRequest.RemoteAddress(remoteAddress.getRawRemoteAddress(), remoteAddress.getEndRemoteAddress()),
                 query, queryVariables,
+                xTraceId,
                 transportSession.getSession().getUuid(),
                 parameters,
                 null

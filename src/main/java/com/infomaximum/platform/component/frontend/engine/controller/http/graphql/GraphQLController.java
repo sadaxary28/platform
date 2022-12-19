@@ -54,8 +54,9 @@ public class GraphQLController {
 
         GRequest gRequest = graphQLRequest.getGRequest();
 
-        log.debug("Request {}, remote address: {}",
+        log.debug("Request {}, xTraceId: {}, remote address: {}",
                 GRequestUtils.getTraceRequest(gRequest),
+                gRequest.getXTraceId(),
                 gRequest.getRemoteAddress().endRemoteAddress
         );
 

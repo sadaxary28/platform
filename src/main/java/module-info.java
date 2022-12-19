@@ -57,6 +57,8 @@ module com.infomaximum.platform {
     exports com.infomaximum.platform.component.frontend.request.graphql.builder.impl.attribute;
     exports com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
     exports com.infomaximum.platform.component.frontend.engine.controller.websocket.graphql;
+    exports com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet;
+    exports com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.handshake;
     exports com.infomaximum.platform.component.database.remote.backup;
     exports com.infomaximum.platform.component.database.remote.cfconfig;
     exports com.infomaximum.platform.component.database.remote.dbprovider to com.infomaximum.cluster;

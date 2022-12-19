@@ -19,12 +19,12 @@ public class GRequestWebSocket extends GRequest {
 
     private final HandshakeData handshakeData;
 
-    public GRequestWebSocket(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String sessionUuid, Map<String, String> parameters, Cookie[] cookies) {
-        this(instant, remoteAddress, query, queryVariables, sessionUuid, parameters, cookies, null);
+    public GRequestWebSocket(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String xTraceId, String sessionUuid, Map<String, String> parameters, Cookie[] cookies) {
+        this(instant, remoteAddress, query, queryVariables, xTraceId, sessionUuid, parameters, cookies, null);
     }
 
-    public GRequestWebSocket(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String sessionUuid, Map<String, String> parameters, Cookie[] cookies, HandshakeData handshakeData) {
-        super(instant, remoteAddress, query, queryVariables);
+    public GRequestWebSocket(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String xTraceId, String sessionUuid, Map<String, String> parameters, Cookie[] cookies, HandshakeData handshakeData) {
+        super(instant, remoteAddress, query, queryVariables, xTraceId);
 
         this.sessionUuid = sessionUuid;
         this.parameters = parameters != null ? parameters : new HashMap<>();
