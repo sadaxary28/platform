@@ -168,7 +168,7 @@ public class GraphQLController {
         log.debug("Request {}, http code: {}, response: {}",
                 (gRequest != null) ? GRequestUtils.getTraceRequest(gRequest) : null,
                 httpStatus.value(),
-                (graphQLResponse.error) ? sout : "hide(" + bout + " bytes)"
+                (graphQLResponse.error) ? sout : "hide(" + bout.length + " bytes)"
         );
 
         return new ResponseEntity(bout, headers, httpStatus);
