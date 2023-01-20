@@ -19,8 +19,8 @@ public class GRequestHttp extends GRequest {
 
     private final ArrayList<UploadFile> uploadFiles;
 
-    public GRequestHttp(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String xTraceId, HashMap<String, String[]> parameters, HashMap<String, String[]> attributes, Cookie[] cookies, ArrayList<UploadFile> uploadFiles) {
-        super(instant, remoteAddress, query, queryVariables, xTraceId);
+    public GRequestHttp(Instant instant, RemoteAddress remoteAddress, String query, HashMap<String, Serializable> queryVariables, String operationName, String xTraceId, HashMap<String, String[]> parameters, HashMap<String, String[]> attributes, Cookie[] cookies, ArrayList<UploadFile> uploadFiles) {
+        super(instant, remoteAddress, query, queryVariables, operationName, xTraceId);
 
         this.parameters = parameters;
 

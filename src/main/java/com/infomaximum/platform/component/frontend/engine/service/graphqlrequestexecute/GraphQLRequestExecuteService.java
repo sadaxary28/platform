@@ -77,6 +77,7 @@ public class GraphQLRequestExecuteService {
         ExecutionInput executionInput = ExecutionInput.newExecutionInput()
                 .executionId(ExecutionId.generate())
                 .query(gRequest.getQuery())
+                .operationName(gRequest.getOperationName())
                 .context(context)
                 .variables(Collections.unmodifiableMap(gRequest.getQueryVariables()))
                 .build();

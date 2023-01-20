@@ -65,6 +65,8 @@ public class GraphQLController {
             queryVariables = new HashMap<>();
         }
 
+        String operationName = data.getAsString("operation_name");
+
         Map<String, String> parameters = new HashMap<>();
 
         RemoteAddress remoteAddress = transportSession.buildRemoteAddress();
@@ -73,7 +75,7 @@ public class GraphQLController {
         GRequestWebSocket gRequest = new GRequestWebSocket(
                 Instant.now(),
                 new GRequest.RemoteAddress(remoteAddress.getRawRemoteAddress(), remoteAddress.getEndRemoteAddress()),
-                query, queryVariables,
+                query, queryVariables, operationName,
                 xTraceId,
                 transportSession.getSession().getUuid(),
                 parameters,

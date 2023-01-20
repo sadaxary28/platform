@@ -34,6 +34,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
 
     private static final String QUERY_PARAM = "query";
     private static final String VARIABLES_PARAM = "variables";
+    private static final String OPERATION_NAME = "operationName";
 
     private final FrontendMultipartSource frontendMultipartSource;
     private final ClearUploadFiles clearUploadFiles;
@@ -69,6 +70,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
             //Собираем параметры
             String query = request.getParameter(QUERY_PARAM);
             HashMap<String, Serializable> queryVariables = null;
+            String operationName = request.getParameter(OPERATION_NAME);
 
             String variablesJson = request.getParameter(VARIABLES_PARAM);
             if (variablesJson != null) {
@@ -98,6 +100,12 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
                         queryVariables = new HashMap<>((Map) variables);
                     }
                 }
+
+                String[] operationNameArray = multipartParameters.get(OPERATION_NAME);
+                if (operationNameArray != null && operationNameArray.length > 0) {
+                    operationName = operationNameArray[0];
+                }
+
                 multipartParameters.forEach((key, values) -> parameters.put(key, values));
 
                 MultiValueMap<String, MultipartFile> multipartFiles = multipartRequest.getMultiFileMap();
@@ -134,6 +142,10 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
                             queryVariables = new HashMap<>((Map) variables);
                         }
 
+                        if (dataPostVariables.containsKey(OPERATION_NAME)) {
+                            operationName = dataPostVariables.getAsString(OPERATION_NAME);
+                        }
+
                         dataPostVariables.forEach((key, value) -> {
                             if (value instanceof String) {
                                 parameters.put(key, new String[]{ (String) value });
@@ -152,7 +164,7 @@ public class DefaultGraphQLRequestBuilder implements GraphQLRequestBuilder {
             GRequestHttp gRequest = new GRequestHttp(
                     Instant.now(),
                     remoteAddress,
-                    query, queryVariables != null ? queryVariables : new HashMap<>(),
+                    query, queryVariables != null ? queryVariables : new HashMap<>(), operationName,
                     xTraceId,
                     parameters,
                     attributes,

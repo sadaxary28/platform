@@ -71,6 +71,8 @@ public class GraphQLWSHandler implements PacketHandler {
             variables = new HashMap<>();
         }
 
+        String operationName =  payload.getAsString("operation_name");
+
         UpgradeRequest upgradeRequest = ((SessionImpl)session).getTransportSession().getUpgradeRequest();
 
         Map<String, String> parameters = new HashMap<>();
@@ -84,7 +86,7 @@ public class GraphQLWSHandler implements PacketHandler {
         GRequestWebSocket gRequest = new GRequestWebSocket(
                 Instant.now(),
                 new GRequest.RemoteAddress(remoteAddress.getRawRemoteAddress(), remoteAddress.getEndRemoteAddress()),
-                query, variables,
+                query, variables, operationName,
                 xTraceId,
                 session.getUuid(),
                 parameters,
