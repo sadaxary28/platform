@@ -47,4 +47,10 @@ public interface ReadableResource<T extends DomainObject>  {
         forEach(filter, result::add, transaction);
         return result;
     }
+
+    default ArrayList<Long> getIds(final Filter filter, QueryTransaction transaction) throws PlatformException {
+        ArrayList<Long> result = new ArrayList<>();
+        forEach(filter, o -> result.add(o.getId()), transaction);
+        return result;
+    }
 }
