@@ -55,7 +55,15 @@ public class ExcludeIntegrityTableService {
                 "com.infomaximum.subsystem.dashboard.TableComponentSetting",
                 "com.infomaximum.subsystem.dashboard.DynamicDimension",
                 "com.infomaximum.subsystem.dashboard.EntityMeta",
-                "com.infomaximum.subsystem.dashboard.Sorting"
+                "com.infomaximum.subsystem.dashboard.Sorting",
+                "com.infomaximum.subsystem.timesheet.TimesheetRole",
+                "com.infomaximum.subsystem.timesheet.CategoryLaborCost",
+                "com.infomaximum.subsystem.timesheet.OnActionNotificationList",
+                "com.infomaximum.subsystem.timesheet.NotWorkingTime",
+                "com.infomaximum.subsystem.timesheet.Comment",
+                "com.infomaximum.subsystem.timesheet.NomenclatureGroup",
+                "com.infomaximum.subsystem.timesheet.Junction",
+                "com.infomaximum.subsystem.timesheet.ProjectManagerApprovalState"
         ).collect(Collectors.toSet());
     }
 }
