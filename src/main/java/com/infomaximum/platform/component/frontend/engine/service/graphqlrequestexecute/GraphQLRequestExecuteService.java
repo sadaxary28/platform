@@ -255,10 +255,6 @@ public class GraphQLRequestExecuteService {
             error.put("parameters", outParameters);
         }
 
-        if (e.getComment() != null) {
-            error.put("message", e.getComment());
-        }
-
         if (sourceLocations != null) {
             JSONArray locations = new JSONArray();
             for (SourceLocation sourceLocation : sourceLocations) {

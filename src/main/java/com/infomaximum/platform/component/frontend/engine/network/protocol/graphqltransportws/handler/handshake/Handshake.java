@@ -8,6 +8,7 @@ import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.packet.TypePacket;
+import com.infomaximum.platform.exception.PlatformException;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -41,19 +42,25 @@ public abstract class Handshake implements PacketHandler {
         ((SessionImpl)session).getTransportSession().failPhaseHandshake(responsePacket);
     }
 
-    public abstract HandshakeData handshake(Packet packet);
+    public abstract Response handshake(Packet packet) throws PlatformException;
 
     @Override
     public CompletableFuture<IPacket[]> exec(Session session, IPacket packet) {
         Packet requestPacket = (Packet) packet;
         Packet responsePacket;
         if (requestPacket.type == TypePacket.GQL_CONNECTION_INIT) {
-            HandshakeData handshakeData = handshake(requestPacket);
-            completedPhaseHandshake(session, handshakeData);
-            responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ACK);
+            try {
+                Response handshakeResponse = handshake(requestPacket);
+                HandshakeData handshakeData = handshakeResponse.handshakeData();
+                completedPhaseHandshake(session, handshakeData);
+                responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ACK, handshakeResponse.payload());
+            } catch (PlatformException e) {
+                responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ERROR);
+            }
         } else {
             responsePacket = new Packet(requestPacket.id, TypePacket.GQL_CONNECTION_ERROR);
         }
         return CompletableFuture.completedFuture(new IPacket[]{ responsePacket });
     }
+
 }

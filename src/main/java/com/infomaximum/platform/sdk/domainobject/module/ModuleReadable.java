@@ -32,6 +32,6 @@ public class ModuleReadable extends DomainObject {
     }
 
     public Version getVersion() throws DatabaseException {
-        return Version.parseWithMigration(getString(FIELD_VERSION));
+        return Version.parse(getString(FIELD_VERSION));
     }
 }

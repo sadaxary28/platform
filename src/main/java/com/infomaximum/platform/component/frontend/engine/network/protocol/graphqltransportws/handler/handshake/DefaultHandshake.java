@@ -7,7 +7,7 @@ import com.infomaximum.platform.component.frontend.engine.network.protocol.graph
 public class DefaultHandshake extends Handshake {
 
     @Override
-    public HandshakeData handshake(Packet packet) {
-        return null;
+    public Response handshake(Packet packet) {
+        return new Response(null, null);
     }
 }

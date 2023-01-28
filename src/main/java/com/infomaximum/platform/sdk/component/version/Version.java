@@ -36,23 +36,6 @@ public class Version {
         );
     }
 
-    //TODO Удалить после 01.06.022
-    public static Version parseWithMigration(String source) throws IllegalArgumentException {
-        String[] parts = source.split("\\.");
-        if (parts.length == 4) {
-            return parse(source);
-        } else if (parts.length == 3) {
-            return new Version(
-                    Integer.parseInt(parts[0]),
-                    Integer.parseInt(parts[1]),
-                    Integer.parseInt(parts[2]),
-                    0
-            );
-        } else {
-            throw new IllegalArgumentException("Version string must be contains 4 or 3 parts: " + source);
-        }
-    }
-
     public static Version parseTaskUpdate(String source) throws IllegalArgumentException {
         String[] parts = source.split("\\.");
         if (parts.length == 4) {

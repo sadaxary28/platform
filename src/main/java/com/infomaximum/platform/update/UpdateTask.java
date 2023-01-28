@@ -115,7 +115,7 @@ public abstract class UpdateTask<T extends Component> {
                 throw new UpdateException(getComponentInfo().getUuid(), "Can't find dependence module in system " + dependency.componentUUID());
             }
         }
-        Version expectedDependenceModule = Version.parseWithMigration(dependency.version());
+        Version expectedDependenceModule = Version.parse(dependency.version());
         if (!dependenceModule.getVersion().equals(expectedDependenceModule)) {
             throw new UpdateException(getComponentInfo().getUuid(), "Wrong dependence module version. Current version: " + dependenceModule.getVersion() + ", expected: " + expectedDependenceModule
                     + ". Dependence on module: " + dependency.componentUUID());
