@@ -1,6 +1,7 @@
 package com.infomaximum.platform.component.frontend.engine.service.errorhandler;
 
 import com.infomaximum.platform.utils.ExceptionUtils;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.io.EofException;
@@ -11,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.util.NestedServletException;
 
 import java.util.List;
@@ -95,6 +98,21 @@ public class PlatformErrorHandler extends ErrorHandler {
         ) {
             //Exception в случае невалидного url, например:
             // _build/static/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e/%uff0e%uff0e//etc/passwd
+            return;
+        } else if (chainThrowables.size() == 3
+                && chainThrowables.get(0) instanceof ServletException
+                && chainThrowables.get(1) instanceof MultipartException
+                && chainThrowables.get(2) instanceof EofException
+        ) {
+            //Разрыв соединение
+            return;
+        } else if (chainThrowables.size() == 3
+                && chainThrowables.get(0) instanceof ServletException
+                && chainThrowables.get(1) instanceof MaxUploadSizeExceededException
+                && chainThrowables.get(2) instanceof IllegalStateException
+        ) {
+            //Exception если загружаемый файл превышает по лимитам
+            //java.lang.IllegalStateException: Request exceeds maxRequestSize (33554432)
             return;
         }
 
