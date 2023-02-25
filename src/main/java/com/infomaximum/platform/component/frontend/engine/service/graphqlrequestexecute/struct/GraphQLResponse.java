@@ -5,9 +5,15 @@ public class GraphQLResponse<T> {
     public final T data;
     public final boolean error;
 
-    public GraphQLResponse(T data, boolean error) {
+    public final GExecutionStatistics statistics;
+
+    public GraphQLResponse(
+            T data, boolean error,
+            GExecutionStatistics statistics
+    ) {
         this.data = data;
         this.error = error;
+        this.statistics = statistics;
     }
 
 }

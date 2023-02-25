@@ -26,7 +26,9 @@ public class MimeType implements RemoteObject {
 
     public static final MimeType ZIP = new MimeType("application/zip");
 
-    public static final MimeType DEB = new MimeType("application/x-deb");
+    public static final MimeType DEB = new MimeType("application/vnd.debian.binary-package");
+
+    public static final MimeType RPM = new MimeType("application/x-rpm");
 
 
     public final String value;

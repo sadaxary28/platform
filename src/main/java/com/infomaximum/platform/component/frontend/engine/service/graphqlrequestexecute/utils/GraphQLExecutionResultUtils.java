@@ -14,20 +14,9 @@ import java.util.stream.Collectors;
 
 public class GraphQLExecutionResultUtils {
 
-    public static String toLog(GRequest gRequest, GExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        String out = "query: " + gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "");
 
-        String outAccessDenied = getAccessDenied(executionResult, uncaughtExceptionHandler);
-        if (outAccessDenied != null) {
-            out += ", access_denied: [ " + outAccessDenied + "]";
-        }
-
-        return out;
-    }
-
-
-    //Формируем пути по которым произошол access_denied
-    private static String getAccessDenied(GExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    //Формируем пути по которым происходили access_denied
+    public static String getAccessDenied(GExecutionResult executionResult, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         if (executionResult.getErrors() == null || executionResult.getErrors().isEmpty()) {
             return null;
         }

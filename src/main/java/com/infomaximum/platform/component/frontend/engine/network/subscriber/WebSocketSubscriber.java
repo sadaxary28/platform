@@ -48,7 +48,7 @@ public abstract class WebSocketSubscriber implements Flow.Subscriber {
     public void onNext(Object nextExecutionResult) {
         try {
             GraphQLResponse nextGraphQLResponse = GraphQLRequestExecuteService.buildResponse(
-                    new GExecutionResult((ExecutionResult) nextExecutionResult)
+                    new GExecutionResult((ExecutionResult) nextExecutionResult), null
             );
 
             IPacket responsePacket = buildPacket(nextGraphQLResponse);

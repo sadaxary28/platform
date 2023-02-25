@@ -1,6 +1,7 @@
 package com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
 
 import com.google.common.net.UrlEscapers;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GExecutionStatistics;
 import com.infomaximum.cluster.graphql.executor.struct.GSubscriptionPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
 import com.infomaximum.cluster.graphql.subscription.SingleSubscriber;
@@ -54,12 +55,12 @@ public class GraphQLController {
 
         GRequest gRequest = graphQLRequest.getGRequest();
 
-        log.debug("Request {}, xTraceId: {}, remote address: {}",
+        log.debug("Request {}, xTraceId: {}, remote address: {}, query: {}",
                 GRequestUtils.getTraceRequest(gRequest),
                 gRequest.getXTraceId(),
-                gRequest.getRemoteAddress().endRemoteAddress
+                gRequest.getRemoteAddress().endRemoteAddress,
+                gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "")
         );
-
 
         if (frontendEngine.getFilterGRequests() != null) {
             try {
@@ -88,7 +89,7 @@ public class GraphQLController {
                         completionPublisher.subscribe(singleSubscriber);
                         return singleSubscriber.getCompletableFuture().thenApply(executionResult -> {
                             GraphQLResponse graphQLResponse =
-                                    GraphQLRequestExecuteService.buildResponse(executionResult);
+                                    GraphQLRequestExecuteService.buildResponse(executionResult, null);
                             return buildResponseEntity(gRequest, graphQLResponse);
                         });
                     } else if (data instanceof GOutputFile) {
@@ -141,7 +142,7 @@ public class GraphQLController {
     public ResponseEntity buildResponseEntity(GRequest gRequest, GraphQLWrapperPlatformException graphQLWrapperSubsystemException) {
         GraphQLRequestExecuteService graphQLRequestExecuteService = frontendEngine.getGraphQLRequestExecuteService();
 
-        GraphQLResponse<JSONObject> graphQLResponse = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException);
+        GraphQLResponse<JSONObject> graphQLResponse = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException, null);
         return buildResponseEntity(gRequest, graphQLResponse);
     }
 
@@ -165,11 +166,25 @@ public class GraphQLController {
         String sout = out.toString();
         byte[] bout = sout.getBytes(StandardCharsets.UTF_8);
 
-        log.debug("Request {}, http code: {}, response: {}",
-                (gRequest != null) ? GRequestUtils.getTraceRequest(gRequest) : null,
-                httpStatus.value(),
-                (graphQLResponse.error) ? sout : "hide(" + bout.length + " bytes)"
-        );
+        GExecutionStatistics statistics = graphQLResponse.statistics;
+        if (statistics == null) {
+            log.debug("Request {}, http code: {}, response: {}",
+                    (gRequest != null) ? GRequestUtils.getTraceRequest(gRequest) : null,
+                    httpStatus.value(),
+                    (graphQLResponse.error) ? sout : "hide(" + bout.length + " bytes)"
+            );
+        } else {
+            log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {}, http code: {}, response: {}{}",
+                    (gRequest != null) ? GRequestUtils.getTraceRequest(gRequest) : null,
+                    statistics.authContext(),
+                    statistics.priority(),
+                    statistics.timeWait(),
+                    statistics.timeExec(),
+                    httpStatus.value(),
+                    (graphQLResponse.error) ? sout : "hide(" + bout.length + " bytes)",
+                    (statistics.accessDenied() != null)?", access_denied: [ " + statistics.accessDenied() + "]": ""
+            );
+        }
 
         return new ResponseEntity(bout, headers, httpStatus);
     }

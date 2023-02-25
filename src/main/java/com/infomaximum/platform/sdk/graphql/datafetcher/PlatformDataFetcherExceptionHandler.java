@@ -1,45 +1,27 @@
 package com.infomaximum.platform.sdk.graphql.datafetcher;
 
-import com.infomaximum.platform.Platform;
+import com.infomaximum.cluster.graphql.executor.datafetcher.GDataFetcherExceptionHandler;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.exception.runtime.PlatformRuntimeException;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
-import graphql.ExceptionWhileDataFetching;
-import graphql.execution.DataFetcherExceptionHandler;
-import graphql.execution.DataFetcherExceptionHandlerParameters;
-import graphql.execution.DataFetcherExceptionHandlerResult;
-import graphql.execution.ResultPath;
-import graphql.language.SourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlatformDataFetcherExceptionHandler implements DataFetcherExceptionHandler {
+public class PlatformDataFetcherExceptionHandler extends GDataFetcherExceptionHandler {
 
-    private final static Logger log = LoggerFactory.getLogger(Platform.class);
+    private final static Logger log = LoggerFactory.getLogger(PlatformDataFetcherExceptionHandler.class);
 
-    @Override
-    public DataFetcherExceptionHandlerResult onException(DataFetcherExceptionHandlerParameters handlerParameters) {
-        Throwable exception = handlerParameters.getException();
-        SourceLocation sourceLocation = handlerParameters.getSourceLocation();
-        ResultPath path = handlerParameters.getPath();
-
-        ExceptionWhileDataFetching error = new ExceptionWhileDataFetching(path, exception, sourceLocation);
-
-        PlatformException extractSubsystemException = extractSubsystemException(exception);
-        String code = (extractSubsystemException != null) ? extractSubsystemException.getCode() : null;
-        if (GeneralExceptionBuilder.ACCESS_DENIED_CODE.equals(code) || GeneralExceptionBuilder.INVALID_CREDENTIALS.equals(code)) {
-            //ничего в лог не выводим
-        } else {
-            log.warn(exception.getMessage(), exception);
-        }
-        return DataFetcherExceptionHandlerResult.newResult().error(error).build();
+    public PlatformDataFetcherExceptionHandler() {
     }
 
-    private PlatformException extractSubsystemException(Throwable exception) {
-        if (exception instanceof PlatformRuntimeException) {
-            return ((PlatformRuntimeException) exception).getPlatformException();
-        } else {
-            return null;
+    public void handlerException(Throwable exception) {
+        if (exception instanceof PlatformRuntimeException platformRuntimeException) {
+            PlatformException platformException = platformRuntimeException.getPlatformException();
+            String code = platformException.getCode();
+            if (!GeneralExceptionBuilder.ACCESS_DENIED_CODE.equals(code) && !GeneralExceptionBuilder.INVALID_CREDENTIALS.equals(code)) {
+                log.warn(exception.getMessage(), exception);
+            }
         }
     }
+
 }

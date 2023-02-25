@@ -54,7 +54,7 @@ public class GraphQLController {
             GraphQLWrapperPlatformException graphQLWrapperSubsystemException = new GraphQLWrapperPlatformException(
                     GeneralExceptionBuilder.buildEmptyValueException("query")
             );
-            JSONObject out = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException).data;
+            JSONObject out = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException, null).data;
             return CompletableFuture.completedFuture(ResponseEntity.error(out));
         }
 
@@ -90,7 +90,7 @@ public class GraphQLController {
                 }
             } catch (PlatformException e) {
                 GraphQLWrapperPlatformException graphQLWrapperSubsystemException = new GraphQLWrapperPlatformException(e);
-                JSONObject out = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException).data;
+                JSONObject out = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException, null).data;
                 return CompletableFuture.completedFuture(ResponseEntity.error(out));
             }
         }

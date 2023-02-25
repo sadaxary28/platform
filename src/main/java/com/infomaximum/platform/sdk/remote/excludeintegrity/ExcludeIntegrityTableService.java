@@ -46,16 +46,11 @@ public class ExcludeIntegrityTableService {
 
     public Set<String> getListProcessedTables() {
         return Stream.of(
-                "com.infomaximum.subsystem.workspaces. WorkspaceApiKey",
-                "com.infomaximum.subsystem.workspaces. WorkspaceEmployee",
                 "com.infomaximum.subsystem.activedirectory.AdDomain",
                 "com.infomaximum.subsystem.dashboard.Sheet",
                 "com.infomaximum.subsystem.dashboard.DisplayCondition",
                 "com.infomaximum.subsystem.dashboard.ComponentVariable",
                 "com.infomaximum.subsystem.dashboard.TableComponentSetting",
-                "com.infomaximum.subsystem.dashboard.DynamicDimension",
-                "com.infomaximum.subsystem.dashboard.EntityMeta",
-                "com.infomaximum.subsystem.dashboard.Sorting",
                 "com.infomaximum.subsystem.timesheet.TimesheetRole",
                 "com.infomaximum.subsystem.timesheet.CategoryLaborCost",
                 "com.infomaximum.subsystem.timesheet.OnActionNotificationList",
