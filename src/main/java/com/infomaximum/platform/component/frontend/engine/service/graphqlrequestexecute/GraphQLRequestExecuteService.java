@@ -89,16 +89,17 @@ public class GraphQLRequestExecuteService {
         } catch (Throwable throwable) {
             graphQLExecutorPrepare.requestCompleted(context);
 
-            GraphQLWrapperPlatformException graphQLSubsystemException = coercionGraphQLSubsystemException(throwable);
-            return CompletableFuture.completedFuture(buildResponse(graphQLSubsystemException, null));
+            GraphQLWrapperPlatformException graphQLSubsystemException = coercionGraphQLPlatformException(throwable);
+            return CompletableFuture.completedFuture(buildResponse(graphQLSubsystemException));
         }
         if (prepareGraphQLDocument.getPrepareDocumentRequest().preparsedDocumentEntry.hasErrors()) {//Произошла ошибка парсинга
             graphQLExecutorPrepare.requestCompleted(context);
 
-            GraphQLWrapperPlatformException graphQLSubsystemException = coercionGraphQLSubsystemException(
-                    prepareGraphQLDocument.getPrepareDocumentRequest().preparsedDocumentEntry.getErrors().get(0)
+            GraphQLWrapperPlatformException graphQLSubsystemException = coercionGraphQLPlatformException(
+                    prepareGraphQLDocument.getPrepareDocumentRequest().preparsedDocumentEntry.getErrors().get(0),
+                    null
             );
-            return CompletableFuture.completedFuture(buildResponse(graphQLSubsystemException, null));
+            return CompletableFuture.completedFuture(buildResponse(graphQLSubsystemException));
         }
 
         //Выполняем graphql запрос
@@ -148,8 +149,8 @@ public class GraphQLRequestExecuteService {
                             graphQLExecutorPrepare.requestCompleted(context);
 
                             if (isExceptionWithIgnoreAccessDenied(executionResult)) {
-                                GraphQLWrapperPlatformException graphQLPlatformException = coercionGraphQLSubsystemException(executionResult.getErrors().get(0));
-                                return buildResponse(graphQLPlatformException, statistics);
+                                //Необходимо обязательно кидать exception, что бы транзакция откатилась
+                                throw coercionGraphQLPlatformException(executionResult.getErrors().get(0), statistics);
                             } else {
                                 return buildResponse(executionResult, statistics);
                             }
@@ -159,8 +160,8 @@ public class GraphQLRequestExecuteService {
                 //Все чистим
                 graphQLExecutorPrepare.requestCompleted(context);
 
-                GraphQLWrapperPlatformException graphQLSubsystemException = coercionGraphQLSubsystemException(throwable);
-                return buildResponse(graphQLSubsystemException, null);
+                GraphQLWrapperPlatformException graphQLPlatformException = coercionGraphQLPlatformException(throwable);
+                return buildResponse(graphQLPlatformException);
             });
         } else {
             try {
@@ -178,15 +179,15 @@ public class GraphQLRequestExecuteService {
 
                 GraphQLResponse<JSONObject> response;
                 if (!executionResult.getErrors().isEmpty()) {
-                    GraphQLWrapperPlatformException graphQLPlatformException = coercionGraphQLSubsystemException(executionResult.getErrors().get(0));
-                    response = buildResponse(graphQLPlatformException, statistics);
+                    GraphQLWrapperPlatformException graphQLPlatformException = coercionGraphQLPlatformException(executionResult.getErrors().get(0), statistics);
+                    response = buildResponse(graphQLPlatformException);
                 } else {
                     response = buildResponse(executionResult, statistics);
                 }
                 return CompletableFuture.completedFuture(response);
             } catch (Throwable throwable) {
-                GraphQLWrapperPlatformException graphQLSubsystemException = coercionGraphQLSubsystemException(throwable);
-                return CompletableFuture.completedFuture(buildResponse(graphQLSubsystemException, null));
+                GraphQLWrapperPlatformException graphQLSubsystemException = coercionGraphQLPlatformException(throwable);
+                return CompletableFuture.completedFuture(buildResponse(graphQLSubsystemException));
             } finally {
                 graphQLExecutorPrepare.requestCompleted(context);
             }
@@ -215,7 +216,7 @@ public class GraphQLRequestExecuteService {
         return false;
     }
 
-    public static GraphQLWrapperPlatformException coercionGraphQLSubsystemException(Throwable throwable) {
+    public static GraphQLWrapperPlatformException coercionGraphQLPlatformException(Throwable throwable) {
         if (throwable instanceof GraphQLWrapperPlatformException) {
             return (GraphQLWrapperPlatformException) throwable;
         } else if (throwable instanceof PlatformException) {
@@ -229,16 +230,17 @@ public class GraphQLRequestExecuteService {
             List<GSourceLocation> sourceLocations = (throwable instanceof GraphQLError) ? ((GraphQLError) throwable).getLocations().stream().map(GSourceLocation::new).toList() : null;
             return new GraphQLWrapperPlatformException(
                     GeneralExceptionBuilder.buildGraphQLValidationException(throwable.getMessage()),
-                    sourceLocations
+                    sourceLocations,
+                    null
             );
         } else {
             throw ExceptionUtils.coercionRuntimeException(throwable);
         }
     }
 
-    public GraphQLResponse<JSONObject> buildResponse(GraphQLWrapperPlatformException graphQLSubsystemException, GExecutionStatistics statistics) {
-        PlatformException e = graphQLSubsystemException.getPlatformException();
-        List<GSourceLocation> sourceLocations = graphQLSubsystemException.getSourceLocations();
+    public GraphQLResponse<JSONObject> buildResponse(GraphQLWrapperPlatformException graphQLPlatformException) {
+        PlatformException e = graphQLPlatformException.getPlatformException();
+        List<GSourceLocation> sourceLocations = graphQLPlatformException.getSourceLocations();
 
         JSONObject error = new JSONObject();
 
@@ -269,31 +271,31 @@ public class GraphQLRequestExecuteService {
             error.put("source_location", locations);
         }
 
-        return new GraphQLResponse<>(error, true, statistics);
+        return new GraphQLResponse<>(error, true, graphQLPlatformException.getStatistics());
     }
 
-    private static GraphQLWrapperPlatformException coercionGraphQLSubsystemException(GraphQLError graphQLError) {
+    private static GraphQLWrapperPlatformException coercionGraphQLPlatformException(GraphQLError graphQLError, GExecutionStatistics statistics) {
         ErrorClassification errorType = graphQLError.getErrorType();
 
-        PlatformException subsystemException;
+        PlatformException platformException;
         if (errorType == ErrorType.InvalidSyntax) {
-            subsystemException = GeneralExceptionBuilder.buildGraphQLInvalidSyntaxException();
+            platformException = GeneralExceptionBuilder.buildGraphQLInvalidSyntaxException();
         } else if (errorType == ErrorType.ValidationError) {
-            subsystemException = GeneralExceptionBuilder.buildGraphQLValidationException();
+            platformException = GeneralExceptionBuilder.buildGraphQLValidationException();
         } else if (errorType == ErrorType.DataFetchingException) {
             ExceptionWhileDataFetching exceptionWhileDataFetching = (ExceptionWhileDataFetching) graphQLError;
             Throwable dataFetchingThrowable = exceptionWhileDataFetching.getException();
             if (dataFetchingThrowable instanceof PlatformRuntimeException) {
-                subsystemException = ((PlatformRuntimeException) dataFetchingThrowable).getPlatformException();
+                platformException = ((PlatformRuntimeException) dataFetchingThrowable).getPlatformException();
             } else if (dataFetchingThrowable instanceof PlatformException) {
-                subsystemException = (PlatformException) dataFetchingThrowable;
+                platformException = (PlatformException) dataFetchingThrowable;
             } else {
                 throw ExceptionUtils.coercionRuntimeException(dataFetchingThrowable);
             }
         } else {
             throw new RuntimeException("Not support error type: " + graphQLError.getErrorType());
         }
-        return new GraphQLWrapperPlatformException(subsystemException, graphQLError.getLocations().stream().map(GSourceLocation::new).toList());
+        return new GraphQLWrapperPlatformException(platformException, graphQLError.getLocations().stream().map(GSourceLocation::new).toList(), statistics);
     }
 
     public static GraphQLResponse buildResponse(GExecutionResult executionResult, GExecutionStatistics statistics) {

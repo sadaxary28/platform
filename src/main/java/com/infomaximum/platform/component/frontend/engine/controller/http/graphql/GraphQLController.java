@@ -49,7 +49,7 @@ public class GraphQLController {
         try {
             graphQLRequest = frontendEngine.getGraphQLRequestBuilder().build(request);
         } catch (PlatformException e) {
-            GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLSubsystemException(e);
+            GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLPlatformException(e);
             return CompletableFuture.completedFuture(buildResponseEntity(null, graphQLWrapperSubsystemException));
         }
 
@@ -68,7 +68,7 @@ public class GraphQLController {
                     filter.filter(gRequest);
                 }
             } catch (PlatformException e) {
-                GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLSubsystemException(e);
+                GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLPlatformException(e);
                 return CompletableFuture.completedFuture(buildResponseEntity(null, graphQLWrapperSubsystemException));
             }
         }
@@ -142,7 +142,7 @@ public class GraphQLController {
     public ResponseEntity buildResponseEntity(GRequest gRequest, GraphQLWrapperPlatformException graphQLWrapperSubsystemException) {
         GraphQLRequestExecuteService graphQLRequestExecuteService = frontendEngine.getGraphQLRequestExecuteService();
 
-        GraphQLResponse<JSONObject> graphQLResponse = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException, null);
+        GraphQLResponse<JSONObject> graphQLResponse = graphQLRequestExecuteService.buildResponse(graphQLWrapperSubsystemException);
         return buildResponseEntity(gRequest, graphQLResponse);
     }
 
