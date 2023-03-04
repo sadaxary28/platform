@@ -28,6 +28,7 @@ import com.infomaximum.platform.utils.ExceptionUtils;
 import graphql.*;
 import graphql.execution.ExecutionId;
 import graphql.execution.NonNullableValueCoercedAsNullException;
+import graphql.language.SourceLocation;
 import graphql.schema.CoercingParseValueException;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -227,10 +228,16 @@ public class GraphQLRequestExecuteService {
                 || throwable instanceof CoercingParseValueException
                 || throwable instanceof NonNullableValueCoercedAsNullException
         ) {
-            List<GSourceLocation> sourceLocations = (throwable instanceof GraphQLError) ? ((GraphQLError) throwable).getLocations().stream().map(GSourceLocation::new).toList() : null;
+            List<GSourceLocation> locations = null;
+            if (throwable instanceof GraphQLError graphQLError) {
+                List<SourceLocation> nLocations = graphQLError.getLocations();
+                if (nLocations != null) {
+                    locations = nLocations.stream().map(GSourceLocation::new).toList();
+                }
+            }
             return new GraphQLWrapperPlatformException(
                     GeneralExceptionBuilder.buildGraphQLValidationException(throwable.getMessage()),
-                    sourceLocations,
+                    locations,
                     null
             );
         } else {
