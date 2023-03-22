@@ -25,12 +25,11 @@ public class UpdateService {
     private final static Logger log = LoggerFactory.getLogger(UpdateService.class);
 
     public static void updateComponents(Transaction transaction,
-                                        HashMap<String, ArrayList<String>> excludedIntegrityTables,
                                         ModuleUpdateEntity... updates) throws DatabaseException {
         Schema.resolve(ModuleEditable.class); //todo V.Bukharkin вынести отсюда
         List<UpdateUtil.ModuleTaskUpdate> moduleTaskUpdates = UpdateUtil.getUpdatesInCorrectOrder(updates);
         for (UpdateUtil.ModuleTaskUpdate moduleTaskUpdate : moduleTaskUpdates) {
-            updateComponent(moduleTaskUpdate, excludedIntegrityTables, transaction);
+            updateComponent(moduleTaskUpdate, transaction);
         }
     }
 
@@ -39,11 +38,10 @@ public class UpdateService {
                                                              T component,
                                                              Transaction transaction) throws DatabaseException {
         UpdateUtil.ModuleTaskUpdate moduleTaskUpdate = UpdateUtil.getUpdateTaskObj(prevVersion, nextVersion, component);
-        updateComponent(moduleTaskUpdate, component.getExcludedIntegrityTables(), transaction);
+        updateComponent(moduleTaskUpdate, transaction);
     }
 
     private static void updateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate,
-                                        HashMap<String, ArrayList<String>> excludedIntegrityTables,
                                         Transaction transaction) throws DatabaseException {
         Info componentInfo = (Info) moduleTaskUpdate.getComponent().getInfo();
 
@@ -67,6 +65,6 @@ public class UpdateService {
         for (Class domainObjectClass : new Reflections(componentInfo.getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
             domains.add(Schema.getEntity(domainObjectClass));
         }
-        Schema.read(transaction.getDbProvider()).checkSubsystemIntegrity(domains, componentInfo.getUuid(), excludedIntegrityTables);
+        Schema.read(transaction.getDbProvider()).checkSubsystemIntegrity(domains, componentInfo.getUuid(), new HashMap<>());
     }
 }

@@ -80,7 +80,7 @@ public class PlatformUpgrade {
 
 		new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> {
             ensureSchema(transaction.getDbProvider());
-            updateInstallModules(modules, databaseComponent.getExcludedIntegrityTables(), transaction);
+            updateInstallModules(modules, transaction);
             removeRedundantModules(modules, transaction);
 
 			//После обновления - перечитываем схему
@@ -128,7 +128,7 @@ public class PlatformUpgrade {
         }
 	}
 
-    private void updateInstallModules(List<Component> modules, HashMap<String, ArrayList<String>> excludedIntegrityTables, Transaction transaction) throws Exception {
+    private void updateInstallModules(List<Component> modules, Transaction transaction) throws Exception {
         Schema.resolve(ModuleReadable.class);
 
         List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
@@ -156,15 +156,15 @@ public class PlatformUpgrade {
 		for (Component module : modules) {
 			module.initialize();
 		}
-        update(modulesForUpdate, excludedIntegrityTables, transaction);
+        update(modulesForUpdate, transaction);
 	}
 
-    public void update(List<ModuleUpdateEntity> updates, HashMap<String, ArrayList<String>> excludedIntegrityTables, Transaction transaction) throws Exception {
+    public void update(List<ModuleUpdateEntity> updates, Transaction transaction) throws Exception {
         log.warn("Updating versions: " + updates);
         if (updates == null || updates.size() == 0) {
             return;
         }
-        UpdateService.updateComponents(transaction, excludedIntegrityTables, updates.toArray(new ModuleUpdateEntity[0]));
+        UpdateService.updateComponents(transaction, updates.toArray(new ModuleUpdateEntity[0]));
     }
 
 	private ModuleEditable getModuleByUuid(String uuid, Transaction transaction) throws DatabaseException {
