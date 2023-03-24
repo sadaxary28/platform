@@ -10,10 +10,10 @@ public class ClusterExceptionBuilder extends ExceptionBuilder {
     private static final ExceptionFactory EXCEPTION_FACTORY = new GeneralExceptionFactory();
 
     @Override
-    public PlatformException buildTransitRequestException(int node, int componentUniqueId, String rControllerClassName, String methodName, Exception cause) {
+    public PlatformException buildTransitRequestException(int node, int componentUniqueId, String rControllerClassName, int methodKey, Exception cause) {
         return EXCEPTION_FACTORY.build(
                 "remote_component_transit_request",
-                "node: " + node + ", componentUniqueId: " + componentUniqueId + ", rControllerClassName: " + rControllerClassName + ", methodName: " + methodName,
+                "node: " + node + ", componentUniqueId: " + componentUniqueId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
                 new HashMap<String, Object>() {{
                     put("node", node);
                 }},
@@ -22,10 +22,10 @@ public class ClusterExceptionBuilder extends ExceptionBuilder {
     }
 
     @Override
-    public PlatformException buildRemoteComponentUnavailableException(int node, int componentUniqueId, String rControllerClassName, String methodName, Exception cause) {
+    public PlatformException buildRemoteComponentUnavailableException(int node, int componentUniqueId, String rControllerClassName, int methodKey, Exception cause) {
         return EXCEPTION_FACTORY.build(
                 "remote_component_unavailable",
-                "node: " + node + ", componentUniqueId: " + componentUniqueId + ", rControllerClassName: " + rControllerClassName + ", methodName: " + methodName,
+                "node: " + node + ", componentUniqueId: " + componentUniqueId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
                 new HashMap<String, Object>() {{
                     put("node", node);
                 }},
