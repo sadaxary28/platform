@@ -59,7 +59,7 @@ public class GraphQLController {
                 GRequestUtils.getTraceRequest(gRequest),
                 gRequest.getXTraceId(),
                 gRequest.getRemoteAddress().endRemoteAddress,
-                gRequest.getQuery().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\r", "")
+                gRequest.getQuery().replaceAll("[\\s\\t\\r\\n]+", " ")
         );
 
         if (frontendEngine.getFilterGRequests() != null) {
