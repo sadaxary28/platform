@@ -10,7 +10,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.1.6p3'
+version '0.1.6p4'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -57,7 +57,7 @@ repositories {
 
 dependencies {
 
-    api 'com.infomaximum:cluster:1.1.6p4'
+    api 'com.infomaximum:cluster:1.1.6p6'
 //    api project(':cluster')
 
     api 'com.infomaximum:cluster-graphql:1.1.4p9'
