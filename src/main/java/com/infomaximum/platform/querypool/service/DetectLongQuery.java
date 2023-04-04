@@ -1,6 +1,7 @@
 package com.infomaximum.platform.querypool.service;
 
 import com.infomaximum.platform.querypool.QueryPool;
+import com.infomaximum.platform.querypool.service.utils.QueryPoolUtils;
 import com.infomaximum.platform.sdk.context.Context;
 import com.infomaximum.platform.sdk.context.ContextUtils;
 import com.infomaximum.platform.utils.DefaultThreadFactory;
@@ -76,16 +77,16 @@ public class DetectLongQuery implements Runnable {
 							ContextUtils.toTrace(context),
 							sTimeStart,
 							duration.toMillis(),
-							toStringResources(resources),
-							toStringStackTrace(thread.getStackTrace())
+							QueryPoolUtils.toStringResources(resources),
+							QueryPoolUtils.toStringStackTrace(thread)
 					);
 				} else {
 					log.warn("Detect long query {}, start: {}, duration: {}, resources: {}, stackTrace: {}",
 							ContextUtils.toTrace(context),
 							sTimeStart,
 							duration.toMillis(),
-							toStringResources(resources),
-							toStringStackTrace(thread.getStackTrace())
+							QueryPoolUtils.toStringResources(resources),
+							QueryPoolUtils.toStringStackTrace(thread)
 					);
 				}
 			}
@@ -94,45 +95,6 @@ public class DetectLongQuery implements Runnable {
 		}
 	}
 
-	private static String toStringResources(Map<String, QueryPool.LockType> resources) {
-		StringJoiner exclusive = new StringJoiner(", ");
-		StringJoiner shared = new StringJoiner(", ");
-		for (Map.Entry<String, QueryPool.LockType> entry : resources.entrySet()) {
-			String clazzName = entry.getKey().substring(entry.getKey().lastIndexOf('.') + 1);
-			switch (entry.getValue()) {
-				case EXCLUSIVE:
-					exclusive.add(clazzName);
-					break;
-				case SHARED:
-					shared.add(clazzName);
-					break;
-				default:
-					throw new RuntimeException("Unknown type: " + entry.getValue());
-			}
-		}
-
-		StringBuilder out = new StringBuilder();
-		out.append("{ ");
-		if (exclusive.length() > 0) {
-			out.append("exclusive: [").append(exclusive.toString()).append(']');
-		}
-		if (shared.length() > 0) {
-			if (exclusive.length() > 0) {
-				out.append(", ");
-			}
-			out.append("shared: [").append(shared.toString()).append(']');
-		}
-		out.append('}');
-		return out.toString();
-	}
-
-	private static String toStringStackTrace(StackTraceElement[] stackTraceElements) {
-		StringJoiner out = new StringJoiner(" ", "[", "]");
-		for (StackTraceElement item: stackTraceElements) {
-			out.add(item.toString());
-		}
-		return out.toString();
-	}
 
 	public void shutdownAwait() {
 		scheduler.shutdown();

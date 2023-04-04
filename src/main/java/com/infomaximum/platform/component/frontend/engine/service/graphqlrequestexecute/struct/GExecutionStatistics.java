@@ -7,6 +7,7 @@ public record GExecutionStatistics(
         UnauthorizedContext authContext,
         QueryPool.Priority priority,
         long timeWait,
+        long timeAuth,
         long timeExec,
         String accessDenied
 ) {

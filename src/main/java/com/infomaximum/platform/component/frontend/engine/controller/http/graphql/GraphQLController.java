@@ -174,12 +174,12 @@ public class GraphQLController {
                     (graphQLResponse.error) ? sout : "hide(" + bout.length + " bytes)"
             );
         } else {
-            log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {}, http code: {}, response: {}{}",
+            log.debug("Request {}, auth: {}, priority: {}, wait: {}, exec: {} ({}), http code: {}, response: {}{}",
                     (gRequest != null) ? GRequestUtils.getTraceRequest(gRequest) : null,
                     statistics.authContext(),
                     statistics.priority(),
                     statistics.timeWait(),
-                    statistics.timeExec(),
+                    statistics.timeExec(), statistics.timeAuth(),
                     httpStatus.value(),
                     (graphQLResponse.error) ? sout : "hide(" + bout.length + " bytes)",
                     (statistics.accessDenied() != null)?", access_denied: [ " + statistics.accessDenied() + "]": ""

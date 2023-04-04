@@ -136,12 +136,15 @@ public class GraphQLRequestExecuteService {
                             UnauthorizedContext authContext = requestAuthorize.authorize(context);
                             source.setAuthContext(authContext);
 
+                            Instant instantAuthorize = Instant.now();
+
                             GExecutionResult executionResult = graphQLExecutorPrepare.execute(prepareGraphQLDocument.getPrepareDocumentRequest());
 
                             GExecutionStatistics statistics = new GExecutionStatistics(
                                     authContext,
                                     priority,
                                     instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
+                                    instantAuthorize.toEpochMilli() - instantStartExecute.toEpochMilli(),
                                     Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),
                                     GraphQLExecutionResultUtils.getAccessDenied(executionResult, uncaughtExceptionHandler)
                             );
@@ -174,6 +177,7 @@ public class GraphQLRequestExecuteService {
                         new UnauthorizedContext(),
                         null,
                         instantStartExecute.toEpochMilli() - gRequest.getInstant().toEpochMilli(),
+                        0,
                         Instant.now().toEpochMilli() - instantStartExecute.toEpochMilli(),
                         GraphQLExecutionResultUtils.getAccessDenied(executionResult, uncaughtExceptionHandler)
                 );

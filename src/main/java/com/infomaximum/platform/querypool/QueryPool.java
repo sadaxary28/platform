@@ -3,6 +3,7 @@ package com.infomaximum.platform.querypool;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.querypool.service.DetectHighLoad;
 import com.infomaximum.platform.querypool.service.DetectLongQuery;
+import com.infomaximum.platform.querypool.service.DetectQueueFilling;
 import com.infomaximum.platform.querypool.service.threadcontext.ThreadContext;
 import com.infomaximum.platform.querypool.service.threadcontext.ThreadContextImpl;
 import com.infomaximum.platform.sdk.component.Component;
@@ -106,6 +107,7 @@ public class QueryPool {
                 throw e;
             } finally {
                 timeComplete = Instant.now();
+                queryPool.detectQueueFilling.queryComplete(this, timeStart, timeComplete);
                 thread = null;
                 queryPool.threadContext.clearContext();
             }
@@ -150,6 +152,7 @@ public class QueryPool {
 
     private final DetectLongQuery detectLongQuery;
     private final DetectHighLoad detectHighLoad;
+    private final DetectQueueFilling detectQueueFilling;
     private final ThreadContextImpl threadContext;
 
     private volatile int highPriorityWaitingQueryCount = 0;
@@ -169,6 +172,7 @@ public class QueryPool {
         );
         this.detectLongQuery = new DetectLongQuery(this, uncaughtExceptionHandler);
         this.detectHighLoad = new DetectHighLoad(this, threadPool, uncaughtExceptionHandler);
+        this.detectQueueFilling = new DetectQueueFilling();
         this.threadContext = new ThreadContextImpl(defaultThreadGroup);
     }
 
