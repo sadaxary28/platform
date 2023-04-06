@@ -50,7 +50,7 @@ public class GraphQLSubscriber implements NetworkListener {
 
         for (WebSocketSubscriber subscriber : subscribers) {
             if (packetId.equals(subscriber.packetId)) {
-                subscriber.getSubscription().cancel();
+                subscriber.unSubscriber();
                 subscribers.remove(subscriber);
                 break;
             }
@@ -73,13 +73,13 @@ public class GraphQLSubscriber implements NetworkListener {
 
     @Override
     public void onDisconnect(Session session) {
-        //При разрыве сетевого соединения - удляем себя из подписчиков и отменяем подписку
+        //При разрыве сетевого соединения - удаляем себя из подписчиков и отменяем подписку
         ((SessionImpl) session).getTransportSession().removeListener(this);
 
         CopyOnWriteArrayList<WebSocketSubscriber> subscribers = sessions.remove(session);
         if (subscribers != null) {
             for (WebSocketSubscriber subscriber : subscribers) {
-                subscriber.getSubscription().cancel();
+                subscriber.unSubscriber();
             }
         }
     }

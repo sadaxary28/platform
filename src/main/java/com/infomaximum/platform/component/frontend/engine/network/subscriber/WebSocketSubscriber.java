@@ -40,8 +40,10 @@ public abstract class WebSocketSubscriber implements Flow.Subscriber {
         subscription.request(1);
     }
 
-    public Flow.Subscription getSubscription() {
-        return subscription;
+    public void unSubscriber(){
+        if (subscription!=null) {
+            subscription.cancel();
+        }
     }
 
     @Override
