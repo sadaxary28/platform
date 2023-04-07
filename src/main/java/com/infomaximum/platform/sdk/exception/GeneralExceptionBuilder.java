@@ -1,6 +1,5 @@
 package com.infomaximum.platform.sdk.exception;
 
-import com.google.common.collect.ImmutableMap;
 import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.schema.Schema;
@@ -87,7 +86,7 @@ public class GeneralExceptionBuilder {
     }
 
     public static PlatformException buildInvalidCredentialsException(String type, String name) {
-        return EXCEPTION_FACTORY.build(INVALID_CREDENTIALS, ImmutableMap.of("type", type, "name", name));
+        return EXCEPTION_FACTORY.build(INVALID_CREDENTIALS, Map.of("type", type, "name", name));
     }
 
     public static PlatformException buildInvalidJsonException() {

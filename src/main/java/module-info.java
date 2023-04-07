@@ -11,7 +11,6 @@ module com.infomaximum.platform {
     requires spring.core;
     requires spring.web;
     requires org.eclipse.jetty.websocket.jetty.api;
-    requires com.google.common;
 
     exports com.infomaximum.platform.sdk.context;
     exports com.infomaximum.platform.querypool.iterator;

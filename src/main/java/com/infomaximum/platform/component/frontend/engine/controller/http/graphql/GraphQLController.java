@@ -1,6 +1,5 @@
 package com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
 
-import com.google.common.net.UrlEscapers;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GExecutionStatistics;
 import com.infomaximum.cluster.graphql.executor.struct.GSubscriptionPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
@@ -16,6 +15,7 @@ import com.infomaximum.platform.component.frontend.utils.GRequestUtils;
 import com.infomaximum.platform.exception.GraphQLWrapperPlatformException;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
+import com.infomaximum.platform.utils.EscapeUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import org.eclipse.jetty.server.Request;
@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,7 +99,7 @@ public class GraphQLController {
                         long fileSize = gOutputFile.getSize();
 
                         HttpHeaders header = new HttpHeaders();
-                        header.add("Content-Disposition", "attachment; filename*=UTF-8''" + UrlEscapers.urlFragmentEscaper().escape(gOutputFile.fileName));
+                        header.add("Content-Disposition", "attachment; filename*=UTF-8''" + EscapeUtils.escapeFileNameFromContentDisposition(gOutputFile.fileName));
                         header.setContentType(MediaType.valueOf(gOutputFile.mimeType.value));
                         header.setContentLength(fileSize);
 
