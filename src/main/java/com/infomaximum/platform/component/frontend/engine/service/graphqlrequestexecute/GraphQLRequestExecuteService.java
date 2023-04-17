@@ -234,10 +234,7 @@ public class GraphQLRequestExecuteService {
         ) {
             List<GSourceLocation> locations = null;
             if (throwable instanceof GraphQLError graphQLError) {
-                List<SourceLocation> nLocations = graphQLError.getLocations();
-                if (nLocations != null) {
-                    locations = nLocations.stream().map(GSourceLocation::new).toList();
-                }
+                locations = convertLocation(graphQLError);
             }
             return new GraphQLWrapperPlatformException(
                     GeneralExceptionBuilder.buildGraphQLValidationException(throwable.getMessage()),
@@ -306,7 +303,7 @@ public class GraphQLRequestExecuteService {
         } else {
             throw new RuntimeException("Not support error type: " + graphQLError.getErrorType());
         }
-        return new GraphQLWrapperPlatformException(platformException, graphQLError.getLocations().stream().map(GSourceLocation::new).toList(), statistics);
+        return new GraphQLWrapperPlatformException(platformException, convertLocation(graphQLError), statistics);
     }
 
     public static GraphQLResponse buildResponse(GExecutionResult executionResult, GExecutionStatistics statistics) {
@@ -358,6 +355,15 @@ public class GraphQLRequestExecuteService {
                 throw new RuntimeException("Not support type object(not scalar): " + value);
             }
             return graphQLTypeScalar.getGraphQLScalarType().getCoercing().serialize(value);
+        }
+    }
+
+    private static List<GSourceLocation> convertLocation(GraphQLError graphQLError) {
+        List<SourceLocation> nLocations = graphQLError.getLocations();
+        if (nLocations != null) {
+            return nLocations.stream().map(GSourceLocation::new).toList();
+        } else {
+            return null;
         }
     }
 }
