@@ -35,15 +35,11 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     private GraphQLSubscribeEvent graphQLSubscribeEvent;
     private RControllerGraphQLExecutorImpl rControllerGraphQLExecutor;
 
-    public Component(Cluster cluster) {
-        super(cluster);
-    }
-
     protected DBProvider initDBProvider() throws ClusterException {
         if (dbProvider != null) {
             return dbProvider;
         }
-        return new ComponentDBProvider(cluster, this);
+        return new ComponentDBProvider(getCluster(), this);
     }
 
     @Override
@@ -55,7 +51,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
 
     @Override
     protected ComponentExecutorTransportImpl.Builder getExecutorTransportBuilder() {
-        ClusterContext clusterContext = cluster.getContext();
+        ClusterContext clusterContext = getCluster().getContext();
         this.rControllerGraphQLExecutor = clusterContext.platform.getGraphQLEngine().buildRemoteControllerGraphQLExecutor(this);//Обработчик GraphQL запросов
         return super.getExecutorTransportBuilder()
                 .withRemoteController(rControllerGraphQLExecutor);

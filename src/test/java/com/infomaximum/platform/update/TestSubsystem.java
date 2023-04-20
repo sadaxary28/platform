@@ -12,17 +12,12 @@ public class TestSubsystem extends Component {
 
     public static Info INFO = new Info.Builder(UUID).build();
 
-    public TestSubsystem(Cluster cluster) {
-        super(cluster);
+    public TestSubsystem() {
     }
 
     @Override
     public Info getInfo() {
         return null;
-    }
-
-    public TestSubsystem() {
-        super(null);
     }
 
     @Override

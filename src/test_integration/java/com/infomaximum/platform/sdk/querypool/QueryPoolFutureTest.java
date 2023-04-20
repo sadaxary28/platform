@@ -23,7 +23,7 @@ public class QueryPoolFutureTest {
 
     @BeforeAll
     public static void initialize() {
-        component = new TestComponent(null);
+        component = new TestComponent();
         component.initialize();
     }
 

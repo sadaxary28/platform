@@ -26,14 +26,7 @@ public class TestComponent extends Component {
 
     private Path pathDatabase;
 
-    public TestComponent(Cluster cluster) {
-        super(cluster);
-
-    }
-
-    public TestComponent() {
-        super(null);
-    }
+    public TestComponent() { }
 
     @Override
     public Info getInfo() {

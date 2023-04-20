@@ -5,6 +5,7 @@ import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.platform.Platform;
+import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.component.database.remote.cfconfig.ColumnFamilyConfigService;
 import com.infomaximum.platform.sdk.component.Component;
@@ -15,23 +16,16 @@ import com.infomaximum.rocksdb.options.columnfamily.ColumnFamilyConfig;
 
 import java.util.HashMap;
 
+@com.infomaximum.cluster.anotation.Info(uuid = DatabaseConsts.UUID)
 public class DatabaseComponent extends Component {
 
-    public static final Info INFO = (Info) new Info.Builder(DatabaseConsts.UUID, null)
-            .withComponentClass(DatabaseComponent.class)
-            .build();
-
+    private final DatabaseConfigure databaseConfigure;
     private volatile RocksDBProvider dbProvider;
 
-    private DatabaseComponentExtension extension;
+//    private DatabaseComponentExtension extension;
 
-    public DatabaseComponent(Cluster cluster) {
-        super(cluster);
-    }
-
-    @Override
-    public Info getInfo() {
-        return INFO;
+    public DatabaseComponent(DatabaseConfigure databaseConfigure) {
+        this.databaseConfigure = databaseConfigure;
     }
 
     @Override
@@ -42,7 +36,7 @@ public class DatabaseComponent extends Component {
         try {
             final HashMap<String, ColumnFamilyConfig> configuredColumnFamilies = new ColumnFamilyConfigService(this).getConfigs();
             dbProvider = new RocksDataBaseBuilder()
-                    .withPath(Platform.get().getDatabaseConfigure().dbPath)
+                    .withPath(databaseConfigure.dbPath)
                     .withConfigColumnFamilies(configuredColumnFamilies)
                     .build();
             return dbProvider;
@@ -54,7 +48,7 @@ public class DatabaseComponent extends Component {
     public void onStarting() throws PlatformException {
         super.onStarting();
 
-        this.extension = Platform.get().getDatabaseConfigure().extension;
+        DatabaseComponentExtension extension = databaseConfigure.extension;
         if (extension != null) {
             extension.initialize(this);
         }
@@ -62,6 +56,10 @@ public class DatabaseComponent extends Component {
 
     public RocksDBProvider getRocksDBProvider() {
         return dbProvider;
+    }
+
+    public DatabaseConfigure getDatabaseConfigure() {
+        return databaseConfigure;
     }
 
     @Override

@@ -54,7 +54,7 @@ public class QueryPoolTest {
         }
     }
 
-    private static Component component = new TestComponent(null);
+    private static Component component = new TestComponent();
 
     private Throwable uncaughtException = null;
 

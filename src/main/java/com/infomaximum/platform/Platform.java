@@ -29,8 +29,6 @@ public class Platform implements AutoCloseable {
 
 	private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-	private final DatabaseConfigure databaseConfigure;
-
 	private final GraphQLEngine graphQLEngine;
 	private final Cluster cluster;
 	private final QueryPool queryPool;
@@ -40,7 +38,6 @@ public class Platform implements AutoCloseable {
 			if (instant != null) throw new IllegalStateException();
 
 			this.uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
-			this.databaseConfigure = builder.databaseConfigure;
 			this.graphQLEngine = builder.graphQLEngineBuilder.build();
 			this.cluster = builder.clusterBuilder
 					.withContext(new ClusterContext(this, builder.clusterContext))
@@ -70,10 +67,6 @@ public class Platform implements AutoCloseable {
 
 	public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
 		return uncaughtExceptionHandler;
-	}
-
-	public DatabaseConfigure getDatabaseConfigure() {
-		return databaseConfigure;
 	}
 
 	public Cluster getCluster() {
@@ -111,7 +104,6 @@ public class Platform implements AutoCloseable {
 
 		public final GraphQLEngine.Builder graphQLEngineBuilder;
 
-		private DatabaseConfigure databaseConfigure;
 		private Object clusterContext;
 
 		public Builder() {
@@ -137,11 +129,6 @@ public class Platform implements AutoCloseable {
 					.withPrepareCustomField(new GraphQLQueryCustomField())
 					.withTypeScalar(GraphQLScalarTypePlatform.GraphQLDuration)
 					.withTypeScalar(GraphQLScalarTypePlatform.GraphQLGOutputFile);
-		}
-
-		public Builder withConfig(DatabaseConfigure databaseConfigure) {
-			this.databaseConfigure = databaseConfigure;
-			return this;
 		}
 
 		public Builder withClusterContext(Object clusterContext) {
