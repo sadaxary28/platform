@@ -30,7 +30,10 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PlatformUpgrade {
@@ -160,12 +163,13 @@ public class PlatformUpgrade {
 	}
 
     public void update(List<ModuleUpdateEntity> updates, Transaction transaction) throws Exception {
-        log.warn("Updating versions: " + updates);
-        if (updates == null || updates.size() == 0) {
-            return;
-        }
-        UpdateService.updateComponents(transaction, updates.toArray(new ModuleUpdateEntity[0]));
-    }
+		log.warn("Updating versions: " + updates);
+		if (updates == null || updates.size() == 0) {
+			return;
+		}
+		UpdateService.beforeUpdateComponents(transaction, updates.toArray(ModuleUpdateEntity[]::new));
+		UpdateService.updateComponents(transaction, updates.toArray(ModuleUpdateEntity[]::new));
+	}
 
 	private ModuleEditable getModuleByUuid(String uuid, Transaction transaction) throws DatabaseException {
 		try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, uuid))) {

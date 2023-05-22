@@ -17,7 +17,10 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 public class UpdateService {
@@ -33,12 +36,29 @@ public class UpdateService {
         }
     }
 
-    public static <T extends Component> void updateComponent(Version prevVersion,
-                                                             Version nextVersion,
-                                                             T component,
-                                                             Transaction transaction) throws DatabaseException {
-        UpdateUtil.ModuleTaskUpdate moduleTaskUpdate = UpdateUtil.getUpdateTaskObj(prevVersion, nextVersion, component);
-        updateComponent(moduleTaskUpdate, transaction);
+    public static void beforeUpdateComponents(Transaction transaction,
+                                              ModuleUpdateEntity... updates) throws DatabaseException {
+        Schema.resolve(ModuleEditable.class); //todo V.Bukharkin вынести отсюда
+        List<UpdateUtil.ModuleTaskUpdate> moduleTaskUpdates = UpdateUtil.getUpdatesInCorrectOrder(updates);
+        for (UpdateUtil.ModuleTaskUpdate moduleTaskUpdate : moduleTaskUpdates) {
+            beforeUpdateComponent(moduleTaskUpdate, transaction);
+        }
+    }
+
+    private static void beforeUpdateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate,
+                                              Transaction transaction) throws DatabaseException {
+        Info componentInfo = (Info) moduleTaskUpdate.getComponent().getInfo();
+
+        try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, componentInfo.getUuid()))) {
+            if (iter.hasNext()) {
+                ModuleEditable moduleEditable = iter.next();
+                log.info("Before updating subsystem: " + componentInfo.getUuid() + ". From version " + moduleEditable.getVersion() + " to version " + componentInfo.getVersion());
+                UpdateTask<? extends Component> updateTask = moduleTaskUpdate.getUpdateTask();
+                if (updateTask != null) {
+                    updateTask.executeBeforeUpdate(moduleEditable, transaction);
+                }
+            }
+        }
     }
 
     private static void updateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate,
@@ -52,7 +72,7 @@ public class UpdateService {
 
                 UpdateTask<? extends Component> updateTask = moduleTaskUpdate.getUpdateTask();
                 if (updateTask != null) {
-                    updateTask.execute(moduleEditable, transaction);
+                    updateTask.execute(transaction);
                 }
 
                 //Сохраняем

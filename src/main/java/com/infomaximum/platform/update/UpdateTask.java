@@ -34,9 +34,13 @@ public abstract class UpdateTask<T extends Component> {
         this.component = component;
     }
 
-    public void execute(ModuleEditable moduleEditable, Transaction transaction) throws DatabaseException {
-        validateUpdateTask(moduleEditable, transaction);
+    public void execute(Transaction transaction) throws DatabaseException {
         updateComponent(transaction);
+    }
+
+    public void executeBeforeUpdate(ModuleEditable moduleEditable, Transaction transaction) throws DatabaseException {
+        validateUpdateTask(moduleEditable, transaction);
+        beforeUpdate(transaction);
     }
 
     public Info getComponentInfo() {
@@ -73,6 +77,7 @@ public abstract class UpdateTask<T extends Component> {
 
     /**
      * Сверяем версии для обновления игнорируя патч
+     *
      * @param left
      * @param right
      * @return
@@ -148,4 +153,7 @@ public abstract class UpdateTask<T extends Component> {
     }
 
     protected abstract void updateComponent(Transaction transaction) throws DatabaseException;
+
+    protected void beforeUpdate(Transaction transaction) throws DatabaseException {
+    }
 }
