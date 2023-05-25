@@ -20,16 +20,16 @@ public class RControllerDBProviderImpl extends AbstractRController<DatabaseCompo
     private final ConcurrentMap<Long, DBTransaction> transactions = new ConcurrentHashMap<>();
     private final ConcurrentMap<Long, DBIterator> iterators = new ConcurrentHashMap<>();
 
-	public RControllerDBProviderImpl(DatabaseComponent subSystem) {
-		super(subSystem);
-	}
+    public RControllerDBProviderImpl(DatabaseComponent subSystem) {
+        super(subSystem);
+    }
 
     @Override
     public long createIterator(String columnFamily) throws DatabaseException {
         DBIterator iterator = component.getRocksDBProvider().createIterator(columnFamily);
 
-	    long iteratorId = objectCounter.getAndIncrement();
-	    iterators.put(iteratorId, iterator);
+        long iteratorId = objectCounter.getAndIncrement();
+        iterators.put(iteratorId, iterator);
         return iteratorId;
     }
 
@@ -37,8 +37,8 @@ public class RControllerDBProviderImpl extends AbstractRController<DatabaseCompo
     public long beginTransaction() throws DatabaseException {
         DBTransaction transaction = component.getRocksDBProvider().beginTransaction();
 
-	    long transactionId = objectCounter.getAndIncrement();
-	    transactions.put(transactionId, transaction);
+        long transactionId = objectCounter.getAndIncrement();
+        transactions.put(transactionId, transaction);
         return transactionId;
     }
 

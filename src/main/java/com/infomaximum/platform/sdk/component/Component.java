@@ -1,6 +1,5 @@
 package com.infomaximum.platform.sdk.component;
 
-import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.core.service.transport.executor.ComponentExecutorTransportImpl;
 import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.graphql.remote.graphql.executor.RControllerGraphQLExecutorImpl;
@@ -22,7 +21,9 @@ import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.platform.sdk.subscription.GraphQLSubscribeEvent;
 import org.reflections.Reflections;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class Component extends com.infomaximum.cluster.struct.Component {
 
@@ -58,7 +59,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     }
 
     @Override
-    public void destroy(){
+    public void destroy() {
         onDestroy();
         super.destroy();
     }
@@ -69,7 +70,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     public ComponentType getType() {
         return null;
     }
-    
+
     public QuerySystem<Void> onStart() {
         return null;
     }

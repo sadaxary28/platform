@@ -9,16 +9,16 @@ import java.nio.file.Path;
 
 public class FileUtils {
 
-	public static void ensureDirectory(Path dir) throws PlatformException {
-		try {
-			if (!Files.exists(dir) || !Files.isDirectory(dir)) {
-				Files.createDirectory(dir);
-			}
-		} catch (IOException e) {
-			throw GeneralExceptionBuilder.buildIOErrorException(e);
-		} catch (SecurityException e) {
-			throw GeneralExceptionBuilder.buildSecurityException(e);
-		}
-	}
+    public static void ensureDirectory(Path dir) throws PlatformException {
+        try {
+            if (!Files.exists(dir) || !Files.isDirectory(dir)) {
+                Files.createDirectory(dir);
+            }
+        } catch (IOException e) {
+            throw GeneralExceptionBuilder.buildIOErrorException(e);
+        } catch (SecurityException e) {
+            throw GeneralExceptionBuilder.buildSecurityException(e);
+        }
+    }
 
 }

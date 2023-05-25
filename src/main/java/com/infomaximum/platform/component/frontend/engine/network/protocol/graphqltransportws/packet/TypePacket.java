@@ -13,8 +13,7 @@ public enum TypePacket {
     GQL_NEXT("next"),// Server -> Client
     GQL_ERROR("error"), // Server -> Client
 
-    GQL_COMPLETE("complete")
-    ;
+    GQL_COMPLETE("complete");
 
     public final String type;
 
