@@ -38,89 +38,101 @@ import java.util.stream.Collectors;
 
 public class PlatformUpgrade {
 
-	private final static Logger log = LoggerFactory.getLogger(PlatformUpgrade.class);
+    private final static Logger log = LoggerFactory.getLogger(PlatformUpgrade.class);
 
-	private final Platform platform;
+    private final Platform platform;
 
-	public PlatformUpgrade(Platform platform) {
-		this.platform = platform;
-	}
+    public PlatformUpgrade(Platform platform) {
+        this.platform = platform;
+    }
 
-	public void install() throws PlatformException {
-		try {
-			DatabaseComponent databaseSubsystem = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
+    public void install() throws PlatformException {
+        try {
+            DatabaseComponent databaseSubsystem = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
             databaseSubsystem.initialize();
-			DBProvider provider = databaseSubsystem.getRocksDBProvider();
-			Schema schema = Schema.read(provider);
+            DBProvider provider = databaseSubsystem.getRocksDBProvider();
+            Schema schema = Schema.read(provider);
 
-			new DomainObjectSource(databaseSubsystem.getRocksDBProvider()).executeTransactional(transaction -> {
-				schema.createTable(new StructEntity(ModuleReadable.class));
+            new DomainObjectSource(databaseSubsystem.getRocksDBProvider()).executeTransactional(transaction -> {
+                schema.createTable(new StructEntity(ModuleReadable.class));
 
-				//Регистрируем и установливаем модули
+                //Регистрируем и установливаем модули
                 List<Component> components = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
                 for (Component component : components) {
                     installComponent(component, transaction);
                 }
-			});
-		} catch (DatabaseException e) {
-			throw GeneralExceptionBuilder.buildDatabaseException(e);
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
-		}
-	}
+            });
+        } catch (DatabaseException e) {
+            throw GeneralExceptionBuilder.buildDatabaseException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
-	public void upgrade() throws Exception {
+    public void upgrade() throws Exception {
 //		DatabaseComponent databaseSubsystem = platform.getCluster().getAnyComponent(DatabaseComponent.class);
 //		DBProvider provider = databaseSubsystem.getRocksDBProvider();
 //		Schema schema = Schema.read(provider);
 
-		List<Component> modules = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
-		//Грузим сперва DatabaseSubsystem
-		DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
-		databaseComponent.initialize();
-		log.info("Database initialized...");
+        List<Component> modules = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
+        //Грузим сперва DatabaseSubsystem
+        DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
+        databaseComponent.initialize();
+        log.info("Database initialized...");
 
-		new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> {
+        new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> {
             ensureSchema(transaction.getDbProvider());
             updateInstallModules(modules, transaction);
             removeRedundantModules(modules, transaction);
 
-			//После обновления - перечитываем схему
-			for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
-				component.reloadSchema(transaction.getDbProvider());
-			}
-		});
+            //После обновления - перечитываем схему
+            for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
+                component.reloadSchema(transaction.getDbProvider());
+            }
+        });
 
-		new PlatformStartStop(platform).start(true);
-		new PlatformStartStop(platform).stop();
-	}
+        new PlatformStartStop(platform).start(true);
+        new PlatformStartStop(platform).stop();
+    }
 
-	private void ensureSchema(DBProvider dbProvider) throws DatabaseException {
-		if (!Schema.exists(dbProvider)) {
-			Schema.create(dbProvider);
-		}
-	}
 
-	//TODO Ulitin V. Временно сделано public - перевести на private
-	public void installComponent(Component component, Transaction transaction) throws DatabaseException {
-		if (!(component.getInfo() instanceof Info)) {
-			return;
-		}
+    public void checkUpgrade() throws Exception {
+        List<Component> modules = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
+        DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
+        databaseComponent.initialize();
+        log.info("Database initialized...");
 
-		Info info = (Info) component.getInfo();
-		if (info.getVersion() == null) {
-			return;
-		}
+        new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> checkInstallModules(modules, transaction));
+        new PlatformStartStop(platform).stop();
+    }
 
-		//Регистрируем компонент
-		ModuleEditable moduleEditable = transaction.create(ModuleEditable.class);
-		moduleEditable.setUuid(info.getUuid());
-		moduleEditable.setVersion(info.getVersion());
-		transaction.save(moduleEditable);
 
-		//Создаем доменные сущности
-	    Set<Class<? extends DomainObject>> objects = new HashSet<>();
+    private void ensureSchema(DBProvider dbProvider) throws DatabaseException {
+        if (!Schema.exists(dbProvider)) {
+            Schema.create(dbProvider);
+        }
+    }
+
+    //TODO Ulitin V. Временно сделано public - перевести на private
+    public void installComponent(Component component, Transaction transaction) throws DatabaseException {
+        if (!(component.getInfo() instanceof Info)) {
+            return;
+        }
+
+        Info info = (Info) component.getInfo();
+        if (info.getVersion() == null) {
+            return;
+        }
+
+        //Регистрируем компонент
+        ModuleEditable moduleEditable = transaction.create(ModuleEditable.class);
+        moduleEditable.setUuid(info.getUuid());
+        moduleEditable.setVersion(info.getVersion());
+        transaction.save(moduleEditable);
+
+        //Создаем доменные сущности
+        Set<Class<? extends DomainObject>> objects = new HashSet<>();
         for (Class domainObjectClass : new Reflections(info.getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
             objects.add(domainObjectClass);
         }
@@ -129,7 +141,7 @@ public class PlatformUpgrade {
         } catch (DatabaseException e) {
             throw new SchemaException(e);
         }
-	}
+    }
 
     private void updateInstallModules(List<Component> modules, Transaction transaction) throws Exception {
         Schema.resolve(ModuleReadable.class);
@@ -142,83 +154,101 @@ public class PlatformUpgrade {
                 case NONE:
                     log.warn("Module " + module.getInfo().getUuid() + " has actual version");
                     break;
-				case INSTALL:
-					log.warn("Module " + module.getInfo().getUuid() + " installing");
-					new PlatformUpgrade(platform).installComponent(module, transaction);
-					break;
-				case UPDATE:
-					log.warn("Module " + module.getInfo().getUuid() + " ready for update");
-					ModuleUpdateEntity updateEntity = new ModuleUpdateEntity(moduleInDB.getVersion(),
-							((com.infomaximum.platform.sdk.component.Info)module.getInfo()).getVersion(),
-							module.getInfo().getUuid());
-					updateEntity.setComponent(module);
-					modulesForUpdate.add(updateEntity);
-					break;
-			}
-		}
-		for (Component module : modules) {
-			module.initialize();
-		}
+                case INSTALL:
+                    log.warn("Module " + module.getInfo().getUuid() + " installing");
+                    new PlatformUpgrade(platform).installComponent(module, transaction);
+                    break;
+                case UPDATE:
+                    log.warn("Module " + module.getInfo().getUuid() + " ready for update");
+                    ModuleUpdateEntity updateEntity = new ModuleUpdateEntity(moduleInDB.getVersion(),
+                            ((com.infomaximum.platform.sdk.component.Info) module.getInfo()).getVersion(),
+                            module.getInfo().getUuid());
+                    updateEntity.setComponent(module);
+                    modulesForUpdate.add(updateEntity);
+                    break;
+            }
+        }
+        for (Component module : modules) {
+            module.initialize();
+        }
         update(modulesForUpdate, transaction);
-	}
+    }
+
+
+    private void checkInstallModules(List<Component> modules, Transaction transaction) {
+        List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
+        for (Component module : modules) {
+            ModuleEditable moduleInDB = getModuleByUuid(module.getInfo().getUuid(), transaction);
+            UpgradeAction upgradeAction = getUpgradeAction(module, moduleInDB);
+            if (upgradeAction == UpgradeAction.UPDATE) {
+                ModuleUpdateEntity updateEntity = new ModuleUpdateEntity(moduleInDB.getVersion(),
+                        ((com.infomaximum.platform.sdk.component.Info) module.getInfo()).getVersion(),
+                        module.getInfo().getUuid());
+                updateEntity.setComponent(module);
+                modulesForUpdate.add(updateEntity);
+            }
+        }
+        UpdateService.beforeUpdateComponents(transaction, modulesForUpdate.toArray(ModuleUpdateEntity[]::new));
+    }
+
 
     public void update(List<ModuleUpdateEntity> updates, Transaction transaction) throws Exception {
-		log.warn("Updating versions: " + updates);
-		if (updates == null || updates.size() == 0) {
-			return;
-		}
-		UpdateService.beforeUpdateComponents(transaction, updates.toArray(ModuleUpdateEntity[]::new));
-		UpdateService.updateComponents(transaction, updates.toArray(ModuleUpdateEntity[]::new));
-	}
+        log.warn("Updating versions: " + updates);
+        if (updates == null || updates.size() == 0) {
+            return;
+        }
+        UpdateService.beforeUpdateComponents(transaction, updates.toArray(ModuleUpdateEntity[]::new));
+        UpdateService.updateComponents(transaction, updates.toArray(ModuleUpdateEntity[]::new));
+    }
 
-	private ModuleEditable getModuleByUuid(String uuid, Transaction transaction) throws DatabaseException {
-		try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, uuid))) {
-			if (iter.hasNext()) {
-				return iter.next();
-			} else {
-				return null;
-			}
-		}
-	}
+    private ModuleEditable getModuleByUuid(String uuid, Transaction transaction) throws DatabaseException {
+        try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, uuid))) {
+            if (iter.hasNext()) {
+                return iter.next();
+            } else {
+                return null;
+            }
+        }
+    }
 
-	private UpgradeAction getUpgradeAction(Component module, ModuleEditable moduleEditable) throws DatabaseException {
-		if (moduleEditable == null) {
-			return UpgradeAction.INSTALL;
-		}
-		Version previousVersion = moduleEditable.getVersion();
-		Version nextVersion = ((com.infomaximum.platform.sdk.component.Info)module.getInfo()).getVersion();
-		int cmpResult = Version.compare(nextVersion, previousVersion);
-		if (cmpResult == 0) {
-			return UpgradeAction.NONE;
-		} else if (cmpResult > 0) {
-			return UpgradeAction.UPDATE;
-		} else {
-			throw new DowngradingException(module.getInfo().getUuid(), nextVersion, previousVersion);
-		}
-	}
+    private UpgradeAction getUpgradeAction(Component module, ModuleEditable moduleEditable) throws DatabaseException {
+        if (moduleEditable == null) {
+            return UpgradeAction.INSTALL;
+        }
+        Version previousVersion = moduleEditable.getVersion();
+        Version nextVersion = ((com.infomaximum.platform.sdk.component.Info) module.getInfo()).getVersion();
+        int cmpResult = Version.compare(nextVersion, previousVersion);
+        if (cmpResult == 0) {
+            return UpgradeAction.NONE;
+        } else if (cmpResult > 0) {
+            return UpgradeAction.UPDATE;
+        } else {
+            throw new DowngradingException(module.getInfo().getUuid(), nextVersion, previousVersion);
+        }
+    }
 
-	private void removeRedundantModules(List<Component> modules, Transaction transaction) throws DatabaseException {
-		Schema schema = Schema.read(transaction.getDbProvider());
-		log.info("Checking for unused modules...");
-		Set<String> moduleUuids = modules.stream().map(Component::getInfo).map(com.infomaximum.cluster.struct.Info::getUuid).collect(Collectors.toSet());
-		log.warn("Debug: " + moduleUuids);
-		try (IteratorEntity<ModuleEditable> mi = transaction.find(ModuleEditable.class, EmptyFilter.INSTANCE)) {
-			while (mi.hasNext()) {
-				ModuleEditable moduleEditable = mi.next();
-				log.warn("Debug: " + moduleEditable.getUuid() + " Version: " + moduleEditable.getVersion());
-				if (!moduleUuids.contains(moduleEditable.getUuid())
-						//TODO Ulitin V. Удалить эту доп. условие после 01.01.2021
+    private void removeRedundantModules(List<Component> modules, Transaction transaction) throws DatabaseException {
+        Schema schema = Schema.read(transaction.getDbProvider());
+        log.info("Checking for unused modules...");
+        Set<String> moduleUuids = modules.stream().map(Component::getInfo).map(com.infomaximum.cluster.struct.Info::getUuid).collect(Collectors.toSet());
+        log.warn("Debug: " + moduleUuids);
+        try (IteratorEntity<ModuleEditable> mi = transaction.find(ModuleEditable.class, EmptyFilter.INSTANCE)) {
+            while (mi.hasNext()) {
+                ModuleEditable moduleEditable = mi.next();
+                log.warn("Debug: " + moduleEditable.getUuid() + " Version: " + moduleEditable.getVersion());
+                if (!moduleUuids.contains(moduleEditable.getUuid())
+                    //TODO Ulitin V. Удалить эту доп. условие после 01.01.2021
 //						&& !moduleEditable.getUuid().equals(Subsystems.UUID)
-				) {
-					removeModule(moduleEditable, schema, transaction);
-				}
-			}
-		}
-	}
+                ) {
+                    removeModule(moduleEditable, schema, transaction);
+                }
+            }
+        }
+    }
 
-	private void removeModule(ModuleEditable module, Schema schema, Transaction transaction) throws DatabaseException {
-		log.warn("Removing module " + module.getUuid() + "...");
-		transaction.remove(module);
-		schema.dropTablesByNamespace(module.getUuid());
-	}
+    private void removeModule(ModuleEditable module, Schema schema, Transaction transaction) throws DatabaseException {
+        log.warn("Removing module " + module.getUuid() + "...");
+        transaction.remove(module);
+        schema.dropTablesByNamespace(module.getUuid());
+    }
 }

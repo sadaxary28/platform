@@ -31,9 +31,9 @@ public class WebSocketStandardSubscriber extends WebSocketSubscriber {
                 : ResponseEntity.success(nextGraphQLResponse.data);
 
         return new ResponsePacket(
-                    (long) packetId,
-                    responseEntity.code,
-                    responseEntity.data);
+                (long) packetId,
+                responseEntity.code,
+                responseEntity.data);
     }
 
 }
