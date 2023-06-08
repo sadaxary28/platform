@@ -190,6 +190,9 @@ public class PlatformUpgrade {
                 modulesForUpdate.add(updateEntity);
             }
         }
+        for (Component module : modules) {
+            module.initialize();
+        }
         UpdateService.beforeUpdateComponents(transaction, modulesForUpdate.toArray(ModuleUpdateEntity[]::new));
     }
 
