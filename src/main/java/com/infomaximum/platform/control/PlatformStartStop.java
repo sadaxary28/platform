@@ -43,21 +43,7 @@ public class PlatformStartStop {
      */
     public void start(boolean checkUpgrade) throws PlatformException {
         //initialize
-        for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
-            if (component.getDbProvider() == null) {
-                component.initialize();
-            }
-        }
-
-        //Инициализируем ModuleReadable
-        try {
-            DatabaseComponent databaseSubsystem = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
-            Schema schema = Schema.read(databaseSubsystem.getRocksDBProvider());
-            log.warn("Schema on start: " + schema.getDbSchema().toTablesJsonString());
-            Schema.resolve(ModuleReadable.class);
-        } catch (DatabaseException e) {
-            throw GeneralExceptionBuilder.buildDatabaseException(e);
-        }
+        initialize();
 
         //TODO Ulitin V. - где то потерялась валидация схемы база данных!!!
 
@@ -116,6 +102,24 @@ public class PlatformStartStop {
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void initialize() throws PlatformException {
+        for (Component component : platform.getCluster().getDependencyOrderedComponentsOf(Component.class)) {
+            if (component.getDbProvider() == null) {
+                component.initialize();
+            }
+        }
+
+        //Инициализируем ModuleReadable
+        try {
+            DatabaseComponent databaseSubsystem = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
+            Schema schema = Schema.read(databaseSubsystem.getRocksDBProvider());
+            log.warn("Schema on start: " + schema.getDbSchema().toTablesJsonString());
+            Schema.resolve(ModuleReadable.class);
+        } catch (DatabaseException e) {
+            throw GeneralExceptionBuilder.buildDatabaseException(e);
         }
     }
 

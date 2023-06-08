@@ -104,6 +104,7 @@ public class PlatformUpgrade {
         log.info("Database initialized...");
 
         new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> checkInstallModules(modules, transaction));
+        new PlatformStartStop(platform).initialize();
         new PlatformStartStop(platform).stop();
     }
 
