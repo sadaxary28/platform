@@ -176,6 +176,7 @@ public class PlatformUpgrade {
 
 
     private void checkInstallModules(List<Component> modules, Transaction transaction) {
+        Schema.resolve(ModuleReadable.class);
         List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
         for (Component module : modules) {
             ModuleEditable moduleInDB = getModuleByUuid(module.getInfo().getUuid(), transaction);
