@@ -85,6 +85,6 @@ public class UpdateService {
         for (Class domainObjectClass : new Reflections(componentInfo.getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
             domains.add(Schema.getEntity(domainObjectClass));
         }
-        Schema.read(transaction.getDbProvider()).checkSubsystemIntegrity(domains, componentInfo.getUuid(), new HashMap<>());
+        Schema.read(transaction.getDbProvider()).checkSubsystemIntegrity(domains, componentInfo.getUuid());
     }
 }

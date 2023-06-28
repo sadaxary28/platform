@@ -88,7 +88,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
             for (Class domainObjectClass : new Reflections(getInfo().getUuid()).getTypesAnnotatedWith(Entity.class, true)) {
                 domains.add(Schema.getEntity(domainObjectClass));
             }
-            schema.checkSubsystemIntegrity(domains, getInfo().getUuid(), new HashMap<>());
+            schema.checkSubsystemIntegrity(domains, getInfo().getUuid());
             buildSchemaService()
                     .setChangeMode(ChangeMode.CREATION)
                     .setValidationMode(false)
