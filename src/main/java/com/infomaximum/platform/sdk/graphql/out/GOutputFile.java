@@ -21,30 +21,19 @@ public class GOutputFile implements RemoteObject {
 
     public final boolean temp;
 
-    public GOutputFile(ClusterFile clusterFile, String fileName, boolean temp) {
-        this(clusterFile.getUri(), fileName, temp);
-    }
+    public final boolean cache;
 
-    private GOutputFile(URI uri, String fileName, boolean temp) {
-        this.fileName = fileName;
+    private GOutputFile(Builder builder) {
+        this.fileName = builder.fileName;
 
-        this.uri = uri;
-        this.body = null;
+        this.uri = builder.uri;
+        this.body = builder.body;
 
-        this.mimeType = MimeTypeUtils.findAutoMimeType(fileName);
+        this.mimeType = builder.mimeType;
 
-        this.temp = temp;
-    }
+        this.temp = builder.temp;
 
-    public GOutputFile(String fileName, byte[] body, MimeType mimeType) {
-        this.fileName = fileName;
-
-        this.uri = null;
-        this.body = body;
-
-        this.mimeType = mimeType;
-
-        this.temp = false;
+        this.cache = builder.cache;
     }
 
     public long getSize() {
@@ -58,6 +47,50 @@ public class GOutputFile implements RemoteObject {
             return body.length;
         } else {
             throw new RuntimeException("Not support mode");
+        }
+    }
+
+    public static class Builder {
+
+        private String fileName;
+
+        private URI uri;
+        private byte[] body;
+
+        private MimeType mimeType;
+
+        private boolean temp = false;
+        private boolean cache = false;
+
+        public Builder(String fileName, ClusterFile clusterFile) {
+            this.fileName = fileName;
+            this.uri = clusterFile.getUri();
+            this.mimeType = MimeTypeUtils.findAutoMimeType(fileName);
+        }
+
+        public Builder(String fileName, byte[] body) {
+            this.fileName = fileName;
+            this.body = body;
+            this.mimeType = MimeTypeUtils.findAutoMimeType(fileName);
+        }
+
+        public Builder withMimeType(MimeType mimeType) {
+            this.mimeType = mimeType;
+            return this;
+        }
+
+        public Builder withTemp(boolean temp) {
+            this.temp = temp;
+            return this;
+        }
+
+        public Builder withCache(boolean cache) {
+            this.cache = cache;
+            return this;
+        }
+
+        public GOutputFile build(){
+            return new GOutputFile(this);
         }
     }
 }

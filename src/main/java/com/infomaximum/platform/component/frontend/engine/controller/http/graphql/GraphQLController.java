@@ -102,6 +102,13 @@ public class GraphQLController {
                         header.add("Content-Disposition", "attachment; filename*=UTF-8''" + EscapeUtils.escapeFileNameFromContentDisposition(gOutputFile.fileName));
                         header.setContentType(MediaType.valueOf(gOutputFile.mimeType.value));
                         header.setContentLength(fileSize);
+                        if (gOutputFile.cache) {
+                            header.setCacheControl("public");
+                        } else {
+                            header.setCacheControl("no-cache, no-store, must-revalidate");
+                            header.setPragma("no-cache");
+                            header.setExpires(0);
+                        }
 
                         //Помечаем инфу для сервиса сбора статистики
                         request.setAttribute(StatisticService.ATTRIBUTE_DOWNLOAD_FILE_SIZE, fileSize);
@@ -159,7 +166,7 @@ public class GraphQLController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setCacheControl("no-cache, no-store, must-revalidate");
         headers.setPragma("no-cache");
         headers.setExpires(0);
