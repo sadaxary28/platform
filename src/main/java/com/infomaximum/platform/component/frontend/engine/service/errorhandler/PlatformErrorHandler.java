@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.util.NestedServletException;
 
-import java.io.IOException;
 import java.util.List;
 
 public class PlatformErrorHandler extends ErrorHandler {
@@ -112,6 +111,11 @@ public class PlatformErrorHandler extends ErrorHandler {
                 && chainThrowables.get(1) instanceof org.springframework.web.multipart.MultipartException
                 && chainThrowables.get(2) instanceof java.io.IOException
                 && chainThrowables.get(3) instanceof java.util.concurrent.TimeoutException
+        ) {
+            //Разрыв соединение
+            return;
+        } else if (chainThrowables.size() == 1
+                && chainThrowables.get(0) instanceof java.io.IOException
         ) {
             //Разрыв соединение
             return;
