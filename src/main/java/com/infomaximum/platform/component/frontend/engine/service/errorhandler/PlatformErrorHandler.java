@@ -54,7 +54,12 @@ public class PlatformErrorHandler extends ErrorHandler {
             } else if (response.getStatus() >= 400 && response.getStatus() < 500) {
                 //Ошибки построения запроса клиентом - игнорируем и прокидываем ответ напрямую
             } else {
-                throw (Throwable) request.getAttribute(Dispatcher.ERROR_EXCEPTION);
+                Throwable throwable = (Throwable) request.getAttribute(Dispatcher.ERROR_EXCEPTION);
+                if (throwable == null) {
+                    throw new RuntimeException("Unknown state errorHandler, response status:" + response.getStatus() + ", " + response);
+                } else {
+                    throw throwable;
+                }
             }
         } catch (Throwable ex) {
             processingException(ex, baseRequest, response);
