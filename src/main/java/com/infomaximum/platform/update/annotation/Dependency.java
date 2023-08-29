@@ -9,7 +9,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Dependency {
 
-    String componentUUID();
-    String version();
+    String uuid();
+    String version() default "";
     boolean optional() default false;
 }

@@ -105,18 +105,18 @@ public class UpdateUtil {
                 Set<String> notCyclicDependencies = new HashSet<>();
                 notCyclicDependencies.add(update.getComponentUuid());
                 for (Dependency dependency : annotationEntity.dependencies()) {
-                    if (!notCyclicDependencies.add(dependency.componentUUID())) {
-                        throw new UpdateException("Cyclic dependency error. Dependency: " + dependency.componentUUID());
+                    if (!notCyclicDependencies.add(dependency.uuid())) {
+                        throw new UpdateException("Cyclic dependency error. Dependency: " + dependency.uuid());
                     }
-                    if (!subsystemUpdates.containsKey(dependency.componentUUID())) {
+                    if (!subsystemUpdates.containsKey(dependency.uuid())) {
                         if (dependency.optional()) {
                             continue;
                         } else {
                             throw new UpdateException("Not found required dependency. Dependency: "
-                                    + dependency.componentUUID());
+                                    + dependency.uuid());
                         }
                     }
-                    buildModuleDependency(subsystemUpdates.get(dependency.componentUUID()), subsystemUpdates, passedMds, result);
+                    buildModuleDependency(subsystemUpdates.get(dependency.uuid()), subsystemUpdates, passedMds, result);
                 }
             }
         }

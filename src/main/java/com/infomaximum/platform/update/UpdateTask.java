@@ -69,7 +69,7 @@ public abstract class UpdateTask<T extends Component> {
             throw new DowngradingException(getComponentInfo().getUuid(), nextTaskVersion, previousTaskVersion);
         }
         String subsystemUuid = module.getUuid();
-        if (Arrays.stream(taskAnnotation.dependencies()).anyMatch(d -> d.componentUUID().equals(subsystemUuid))) {
+        if (Arrays.stream(taskAnnotation.dependencies()).anyMatch(d -> d.uuid().equals(subsystemUuid))) {
             throw new UpdateException(getComponentInfo().getUuid(), "Incorrect dependency. Update with self dependence doesn't allow");
         }
         validateUpdateDependencies(taskAnnotation, transaction);
@@ -108,7 +108,7 @@ public abstract class UpdateTask<T extends Component> {
     private void validateUpdateDependence(Dependency dependency, List<ModuleReadable> modules) throws DatabaseException {
         ModuleReadable dependenceModule = null;
         for (ModuleReadable module : modules) {
-            if (module.getUuid().equals(dependency.componentUUID())) {
+            if (module.getUuid().equals(dependency.uuid())) {
                 dependenceModule = module;
                 break;
             }
@@ -117,13 +117,15 @@ public abstract class UpdateTask<T extends Component> {
             if (dependency.optional()) {
                 return;//Зависимость опциональная и ее нет - пропускаем
             } else {
-                throw new UpdateException(getComponentInfo().getUuid(), "Can't find dependence module in system " + dependency.componentUUID());
+                throw new UpdateException(getComponentInfo().getUuid(), "Can't find dependence module in system " + dependency.uuid());
             }
         }
-        Version expectedDependenceModule = Version.parse(dependency.version());
-        if (!dependenceModule.getVersion().equals(expectedDependenceModule)) {
-            throw new UpdateException(getComponentInfo().getUuid(), "Wrong dependence module version. Current version: " + dependenceModule.getVersion() + ", expected: " + expectedDependenceModule
-                    + ". Dependence on module: " + dependency.componentUUID());
+        if (!dependency.version().isEmpty()) {
+            Version expectedDependenceModule = Version.parse(dependency.version());
+            if (!dependenceModule.getVersion().equals(expectedDependenceModule)) {
+                throw new UpdateException(getComponentInfo().getUuid(), "Wrong dependence module version. Current version: " + dependenceModule.getVersion() + ", expected: " + expectedDependenceModule
+                        + ". Dependence on module: " + dependency.uuid());
+            }
         }
     }
 
