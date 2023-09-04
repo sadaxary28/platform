@@ -132,6 +132,13 @@ public class PlatformErrorHandler extends ErrorHandler {
             //Exception если загружаемый файл превышает по лимитам
             //java.lang.IllegalStateException: Request exceeds maxRequestSize (33554432)
             return;
+        } else if (chainThrowables.size() == 3
+                && chainThrowables.get(0) instanceof jakarta.servlet.ServletException
+                && chainThrowables.get(1) instanceof org.springframework.web.multipart.MultipartException
+                && chainThrowables.get(2) instanceof java.io.IOException
+        ) {
+            //Request processing failed: org.springframework.web.multipart.MultipartException: Failed to parse multipart servlet request
+            return;
         }
 
         String msgException = "BaseRequest: " + baseRequest.toString() + ", response.status: " + response.getStatus();
