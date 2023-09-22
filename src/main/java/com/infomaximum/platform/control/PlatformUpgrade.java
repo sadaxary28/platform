@@ -53,7 +53,7 @@ public class PlatformUpgrade {
             DBProvider provider = databaseSubsystem.getRocksDBProvider();
             Schema schema = Schema.read(provider);
 
-            new DomainObjectSource(databaseSubsystem.getRocksDBProvider()).executeTransactional(transaction -> {
+            new DomainObjectSource(databaseSubsystem.getRocksDBProvider(), true).executeTransactional(transaction -> {
                 schema.createTable(new StructEntity(ModuleReadable.class));
 
                 //Регистрируем и установливаем модули
@@ -81,7 +81,7 @@ public class PlatformUpgrade {
         databaseComponent.initialize();
         log.info("Database initialized...");
 
-        new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> {
+        new DomainObjectSource(databaseComponent.getRocksDBProvider(), true).executeTransactional(transaction -> {
             ensureSchema(transaction.getDbProvider());
             updateInstallModules(modules, transaction);
             removeRedundantModules(modules, transaction);
@@ -103,7 +103,7 @@ public class PlatformUpgrade {
         databaseComponent.initialize();
         log.info("Database initialized...");
 
-        new DomainObjectSource(databaseComponent.getRocksDBProvider()).executeTransactional(transaction -> checkInstallModules(modules, transaction));
+        new DomainObjectSource(databaseComponent.getRocksDBProvider(), true).executeTransactional(transaction -> checkInstallModules(modules, transaction));
         new PlatformStartStop(platform).initialize();
         new PlatformStartStop(platform).stop();
     }
