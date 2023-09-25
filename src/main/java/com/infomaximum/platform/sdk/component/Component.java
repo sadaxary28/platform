@@ -21,7 +21,6 @@ import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.platform.sdk.subscription.GraphQLSubscribeEvent;
 import org.reflections.Reflections;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -126,7 +125,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         this.dbProvider = initDBProvider();
         this.schema = initializeSchema(dbProvider);
 
-        this.domainObjectSource = new DomainObjectSource(dbProvider);
+        this.domainObjectSource = new DomainObjectSource(dbProvider, true);
 
         this.queryRemotes = new QueryRemotes(this);
     }
