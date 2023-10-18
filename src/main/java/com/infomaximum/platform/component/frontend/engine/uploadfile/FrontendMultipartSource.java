@@ -34,16 +34,17 @@ public class FrontendMultipartSource implements SourceClusterFile {
 
 		multipartFiles.put(clusterFileUUID, multipartFile);
 
-		return URIClusterFile.createURI(component.getUniqueId(), clusterFileUUID);
+		return new URIClusterFile(component.getRemotes().cluster.node.getRuntimeId(), component.getId(), clusterFileUUID).getURI();
 	}
 
 	public void remove(URI uri) throws IOException {
-		String clusterFileUUID = URIClusterFile.getPathToFileUUID(uri);
+		URIClusterFile uriClusterFile = URIClusterFile.build(uri);
+		String clusterFileUUID = uriClusterFile.fileUUID;
 		deleteIfExists(clusterFileUUID);
 	}
 
 	@Override
-	public boolean contains(String clusterFileUUID) throws IOException {
+	public boolean contains(String clusterFileUUID) {
 		return multipartFiles.containsKey(clusterFileUUID);
 	}
 

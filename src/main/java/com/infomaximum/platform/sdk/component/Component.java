@@ -35,7 +35,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
     private GraphQLSubscribeEvent graphQLSubscribeEvent;
     private RControllerGraphQLExecutorImpl rControllerGraphQLExecutor;
 
-    protected DBProvider initDBProvider() throws ClusterException {
+    protected DBProvider initDBProvider() throws PlatformException {
         if (dbProvider != null) {
             return dbProvider;
         }
@@ -117,7 +117,7 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         return schema;
     }
 
-    public void initialize() throws ClusterException {
+    public void initialize() throws PlatformException {
         if (!getClass().getPackage().getName().equals(getInfo().getUuid())) {
             throw new RuntimeException(getClass() + " is not correspond to uuid: " + getInfo().getUuid());
         }

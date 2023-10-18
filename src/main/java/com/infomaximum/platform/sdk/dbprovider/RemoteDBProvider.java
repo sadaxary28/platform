@@ -3,6 +3,7 @@ package com.infomaximum.platform.sdk.dbprovider;
 import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.*;
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.dbprovider.remote.RControllerDBProvider;
 import com.infomaximum.rocksdb.options.columnfamily.ColumnFamilyConfig;
 import org.slf4j.Logger;
@@ -20,63 +21,111 @@ class RemoteDBProvider implements DBProvider {
 
     @Override
     public DBIterator createIterator(String columnFamily) throws DatabaseException {
-        return new Iterator(getRemoteProvider().createIterator(columnFamily));
+        try {
+            return new Iterator(getRemoteProvider().createIterator(columnFamily));
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public DBTransaction beginTransaction() throws DatabaseException {
-        return new Transaction(getRemoteProvider().beginTransaction());
+        try {
+            return new Transaction(getRemoteProvider().beginTransaction());
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public byte[] getValue(String columnFamily, byte[] key) throws DatabaseException {
-        return getRemoteProvider().getValue(columnFamily, key);
+        try {
+            return getRemoteProvider().getValue(columnFamily, key);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public boolean containsColumnFamily(String name) throws DatabaseException {
-        return getRemoteProvider().containsColumnFamily(name);
+        try {
+            return getRemoteProvider().containsColumnFamily(name);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public String[] getColumnFamilies() throws DatabaseException {
-        return getRemoteProvider().getColumnFamilies();
+        try {
+            return getRemoteProvider().getColumnFamilies();
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public void createColumnFamily(String name) throws DatabaseException {
-        getRemoteProvider().createColumnFamily(name);
+        try {
+            getRemoteProvider().createColumnFamily(name);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public void createColumnFamily(String name, ColumnFamilyConfig options) throws DatabaseException {
-        getRemoteProvider().createColumnFamily(name);
+        try {
+            getRemoteProvider().createColumnFamily(name);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
 
     @Override
     public void dropColumnFamily(String name) throws DatabaseException {
-        getRemoteProvider().dropColumnFamily(name);
+        try {
+            getRemoteProvider().dropColumnFamily(name);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public void compactRange() throws DatabaseException {
-        getRemoteProvider().compactRange();
+        try {
+            getRemoteProvider().compactRange();
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public boolean containsSequence(String name) throws DatabaseException {
-        return getRemoteProvider().containsSequence(name);
+        try {
+            return getRemoteProvider().containsSequence(name);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public void createSequence(String name) throws DatabaseException {
-        getRemoteProvider().createSequence(name);
+        try {
+            getRemoteProvider().createSequence(name);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
     public void dropSequence(String name) throws DatabaseException {
-        getRemoteProvider().dropSequence(name);
+        try {
+            getRemoteProvider().dropSequence(name);
+        } catch (PlatformException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     private RControllerDBProvider getRemoteProvider() {
@@ -95,22 +144,38 @@ class RemoteDBProvider implements DBProvider {
 
         @Override
         public KeyValue seek(KeyPattern pattern) throws DatabaseException {
-            return getRemoteProvider().seekIterator(pattern, iteratorId);
+            try {
+                return getRemoteProvider().seekIterator(pattern, iteratorId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public KeyValue next() throws DatabaseException {
-            return getRemoteProvider().nextIterator(iteratorId);
+            try {
+                return getRemoteProvider().nextIterator(iteratorId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public KeyValue step(StepDirection direction) throws DatabaseException {
-            return getRemoteProvider().stepIterator(direction, iteratorId);
+            try {
+                return getRemoteProvider().stepIterator(direction, iteratorId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void close() throws DatabaseException {
-            getRemoteProvider().closeIterator(iteratorId);
+            try {
+                getRemoteProvider().closeIterator(iteratorId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
     }
 
@@ -124,67 +189,119 @@ class RemoteDBProvider implements DBProvider {
 
         @Override
         public DBIterator createIterator(String columnFamily) throws DatabaseException {
-            return new Iterator(getRemoteProvider().createIteratorTransaction(columnFamily, transactionId));
+            try {
+                return new Iterator(getRemoteProvider().createIteratorTransaction(columnFamily, transactionId));
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public long nextId(String sequenceName) throws DatabaseException {
-            return getRemoteProvider().nextIdTransaction(sequenceName, transactionId);
+            try {
+                return getRemoteProvider().nextIdTransaction(sequenceName, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public byte[] getValue(String columnFamily, byte[] key) throws DatabaseException {
-            return getRemoteProvider().getValueTransaction(columnFamily, key, transactionId);
+            try {
+                return getRemoteProvider().getValueTransaction(columnFamily, key, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void put(String columnFamily, byte[] key, byte[] value) throws DatabaseException {
-            getRemoteProvider().putTransaction(columnFamily, key, value, transactionId);
+            try {
+                getRemoteProvider().putTransaction(columnFamily, key, value, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void delete(String columnFamily, byte[] key) throws DatabaseException {
-            getRemoteProvider().deleteTransaction(columnFamily, key, transactionId);
+            try {
+                getRemoteProvider().deleteTransaction(columnFamily, key, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void deleteRange(String columnFamily, byte[] beginKey, byte[] endKey) throws DatabaseException {
-            getRemoteProvider().deleteRangeTransaction(columnFamily, beginKey, endKey, transactionId);
+            try {
+                getRemoteProvider().deleteRangeTransaction(columnFamily, beginKey, endKey, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void singleDelete(String columnFamily, byte[] key) throws DatabaseException {
-            getRemoteProvider().singleDeleteTransaction(columnFamily, key, transactionId);
+            try {
+                getRemoteProvider().singleDeleteTransaction(columnFamily, key, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void singleDeleteRange(String columnFamily, byte[] beginKey, byte[] endKey) throws DatabaseException {
-            getRemoteProvider().singleDeleteRangeTransaction(columnFamily, beginKey, endKey, transactionId);
+            try {
+                getRemoteProvider().singleDeleteRangeTransaction(columnFamily, beginKey, endKey, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void singleDeleteRange(String columnFamily, KeyPattern keyPattern) throws DatabaseException {
-            getRemoteProvider().singleDeleteRangeTransaction(columnFamily, keyPattern, transactionId);
+            try {
+                getRemoteProvider().singleDeleteRangeTransaction(columnFamily, keyPattern, transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void commit() throws DatabaseException {
-            getRemoteProvider().commitTransaction(transactionId);
+            try {
+                getRemoteProvider().commitTransaction(transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void rollback() throws DatabaseException {
-            getRemoteProvider().rollbackTransaction(transactionId);
+            try {
+                getRemoteProvider().rollbackTransaction(transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void compactRange() throws DatabaseException {
-            getRemoteProvider().compactRange();
+            try {
+                getRemoteProvider().compactRange();
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
 
         @Override
         public void close() throws DatabaseException {
-            getRemoteProvider().closeTransaction(transactionId);
+            try {
+                getRemoteProvider().closeTransaction(transactionId);
+            } catch (PlatformException e) {
+                throw new DatabaseException(e);
+            }
         }
     }
 

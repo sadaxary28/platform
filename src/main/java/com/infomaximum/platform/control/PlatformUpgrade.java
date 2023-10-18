@@ -176,7 +176,7 @@ public class PlatformUpgrade {
     }
 
 
-    private void checkInstallModules(List<Component> modules, Transaction transaction) {
+    private void checkInstallModules(List<Component> modules, Transaction transaction) throws PlatformException {
         Schema.resolve(ModuleReadable.class);
         List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
         for (Component module : modules) {

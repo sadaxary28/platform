@@ -22,7 +22,7 @@ public class QueryPoolFutureTest {
     private Throwable uncaughtException = null;
 
     @BeforeAll
-    public static void initialize() {
+    public static void initialize() throws PlatformException {
         component = new TestComponent();
         component.initialize();
     }

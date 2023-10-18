@@ -8,10 +8,7 @@ import com.infomaximum.cluster.struct.Component;
 import com.infomaximum.cluster.utils.EqualsUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractQueryRController<TComponent extends Component> {
 
@@ -42,8 +39,8 @@ public abstract class AbstractQueryRController<TComponent extends Component> {
         }
     }
 
-    public final byte getNode() {
-        return component.getRemotes().cluster.node;
+    public final UUID getNodeRuntimeId() {
+        return component.getRemotes().cluster.node.getRuntimeId();
     }
 
     public final String getComponentUuid() {

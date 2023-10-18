@@ -1,35 +1,74 @@
 package com.infomaximum.platform.exception;
 
-import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.cluster.exception.ExceptionBuilder;
 
 import java.util.HashMap;
+import java.util.UUID;
 
-public class ClusterExceptionBuilder extends ExceptionBuilder {
+public class ClusterExceptionBuilder implements ExceptionBuilder {
 
     private static final ExceptionFactory EXCEPTION_FACTORY = new GeneralExceptionFactory();
 
     @Override
-    public PlatformException buildTransitRequestException(int node, int componentUniqueId, String rControllerClassName, int methodKey, Exception cause) {
+    public Class getTypeException() {
+        return PlatformException.class;
+    }
+
+    @Override
+    public Exception buildTransitRequestException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         return EXCEPTION_FACTORY.build(
                 "remote_component_transit_request",
-                "node: " + node + ", componentUniqueId: " + componentUniqueId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
                 new HashMap<String, Object>() {{
-                    put("node", node);
+                    put("nodeRuntimeId", nodeRuntimeId);
                 }},
                 cause
         );
     }
 
     @Override
-    public PlatformException buildRemoteComponentUnavailableException(int node, int componentUniqueId, String rControllerClassName, int methodKey, Exception cause) {
+    public Exception buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         return EXCEPTION_FACTORY.build(
                 "remote_component_unavailable",
-                "node: " + node + ", componentUniqueId: " + componentUniqueId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
                 new HashMap<String, Object>() {{
-                    put("node", node);
+                    put("nodeRuntimeId", nodeRuntimeId);
                 }},
                 cause
         );
     }
+
+    @Override
+    public Exception buildRemoteComponentNotFoundException(UUID nodeRuntimeId, int componentId) {
+        return EXCEPTION_FACTORY.build(
+                "remote_component_not_found",
+                "node: " + nodeRuntimeId + ", componentId: " + componentId,
+                new HashMap<String, Object>() {{
+                    put("nodeRuntimeId", nodeRuntimeId);
+                }}
+        );
+    }
+
+    @Override
+    public Exception buildMismatchRemoteApiNotFoundControllerException(UUID nodeRuntimeId, int componentId, String rControllerClassName) {
+        return EXCEPTION_FACTORY.build(
+                "mismatch_remote_api_not_found_controller",
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName,
+                new HashMap<String, Object>() {{
+                    put("nodeRuntimeId", nodeRuntimeId);
+                }}
+        );
+    }
+
+    @Override
+    public Exception buildMismatchRemoteApiNotFoundMethodException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey) {
+        return EXCEPTION_FACTORY.build(
+                "mismatch_remote_api_not_found_method",
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
+                new HashMap<String, Object>() {{
+                    put("nodeRuntimeId", nodeRuntimeId);
+                }}
+        );
+    }
+
 }
