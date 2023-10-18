@@ -14,6 +14,7 @@ import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcherExcep
 import com.infomaximum.platform.sdk.graphql.fieldconfiguration.TypeGraphQLFieldConfigurationBuilderImpl;
 import com.infomaximum.platform.sdk.graphql.scalartype.GraphQLScalarTypePlatform;
 import com.infomaximum.platform.sdk.struct.ClusterContext;
+import com.infomaximum.platform.service.LogUpdateNodeConnect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ public class Platform implements AutoCloseable {
             this.cluster = builder.clusterBuilder
                     .withContext(new ClusterContext(this, builder.clusterContext))
                     .withExceptionBuilder(new ClusterExceptionBuilder())
+                    .withListenerUpdateConnect(new LogUpdateNodeConnect())
                     .build();
             this.queryPool = new QueryPool(builder.uncaughtExceptionHandler);
 
