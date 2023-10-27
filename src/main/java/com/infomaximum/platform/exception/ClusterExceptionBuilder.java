@@ -2,6 +2,8 @@ package com.infomaximum.platform.exception;
 
 import com.infomaximum.cluster.exception.ExceptionBuilder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -18,11 +20,10 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     public Exception buildTransitRequestException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         return EXCEPTION_FACTORY.build(
                 "remote_component_transit_request",
-                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey + ", cause: " + toStringCause(cause),
                 new HashMap<String, Object>() {{
                     put("nodeRuntimeId", nodeRuntimeId);
-                }},
-                cause
+                }}
         );
     }
 
@@ -30,11 +31,10 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     public Exception buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         return EXCEPTION_FACTORY.build(
                 "remote_component_unavailable",
-                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey + ", cause: " + toStringCause(cause),
                 new HashMap<String, Object>() {{
                     put("nodeRuntimeId", nodeRuntimeId);
-                }},
-                cause
+                }}
         );
     }
 
@@ -71,4 +71,10 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
         );
     }
 
+    private static String toStringCause(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
+    }
 }
