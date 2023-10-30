@@ -2,9 +2,8 @@ package com.infomaximum.platform.exception;
 
 import com.infomaximum.cluster.exception.ExceptionBuilder;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class ClusterExceptionBuilder implements ExceptionBuilder {
@@ -18,64 +17,56 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
 
     @Override
     public Exception buildTransitRequestException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("node_runtime_id", nodeRuntimeId);
         return EXCEPTION_FACTORY.build(
                 "remote_component_transit_request",
-                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey + ", cause: " + toStringCause(cause),
-                new HashMap<String, Object>() {{
-                    put("nodeRuntimeId", nodeRuntimeId);
-                }}
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
+                parameters, cause
         );
     }
 
     @Override
     public Exception buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("node_runtime_id", nodeRuntimeId);
         return EXCEPTION_FACTORY.build(
                 "remote_component_unavailable",
-                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey + ", cause: " + toStringCause(cause),
-                new HashMap<String, Object>() {{
-                    put("nodeRuntimeId", nodeRuntimeId);
-                }}
+                "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
+                parameters, cause
         );
     }
 
     @Override
     public Exception buildRemoteComponentNotFoundException(UUID nodeRuntimeId, int componentId) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("node_runtime_id", nodeRuntimeId);
         return EXCEPTION_FACTORY.build(
                 "remote_component_not_found",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId,
-                new HashMap<String, Object>() {{
-                    put("nodeRuntimeId", nodeRuntimeId);
-                }}
+                parameters
         );
     }
 
     @Override
     public Exception buildMismatchRemoteApiNotFoundControllerException(UUID nodeRuntimeId, int componentId, String rControllerClassName) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("node_runtime_id", nodeRuntimeId);
         return EXCEPTION_FACTORY.build(
                 "mismatch_remote_api_not_found_controller",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName,
-                new HashMap<String, Object>() {{
-                    put("nodeRuntimeId", nodeRuntimeId);
-                }}
+                parameters
         );
     }
 
     @Override
     public Exception buildMismatchRemoteApiNotFoundMethodException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("node_runtime_id", nodeRuntimeId);
         return EXCEPTION_FACTORY.build(
                 "mismatch_remote_api_not_found_method",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
-                new HashMap<String, Object>() {{
-                    put("nodeRuntimeId", nodeRuntimeId);
-                }}
+                parameters
         );
-    }
-
-    private static String toStringCause(Exception e) {
-        if (e == null) return "null";
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw.toString();
     }
 }
