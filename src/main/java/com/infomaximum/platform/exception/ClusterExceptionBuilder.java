@@ -18,7 +18,7 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     @Override
     public Exception buildTransitRequestException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("node_runtime_id", nodeRuntimeId);
+        parameters.put("node_runtime_id", nodeRuntimeId.toString());
         return EXCEPTION_FACTORY.build(
                 "remote_component_transit_request",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
@@ -29,7 +29,7 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     @Override
     public Exception buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("node_runtime_id", nodeRuntimeId);
+        parameters.put("node_runtime_id", nodeRuntimeId.toString());
         return EXCEPTION_FACTORY.build(
                 "remote_component_unavailable",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
@@ -40,7 +40,7 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     @Override
     public Exception buildRemoteComponentNotFoundException(UUID nodeRuntimeId, int componentId) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("node_runtime_id", nodeRuntimeId);
+        parameters.put("node_runtime_id", nodeRuntimeId.toString());
         return EXCEPTION_FACTORY.build(
                 "remote_component_not_found",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId,
@@ -51,7 +51,7 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     @Override
     public Exception buildMismatchRemoteApiNotFoundControllerException(UUID nodeRuntimeId, int componentId, String rControllerClassName) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("node_runtime_id", nodeRuntimeId);
+        parameters.put("node_runtime_id", nodeRuntimeId.toString());
         return EXCEPTION_FACTORY.build(
                 "mismatch_remote_api_not_found_controller",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName,
@@ -62,7 +62,7 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     @Override
     public Exception buildMismatchRemoteApiNotFoundMethodException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("node_runtime_id", nodeRuntimeId);
+        parameters.put("node_runtime_id", nodeRuntimeId.toString());
         return EXCEPTION_FACTORY.build(
                 "mismatch_remote_api_not_found_method",
                 "node: " + nodeRuntimeId + ", componentId: " + componentId + ", rControllerClassName: " + rControllerClassName + ", methodKey: " + methodKey,
