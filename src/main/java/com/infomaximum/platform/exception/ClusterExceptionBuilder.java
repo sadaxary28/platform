@@ -27,6 +27,17 @@ public class ClusterExceptionBuilder implements ExceptionBuilder {
     }
 
     @Override
+    public Exception buildRemoteComponentUnavailableException(UUID nodeRuntimeId, Exception cause) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("node_runtime_id", nodeRuntimeId.toString());
+        return EXCEPTION_FACTORY.build(
+                "remote_component_unavailable",
+                "node: " + nodeRuntimeId,
+                parameters, cause
+        );
+    }
+
+    @Override
     public Exception buildRemoteComponentUnavailableException(UUID nodeRuntimeId, int componentId, String rControllerClassName, int methodKey, Exception cause) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("node_runtime_id", nodeRuntimeId.toString());
