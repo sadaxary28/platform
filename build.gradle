@@ -69,7 +69,7 @@ dependencies {
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
 
-    api 'com.infomaximum:rdao:1.14.13'
+    api 'com.infomaximum:rdao:1.14.14'
 //    api project(':rdao')
 
     api 'com.infomaximum:network:1.1.3p11'

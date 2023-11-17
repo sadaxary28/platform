@@ -19,6 +19,8 @@ import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -124,6 +126,50 @@ public class PlatformStartStop {
     }
 
     public void stop() throws PlatformException {
+        List<Component> reverseDependencyOrderedComponents = new ArrayList(platform.getCluster().getDependencyOrderedComponentsOf(Component.class));
+        Collections.reverse(reverseDependencyOrderedComponents);
+        Collections.sort(reverseDependencyOrderedComponents, (o1, o2) -> {//Необходимо, что бы фронт остановился самым первым
+            if (o1.getType() == ComponentType.FRONTEND) {
+                return -1;
+            } else if (o2.getType() == ComponentType.FRONTEND) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        List<QuerySystem<Void>> stopQueries = reverseDependencyOrderedComponents
+                .stream()
+                .map(component -> component.onStop())
+                .filter(query -> query != null)
+                .collect(Collectors.toList());
+        try {
+            DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
+            platform.getQueryPool().execute(databaseComponent, new Query<Void>() {
+                @Override
+                public void prepare(ResourceProvider resources) throws PlatformException {
+                    for (QuerySystem<Void> query : stopQueries) {
+                        query.prepare(resources);
+                    }
+                }
 
+                @Override
+                public Void execute(QueryTransaction transaction) throws PlatformException {
+                    ContextTransaction contextTransaction = new ContextTransactionImpl(new SourceSystemImpl(), transaction);
+                    for (QuerySystem<Void> query : stopQueries) {
+                        query.execute(contextTransaction);
+                    }
+                    return null;
+                }
+            }).get();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof PlatformException) {
+                throw (PlatformException) cause;
+            } else {
+                throw new RuntimeException(e);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
