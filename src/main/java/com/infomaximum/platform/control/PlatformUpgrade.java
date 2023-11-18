@@ -17,12 +17,19 @@ import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.database.DatabaseComponent;
 import com.infomaximum.platform.exception.DowngradingException;
 import com.infomaximum.platform.exception.PlatformException;
+import com.infomaximum.platform.querypool.Query;
+import com.infomaximum.platform.querypool.QueryTransaction;
+import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.component.Info;
 import com.infomaximum.platform.sdk.component.version.Version;
+import com.infomaximum.platform.sdk.context.ContextTransaction;
+import com.infomaximum.platform.sdk.context.impl.ContextTransactionImpl;
+import com.infomaximum.platform.sdk.context.source.impl.SourceSystemImpl;
 import com.infomaximum.platform.sdk.domainobject.module.ModuleEditable;
 import com.infomaximum.platform.sdk.domainobject.module.ModuleReadable;
 import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
+import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.platform.update.core.ModuleUpdateEntity;
 import com.infomaximum.platform.update.core.UpdateService;
 import com.infomaximum.platform.update.core.UpgradeAction;
@@ -34,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class PlatformUpgrade {
@@ -56,12 +64,20 @@ public class PlatformUpgrade {
             new DomainObjectSource(databaseSubsystem.getRocksDBProvider(), true).executeTransactional(transaction -> {
                 schema.createTable(new StructEntity(ModuleReadable.class));
 
-                //Регистрируем и установливаем модули
+                //Регистрируем и устанавливаем модули
                 List<Component> components = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
                 for (Component component : components) {
                     installComponent(component, transaction);
                 }
             });
+
+            fireOnInstall(databaseSubsystem,
+                    platform.getCluster().getDependencyOrderedComponentsOf(Component.class)
+                            .stream()
+                            .filter(component -> (component.getInfo() instanceof Info))
+                            .filter(component -> ((Info) component.getInfo()).getVersion() != null)
+                            .collect(Collectors.toList())
+            );
         } catch (DatabaseException e) {
             throw GeneralExceptionBuilder.buildDatabaseException(e);
         } catch (Throwable e) {
@@ -96,6 +112,44 @@ public class PlatformUpgrade {
         new PlatformStartStop(platform).stop();
     }
 
+    private void fireOnInstall(DatabaseComponent databaseComponent, List<Component> components) throws PlatformException {
+        try {
+            List<QuerySystem<Void>> installQueries = components.stream()
+                    .map(component -> component.onInstall())
+                    .filter(query -> query != null)
+                    .collect(Collectors.toList());
+            if (!installQueries.isEmpty()) {
+                platform.getQueryPool().execute(databaseComponent, new Query<Void>() {
+
+                    @Override
+                    public void prepare(ResourceProvider resources) throws PlatformException {
+                        for (QuerySystem<Void> query : installQueries) {
+                            query.prepare(resources);
+                        }
+                    }
+
+                    @Override
+                    public Void execute(QueryTransaction transaction) throws PlatformException {
+                        ContextTransaction contextTransaction = new ContextTransactionImpl(new SourceSystemImpl(), transaction);
+                        for (QuerySystem<Void> query : installQueries) {
+                            query.execute(contextTransaction);
+                        }
+                        return null;
+                    }
+                }).get();
+            }
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof PlatformException pe) {
+                throw pe;
+            } else {
+                throw new RuntimeException(e);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public void checkUpgrade() throws Exception {
         List<Component> modules = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
@@ -115,8 +169,7 @@ public class PlatformUpgrade {
         }
     }
 
-    //TODO Ulitin V. Временно сделано public - перевести на private
-    public void installComponent(Component component, Transaction transaction) throws DatabaseException {
+    private void installComponent(Component component, Transaction transaction) throws DatabaseException {
         if (!(component.getInfo() instanceof Info)) {
             return;
         }
@@ -147,6 +200,7 @@ public class PlatformUpgrade {
     private void updateInstallModules(List<Component> modules, Transaction transaction) throws Exception {
         Schema.resolve(ModuleReadable.class);
 
+        List<Component> componentsForInstall = new ArrayList<>();
         List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
         for (Component module : modules) {
             ModuleEditable moduleInDB = getModuleByUuid(module.getInfo().getUuid(), transaction);
@@ -158,6 +212,7 @@ public class PlatformUpgrade {
                 case INSTALL:
                     log.warn("Module " + module.getInfo().getUuid() + " installing");
                     new PlatformUpgrade(platform).installComponent(module, transaction);
+                    componentsForInstall.add(module);
                     break;
                 case UPDATE:
                     log.warn("Module " + module.getInfo().getUuid() + " ready for update");
@@ -172,6 +227,10 @@ public class PlatformUpgrade {
         for (Component module : modules) {
             module.initialize();
         }
+
+        DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
+        fireOnInstall(databaseComponent, componentsForInstall);
+
         update(modulesForUpdate, transaction);
     }
 

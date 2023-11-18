@@ -70,6 +70,10 @@ public abstract class Component extends com.infomaximum.cluster.struct.Component
         return null;
     }
 
+    public QuerySystem<Void> onInstall() {
+        return null;
+    }
+
     public QuerySystem<Void> onStart() {
         return null;
     }
