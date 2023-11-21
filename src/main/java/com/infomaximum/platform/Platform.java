@@ -67,7 +67,7 @@ public class Platform implements AutoCloseable {
     }
 
     public void stop() throws PlatformException {
-        new PlatformStartStop(this).stop();
+        new PlatformStartStop(this).stop(false);
     }
 
     public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {

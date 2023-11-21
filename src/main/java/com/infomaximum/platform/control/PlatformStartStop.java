@@ -125,7 +125,17 @@ public class PlatformStartStop {
         }
     }
 
-    public void stop() throws PlatformException {
+    /**
+
+     * @param checkUpgrade - флаг указывающий что старт был "урезанный", для проверки обновления, поэтому и onStop вызывать ен следует
+     * @throws PlatformException
+     */
+    public void stop(boolean checkUpgrade) throws PlatformException {
+        //Режим проверки обновления, упрощенный режим старт/стоп
+        if (checkUpgrade) {
+            return;
+        }
+
         List<Component> reverseDependencyOrderedComponents = new ArrayList(platform.getCluster().getDependencyOrderedComponentsOf(Component.class));
         Collections.reverse(reverseDependencyOrderedComponents);
         Collections.sort(reverseDependencyOrderedComponents, (o1, o2) -> {//Необходимо, что бы фронт остановился самым первым

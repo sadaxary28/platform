@@ -109,7 +109,7 @@ public class PlatformUpgrade {
         });
 
         new PlatformStartStop(platform).start(true);
-        new PlatformStartStop(platform).stop();
+        new PlatformStartStop(platform).stop(true);
     }
 
     private void fireOnInstall(DatabaseComponent databaseComponent, List<Component> components) throws PlatformException {
@@ -159,7 +159,8 @@ public class PlatformUpgrade {
 
         new DomainObjectSource(databaseComponent.getRocksDBProvider(), true).executeTransactional(transaction -> checkInstallModules(modules, transaction));
         new PlatformStartStop(platform).initialize();
-        new PlatformStartStop(platform).stop();
+        new PlatformStartStop(platform).start(true);
+        new PlatformStartStop(platform).stop(true);
     }
 
 
