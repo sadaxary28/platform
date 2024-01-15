@@ -151,16 +151,12 @@ public class PlatformUpgrade {
     }
 
 
-    public void checkUpgrade() throws Exception {
+    public void checkBeforeUpgrade() throws Exception {
         List<Component> modules = platform.getCluster().getDependencyOrderedComponentsOf(Component.class);
         DatabaseComponent databaseComponent = platform.getCluster().getAnyLocalComponent(DatabaseComponent.class);
         databaseComponent.initialize();
         log.info("Database initialized...");
-
-        new DomainObjectSource(databaseComponent.getRocksDBProvider(), true).executeTransactional(transaction -> checkInstallModules(modules, transaction));
-        new PlatformStartStop(platform).initialize();
-        new PlatformStartStop(platform).start(true);
-        new PlatformStartStop(platform).stop(true);
+        new DomainObjectSource(databaseComponent.getRocksDBProvider(), true).executeTransactional(transaction -> checkBeforeUpgradeInstallModules(modules, transaction));
     }
 
 
@@ -236,7 +232,7 @@ public class PlatformUpgrade {
     }
 
 
-    private void checkInstallModules(List<Component> modules, Transaction transaction) throws PlatformException {
+    private void checkBeforeUpgradeInstallModules(List<Component> modules, Transaction transaction) throws PlatformException {
         Schema.resolve(ModuleReadable.class);
         List<ModuleUpdateEntity> modulesForUpdate = new ArrayList<>();
         for (Component module : modules) {

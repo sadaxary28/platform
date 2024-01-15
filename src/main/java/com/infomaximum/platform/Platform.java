@@ -58,8 +58,8 @@ public class Platform implements AutoCloseable {
         new PlatformUpgrade(this).upgrade();
     }
 
-    public void checkUpgrade() throws Exception {
-        new PlatformUpgrade(this).checkUpgrade();
+    public void checkBeforeUpgrade() throws Exception {
+        new PlatformUpgrade(this).checkBeforeUpgrade();
     }
 
     public void start() throws PlatformException {
