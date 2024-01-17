@@ -4,9 +4,10 @@ import com.infomaximum.cluster.exception.ClusterException;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.platform.component.database.configure.DatabaseConfigure;
-import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.component.database.remote.cfconfig.ColumnFamilyConfigService;
+import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.sdk.component.Component;
+import com.infomaximum.platform.sdk.struct.querypool.QuerySystem;
 import com.infomaximum.rocksdb.RocksDBProvider;
 import com.infomaximum.rocksdb.RocksDataBaseBuilder;
 import com.infomaximum.rocksdb.options.columnfamily.ColumnFamilyConfig;
@@ -47,6 +48,15 @@ public class DatabaseComponent extends Component {
         if (extension != null) {
             extension.initialize(this);
         }
+    }
+
+    @Override
+    public QuerySystem<Void> onStart() {
+        DatabaseComponentExtension extension = databaseConfigure.extension;
+        if (extension != null) {
+            extension.onStart(this);
+        }
+        return null;
     }
 
     public RocksDBProvider getRocksDBProvider() {
