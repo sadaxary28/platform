@@ -103,7 +103,7 @@ public class GraphQLController {
                         header.setContentType(MediaType.valueOf(gOutputFile.mimeType.value));
                         header.setContentLength(fileSize);
                         if (gOutputFile.cache) {
-                            header.setCacheControl("public");
+                            header.setCacheControl("public, max-age=86400");
                         } else {
                             header.setCacheControl("no-cache, no-store, must-revalidate");
                             header.setPragma("no-cache");
