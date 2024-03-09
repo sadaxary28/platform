@@ -1,7 +1,8 @@
 package com.infomaximum.platform.service;
 
 import com.infomaximum.cluster.Node;
-import com.infomaximum.cluster.UpdateNodeConnect;
+import com.infomaximum.cluster.event.CauseNodeDisconnect;
+import com.infomaximum.cluster.event.UpdateNodeConnect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,11 @@ public class LogUpdateNodeConnect implements UpdateNodeConnect {
     }
 
     @Override
-    public void onDisconnect(Node node) {
-        log.info("Node disconnect, name: {}, runtimeId {}", node.getName(), node.getRuntimeId());
+    public void onDisconnect(Node node, CauseNodeDisconnect causeDisconnect) {
+        String cause = causeDisconnect.type.name();
+        if (causeDisconnect.throwable!=null) {
+            cause += " (" + causeDisconnect.throwable.getMessage() + ")";
+        }
+        log.info("Node disconnect, name: {}, runtimeId {}, cause: {}", node.getName(), node.getRuntimeId(), cause);
     }
 }
