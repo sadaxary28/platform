@@ -169,6 +169,19 @@ public class UpdateUtil {
                 && version1.minor == version2.minor;
     }
 
+    public static boolean isNotConsistentVersions(Version previousVersion, Version nextVersion) {
+        if (nextVersion.product - previousVersion.product > 1) {
+            return true;
+        }
+        if (nextVersion.major != previousVersion.major) {
+            return nextVersion.major - previousVersion.major > 1 || previousVersion.minor != 12 || nextVersion.minor != 1;
+        }
+        if (nextVersion.minor != previousVersion.minor) {
+            return nextVersion.minor < 1 || nextVersion.minor > 12 || nextVersion.minor - previousVersion.minor > 1;
+        }
+        return false;
+    }
+
     public static class ModuleTaskUpdate {
 
         private final Component component;

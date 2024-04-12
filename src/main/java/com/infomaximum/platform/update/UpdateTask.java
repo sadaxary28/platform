@@ -64,9 +64,14 @@ public abstract class UpdateTask<T extends Component> {
         if (compareWithIgnorePatch(currentCodeVersion, nextTaskVersion) != 0) {
             throw new UpdateException(getComponentInfo().getUuid(), "Current code version " + currentCodeVersion + " doesn't equal to update task next version" + nextTaskVersion);
         }
+        // Проверяем, что это не понижение версии
         int cmpResult = compareWithIgnorePatch(nextTaskVersion, previousTaskVersion);
         if (cmpResult < 0) {
             throw new DowngradingException(getComponentInfo().getUuid(), nextTaskVersion, previousTaskVersion);
+        }
+        // Проверяем, что это последовательное обновление
+        if (UpdateUtil.isNotConsistentVersions(previousTaskVersion, nextTaskVersion)) {
+            throw new UpdateException(getComponentInfo().getUuid(), "Not consistent update versions: " + previousTaskVersion + " -> " + nextTaskVersion);
         }
         String subsystemUuid = module.getUuid();
         if (Arrays.stream(taskAnnotation.dependencies()).anyMatch(d -> d.uuid().equals(subsystemUuid))) {
