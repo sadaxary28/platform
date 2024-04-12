@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 class UpdateUtilTest {
 
     @Test
@@ -71,5 +74,58 @@ class UpdateUtilTest {
         Assertions.assertThatThrownBy(() -> UpdateUtil.checkIntegrity(tasks))
                 .isExactlyInstanceOf(UpdateException.class)
                 .hasMessage("Integrity error. Update version: 1.0.4.0 is less or equal to previous: " + new Version(1,0,5, 0));
+    }
+
+    @Test
+    public void isNotConsistentUpdateTest() {
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 3, 0),
+                new Version(3, 24, 4, 0))
+        );
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 3, 0),
+                new Version(1, 26, 4, 0))
+        );
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 3, 0),
+                new Version(1, 24, 5, 0))
+        );
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 12, 0),
+                new Version(1, 24, 13, 0))
+        );
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 12, 0),
+                new Version(1, 25, 2, 0))
+        );
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 12, 0),
+                new Version(1, 26, 1, 0))
+        );
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 12, 0),
+                new Version(1, 25, 0, 0))
+        );
+        assertTrue(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 3, 0),
+                new Version(1, 25, 4, 0))
+        );
+
+        assertFalse(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 3, 0),
+                new Version(1, 24, 4, 0))
+        );
+        assertFalse(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 12, 0),
+                new Version(1, 25, 1, 0))
+        );
+        assertFalse(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 4, 0),
+                new Version(2, 24, 5, 0))
+        );
+        assertFalse(UpdateUtil.isNotConsistentVersions(
+                new Version(1, 24, 4, 0),
+                new Version(1, 24, 4, 0))
+        );
     }
 }
