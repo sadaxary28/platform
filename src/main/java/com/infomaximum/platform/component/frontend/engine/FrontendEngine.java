@@ -20,6 +20,7 @@ import com.infomaximum.platform.component.frontend.engine.service.statistic.Stat
 import com.infomaximum.platform.component.frontend.engine.uploadfile.FrontendMultipartSource;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.GraphQLRequestBuilder;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.impl.DefaultGraphQLRequestBuilder;
+import com.infomaximum.platform.prometheus.PrometheusRegistry;
 import com.infomaximum.platform.sdk.component.Component;
 
 import java.util.ArrayList;
@@ -84,6 +85,11 @@ public class FrontendEngine implements AutoCloseable {
             } else {
                 throw new RuntimeException("Not support builder transport: " + builderTransport);
             }
+        }
+
+        // Регистрируем сбор метрик Prometheus
+        if (builder.prometheusRegistry != null) {
+            builder.prometheusRegistry.register();
         }
 
         this.controllers = new Controllers(this);
@@ -162,6 +168,8 @@ public class FrontendEngine implements AutoCloseable {
 
         private List<FilterGRequest> filterGRequests = new ArrayList<>();
 
+        private PrometheusRegistry prometheusRegistry;
+
         private StatisticService statisticService = new StatisticServiceImpl();
 
         public Builder(Platform platform, Component component) {
@@ -171,6 +179,11 @@ public class FrontendEngine implements AutoCloseable {
 
         public Builder withBuilderNetwork(BuilderNetwork builderNetwork) {
             this.builderNetwork = builderNetwork;
+            return this;
+        }
+
+        public Builder withPrometheusRegistry(PrometheusRegistry prometheusRegistry) {
+            this.prometheusRegistry = prometheusRegistry;
             return this;
         }
 

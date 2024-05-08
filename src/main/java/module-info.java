@@ -11,6 +11,10 @@ module com.infomaximum.platform {
     requires spring.core;
     requires spring.web;
     requires org.eclipse.jetty.websocket.jetty.api;
+    requires io.prometheus.metrics.core;
+    requires io.prometheus.metrics.model;
+    requires io.prometheus.metrics.instrumentation.jvm;
+    requires io.prometheus.metrics.exporter.common;
 
     exports com.infomaximum.platform.sdk.context;
     exports com.infomaximum.platform.querypool.iterator;
@@ -55,6 +59,7 @@ module com.infomaximum.platform {
     exports com.infomaximum.platform.component.frontend.request.graphql.builder.impl.attribute;
     exports com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
     exports com.infomaximum.platform.component.frontend.engine.controller.websocket.graphql;
+    exports com.infomaximum.platform.component.frontend.engine.controller.prometheus;
     exports com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet;
     exports com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.handler.handshake;
     exports com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws;
@@ -77,4 +82,6 @@ module com.infomaximum.platform {
     exports com.infomaximum.platform.sdk.domainobject.module to com.infomaximum.rdao;
     exports com.infomaximum.platform.sdk.graphql.datafetcher to com.infomaximum.cluster.graphql;
     exports com.infomaximum.platform.sdk.dbprovider.remote to com.infomaximum.cluster;
+    exports com.infomaximum.platform.prometheus;
+    exports com.infomaximum.platform.prometheus.metric;
 }
