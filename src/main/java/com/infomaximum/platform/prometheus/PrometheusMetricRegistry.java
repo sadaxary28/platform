@@ -8,35 +8,39 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrometheusRegistry {
+public class PrometheusMetricRegistry {
 
-    private static final Logger log = LoggerFactory.getLogger(PrometheusRegistry.class);
+    private static final Logger log = LoggerFactory.getLogger(PrometheusMetricRegistry.class);
 
     private final List<PrometheusMetric> prometheusMetrics;
 
-    public PrometheusRegistry() {
+    public PrometheusMetricRegistry() {
         this.prometheusMetrics = new ArrayList<>();
     }
 
-    public PrometheusRegistry withDefaultMetrics() {
+    public PrometheusMetricRegistry addDefaultMetrics() {
         prometheusMetrics.add(new JvmMetric());
         return this;
     }
 
-    public PrometheusRegistry withCustomMetric(PrometheusMetric prometheusMetric) {
+    public PrometheusMetricRegistry addCustomMetric(PrometheusMetric prometheusMetric) {
         prometheusMetrics.add(prometheusMetric);
         return this;
     }
 
-    public PrometheusRegistry withCustomMetrics(List<PrometheusMetric> prometheusMetrics) {
+    public PrometheusMetricRegistry addCustomMetrics(List<PrometheusMetric> prometheusMetrics) {
         this.prometheusMetrics.addAll(prometheusMetrics);
         return this;
     }
 
     public void register() {
         prometheusMetrics.forEach(prometheusMetric -> {
-            prometheusMetric.register();
-            log.info("Register prometheus metric: {}", prometheusMetric.getName());
+            try {
+                prometheusMetric.register();
+                log.info("Register prometheus metric: {}", prometheusMetric.getName());
+            } catch (Exception e) {
+                log.warn("Unable register metric: {}. Message: {}", prometheusMetric.getName(), e.getMessage());
+            }
         });
     }
 }

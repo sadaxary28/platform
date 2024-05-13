@@ -20,7 +20,7 @@ import com.infomaximum.platform.component.frontend.engine.service.statistic.Stat
 import com.infomaximum.platform.component.frontend.engine.uploadfile.FrontendMultipartSource;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.GraphQLRequestBuilder;
 import com.infomaximum.platform.component.frontend.request.graphql.builder.impl.DefaultGraphQLRequestBuilder;
-import com.infomaximum.platform.prometheus.PrometheusRegistry;
+import com.infomaximum.platform.prometheus.PrometheusMetricRegistry;
 import com.infomaximum.platform.sdk.component.Component;
 
 import java.util.ArrayList;
@@ -88,8 +88,8 @@ public class FrontendEngine implements AutoCloseable {
         }
 
         // Регистрируем сбор метрик Prometheus
-        if (builder.prometheusRegistry != null) {
-            builder.prometheusRegistry.register();
+        if (builder.prometheusMetricRegistry != null) {
+            builder.prometheusMetricRegistry.register();
         }
 
         this.controllers = new Controllers(this);
@@ -168,7 +168,7 @@ public class FrontendEngine implements AutoCloseable {
 
         private List<FilterGRequest> filterGRequests = new ArrayList<>();
 
-        private PrometheusRegistry prometheusRegistry;
+        private PrometheusMetricRegistry prometheusMetricRegistry;
 
         private StatisticService statisticService = new StatisticServiceImpl();
 
@@ -182,8 +182,8 @@ public class FrontendEngine implements AutoCloseable {
             return this;
         }
 
-        public Builder withPrometheusRegistry(PrometheusRegistry prometheusRegistry) {
-            this.prometheusRegistry = prometheusRegistry;
+        public Builder withPrometheusMetricRegistry(PrometheusMetricRegistry prometheusMetricRegistry) {
+            this.prometheusMetricRegistry = prometheusMetricRegistry;
             return this;
         }
 
