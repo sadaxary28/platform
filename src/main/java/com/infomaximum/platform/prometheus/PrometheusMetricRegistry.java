@@ -2,15 +2,11 @@ package com.infomaximum.platform.prometheus;
 
 import com.infomaximum.platform.prometheus.metric.JvmMetric;
 import com.infomaximum.platform.prometheus.metric.PrometheusMetric;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PrometheusMetricRegistry {
-
-    private static final Logger log = LoggerFactory.getLogger(PrometheusMetricRegistry.class);
 
     private final List<PrometheusMetric> prometheusMetrics;
 
@@ -34,13 +30,6 @@ public class PrometheusMetricRegistry {
     }
 
     public void register() {
-        prometheusMetrics.forEach(prometheusMetric -> {
-            try {
-                prometheusMetric.register();
-                log.info("Register prometheus metric: {}", prometheusMetric.getName());
-            } catch (Exception e) {
-                log.warn("Unable register metric: {}. Message: {}", prometheusMetric.getName(), e.getMessage());
-            }
-        });
+        prometheusMetrics.forEach(PrometheusMetric::register);
     }
 }
