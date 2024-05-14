@@ -75,6 +75,12 @@ dependencies {
     api 'com.infomaximum:network:1.1.3p12'
 //    api project(':network')
 
+    implementation 'io.prometheus:prometheus-metrics-core:1.2.1'
+    implementation 'io.prometheus:prometheus-metrics-exporter-common:1.2.1'
+    implementation ('io.prometheus:prometheus-metrics-instrumentation-jvm:1.2.1') {
+        exclude group: 'io.prometheus', module: 'prometheus-metrics-core'
+    }
+
     implementation('org.reflections:reflections:0.10.2') {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
         exclude group: 'org.javassist', module: 'javassist'
