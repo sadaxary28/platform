@@ -1,12 +1,13 @@
 package com.infomaximum.platform.sdk.graphql.scalartype;
 
-import com.infomaximum.cluster.graphql.exception.GraphQLExecutorInvalidSyntaxException;
 import com.infomaximum.cluster.graphql.schema.scalartype.GraphQLScalarTypeCustom;
 import com.infomaximum.cluster.graphql.schema.scalartype.GraphQLTypeScalar;
 import com.infomaximum.platform.sdk.graphql.out.GOutputFile;
 import graphql.language.IntValue;
 import graphql.schema.Coercing;
+import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
+import graphql.schema.CoercingSerializeException;
 
 import java.time.Duration;
 
@@ -29,7 +30,9 @@ public class GraphQLScalarTypePlatform {
                     } else if (input instanceof Number) {
                         return ((Number)input).longValue();
                     } else {
-                        throw new RuntimeException("Not support type argument: " + input);
+                        throw new CoercingSerializeException(
+                                "Expected type 'Duration' but was '" + typeName(input) + "'."
+                        );
                     }
                 }
 
@@ -42,7 +45,9 @@ public class GraphQLScalarTypePlatform {
                         if (value < 0) throw new CoercingParseValueException("Invalid value: " + value);
                         return Duration.ofMillis(value);
                     } else {
-                        throw new RuntimeException("Not support type argument: " + input);
+                        throw new CoercingParseValueException(
+                                "Expected type 'Duration' but was '" + typeName(input) + "'."
+                        );
                     }
                 }
 
@@ -52,9 +57,10 @@ public class GraphQLScalarTypePlatform {
                         long value = ((IntValue) input).getValue().longValue();
                         if (value < 0) throw new CoercingParseValueException("Invalid value: " + value);
                         return Duration.ofMillis(value);
-                    } else {
-                        throw new GraphQLExecutorInvalidSyntaxException("Not support type argument: " + input);
                     }
+                    throw new CoercingParseLiteralException(
+                            "Expected AST type 'IntValue' but was '" + typeName(input) + "'."
+                    );
                 }
             }
     );
@@ -80,4 +86,11 @@ public class GraphQLScalarTypePlatform {
                 }
             }
     );
+
+    private static String typeName(Object input) {
+        if (input == null) {
+            return "null";
+        }
+        return input.getClass().getSimpleName();
+    }
 }
