@@ -1,5 +1,7 @@
 package com.infomaximum.platform.sdk.component.version;
 
+import com.infomaximum.cluster.struct.Version;
+
 //https://semver.org/lang/ru/
 public class CompatibleVersion {
 

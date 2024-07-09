@@ -1,7 +1,7 @@
 package com.infomaximum.platform.update.core;
 
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.platform.sdk.component.version.Version;
 
 public class ModuleUpdateEntity {
 

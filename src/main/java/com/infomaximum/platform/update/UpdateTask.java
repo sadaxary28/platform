@@ -1,5 +1,7 @@
 package com.infomaximum.platform.update;
 
+import com.infomaximum.cluster.struct.Info;
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.database.domainobject.Transaction;
 import com.infomaximum.database.domainobject.filter.EmptyFilter;
 import com.infomaximum.database.domainobject.iterator.IteratorEntity;
@@ -9,8 +11,6 @@ import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.exception.DowngradingException;
 import com.infomaximum.platform.querypool.Query;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.platform.sdk.component.Info;
-import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.sdk.domainobject.module.ModuleEditable;
 import com.infomaximum.platform.sdk.domainobject.module.ModuleReadable;
 import com.infomaximum.platform.update.annotation.Dependency;
@@ -44,7 +44,7 @@ public abstract class UpdateTask<T extends Component> {
     }
 
     public Info getComponentInfo() {
-        return (Info) component.getInfo();
+        return component.getInfo();
     }
 
     @SuppressWarnings("unchecked")

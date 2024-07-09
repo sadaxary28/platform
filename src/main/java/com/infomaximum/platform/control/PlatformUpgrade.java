@@ -1,5 +1,7 @@
 package com.infomaximum.platform.control;
 
+import com.infomaximum.cluster.struct.Info;
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.domainobject.DomainObjectSource;
@@ -21,8 +23,6 @@ import com.infomaximum.platform.querypool.Query;
 import com.infomaximum.platform.querypool.QueryTransaction;
 import com.infomaximum.platform.querypool.ResourceProvider;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.platform.sdk.component.Info;
-import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.sdk.context.ContextTransaction;
 import com.infomaximum.platform.sdk.context.impl.ContextTransactionImpl;
 import com.infomaximum.platform.sdk.context.source.impl.SourceSystemImpl;
@@ -214,7 +214,7 @@ public class PlatformUpgrade {
                 case UPDATE:
                     log.warn("Module " + module.getInfo().getUuid() + " ready for update");
                     ModuleUpdateEntity updateEntity = new ModuleUpdateEntity(moduleInDB.getVersion(),
-                            ((com.infomaximum.platform.sdk.component.Info) module.getInfo()).getVersion(),
+                            ((Info) module.getInfo()).getVersion(),
                             module.getInfo().getUuid());
                     updateEntity.setComponent(module);
                     modulesForUpdate.add(updateEntity);
@@ -240,7 +240,7 @@ public class PlatformUpgrade {
             UpgradeAction upgradeAction = getUpgradeAction(module, moduleInDB);
             if (upgradeAction == UpgradeAction.UPDATE) {
                 ModuleUpdateEntity updateEntity = new ModuleUpdateEntity(moduleInDB.getVersion(),
-                        ((com.infomaximum.platform.sdk.component.Info) module.getInfo()).getVersion(),
+                        ((Info) module.getInfo()).getVersion(),
                         module.getInfo().getUuid());
                 updateEntity.setComponent(module);
                 modulesForUpdate.add(updateEntity);
@@ -277,7 +277,7 @@ public class PlatformUpgrade {
             return UpgradeAction.INSTALL;
         }
         Version previousVersion = moduleEditable.getVersion();
-        Version nextVersion = ((com.infomaximum.platform.sdk.component.Info) module.getInfo()).getVersion();
+        Version nextVersion = module.getInfo().getVersion();
         int cmpResult = Version.compare(nextVersion, previousVersion);
         if (cmpResult == 0) {
             return UpgradeAction.NONE;

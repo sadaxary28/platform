@@ -1,7 +1,7 @@
 package com.infomaximum.platform.update.util;
 
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.update.UpdateTask;
 import com.infomaximum.platform.update.annotation.Dependency;
 import com.infomaximum.platform.update.annotation.Update;

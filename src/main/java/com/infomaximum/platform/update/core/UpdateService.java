@@ -1,5 +1,7 @@
 package com.infomaximum.platform.update.core;
 
+import com.infomaximum.cluster.struct.Info;
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.domainobject.Transaction;
 import com.infomaximum.database.domainobject.filter.HashFilter;
@@ -8,8 +10,6 @@ import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.schema.Schema;
 import com.infomaximum.database.schema.StructEntity;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.platform.sdk.component.Info;
-import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.sdk.domainobject.module.ModuleEditable;
 import com.infomaximum.platform.update.UpdateTask;
 import com.infomaximum.platform.update.util.UpdateUtil;
@@ -47,7 +47,7 @@ public class UpdateService {
 
     private static void beforeUpdateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate,
                                               Transaction transaction) throws DatabaseException {
-        Info componentInfo = (Info) moduleTaskUpdate.getComponent().getInfo();
+        Info componentInfo = moduleTaskUpdate.getComponent().getInfo();
 
         try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, componentInfo.getUuid()))) {
             if (iter.hasNext()) {
@@ -63,7 +63,7 @@ public class UpdateService {
 
     private static void updateComponent(UpdateUtil.ModuleTaskUpdate moduleTaskUpdate,
                                         Transaction transaction) throws DatabaseException {
-        Info componentInfo = (Info) moduleTaskUpdate.getComponent().getInfo();
+        Info componentInfo = moduleTaskUpdate.getComponent().getInfo();
 
         try (IteratorEntity<ModuleEditable> iter = transaction.find(ModuleEditable.class, new HashFilter(ModuleEditable.FIELD_UUID, componentInfo.getUuid()))) {
             if (iter.hasNext()) {

@@ -1,6 +1,6 @@
 package com.infomaximum.platform.update.util;
 
-import com.infomaximum.platform.sdk.component.version.Version;
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.platform.update.TestSubsystem;
 import com.infomaximum.platform.update.UpdateTask;
 import com.infomaximum.platform.update.exception.UpdateException;

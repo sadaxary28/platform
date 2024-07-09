@@ -2,12 +2,12 @@ package com.infomaximum.platform;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.graphql.GraphQLEngine;
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.platform.control.PlatformStartStop;
 import com.infomaximum.platform.control.PlatformUpgrade;
 import com.infomaximum.platform.exception.ClusterExceptionBuilder;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.querypool.QueryPool;
-import com.infomaximum.platform.sdk.component.version.Version;
 import com.infomaximum.platform.sdk.graphql.customfield.graphqlquery.GraphQLQueryCustomField;
 import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcher;
 import com.infomaximum.platform.sdk.graphql.datafetcher.PlatformDataFetcherExceptionHandler;
