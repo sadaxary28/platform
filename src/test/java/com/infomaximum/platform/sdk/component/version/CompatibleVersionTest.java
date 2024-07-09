@@ -1,6 +1,7 @@
 package com.infomaximum.platform.sdk.component.version;
 
 
+import com.infomaximum.cluster.struct.Version;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

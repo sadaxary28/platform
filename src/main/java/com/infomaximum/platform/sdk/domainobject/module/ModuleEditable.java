@@ -1,7 +1,7 @@
 package com.infomaximum.platform.sdk.domainobject.module;
 
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.database.domainobject.DomainObjectEditable;
-import com.infomaximum.platform.sdk.component.version.Version;
 
 public class ModuleEditable extends ModuleReadable implements DomainObjectEditable {
 

@@ -2,10 +2,10 @@ package com.infomaximum.testcomponent;
 
 import com.infomaximum.cluster.Cluster;
 import com.infomaximum.cluster.exception.ClusterException;
+import com.infomaximum.cluster.struct.Info;
 import com.infomaximum.database.exception.DatabaseException;
 import com.infomaximum.database.provider.DBProvider;
 import com.infomaximum.platform.sdk.component.Component;
-import com.infomaximum.platform.sdk.component.Info;
 import com.infomaximum.rocksdb.RocksDBProvider;
 import com.infomaximum.rocksdb.RocksDataBaseBuilder;
 import com.infomaximum.utils.FileUtils;
@@ -18,7 +18,7 @@ public class TestComponent extends Component {
 
     public static final String UUID = "com.infomaximum.testcomponent";
 
-    public static final Info INFO = (Info) new Info.Builder(TestComponent.UUID, null)
+    public static final Info INFO = (Info) new Info.Builder(TestComponent.UUID)
             .withComponentClass(TestComponent.class)
             .build();
 

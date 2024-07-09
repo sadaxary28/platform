@@ -1,6 +1,6 @@
 package com.infomaximum.platform.exception;
 
-import com.infomaximum.platform.sdk.component.version.Version;
+import com.infomaximum.cluster.struct.Version;
 
 public class DowngradingException extends RuntimeException {
 

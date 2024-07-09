@@ -1,11 +1,11 @@
 package com.infomaximum.platform.sdk.domainobject.module;
 
+import com.infomaximum.cluster.struct.Version;
 import com.infomaximum.database.anotation.Entity;
 import com.infomaximum.database.anotation.Field;
 import com.infomaximum.database.anotation.HashIndex;
 import com.infomaximum.database.domainobject.DomainObject;
 import com.infomaximum.database.exception.DatabaseException;
-import com.infomaximum.platform.sdk.component.version.Version;
 
 @Entity(
         namespace = "com.infomaximum.subsystems",
