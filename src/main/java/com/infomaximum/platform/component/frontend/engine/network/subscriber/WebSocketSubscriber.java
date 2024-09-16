@@ -4,8 +4,8 @@ import com.infomaximum.cluster.graphql.executor.struct.GExecutionResult;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.GraphQLSubscriber;
-import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.utils.GraphQLExecutionResultUtils;
 import graphql.ExecutionResult;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public abstract class WebSocketSubscriber implements Flow.Subscriber {
     @Override
     public void onNext(Object nextExecutionResult) {
         try {
-            GraphQLResponse nextGraphQLResponse = GraphQLRequestExecuteService.buildResponse(
+            GraphQLResponse<JSONObject> nextGraphQLResponse = GraphQLExecutionResultUtils.buildResponse(
                     new GExecutionResult((ExecutionResult) nextExecutionResult), null
             );
 

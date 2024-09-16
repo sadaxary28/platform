@@ -13,7 +13,9 @@ import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.component.frontend.engine.authorize.RequestAuthorize;
 import com.infomaximum.platform.component.frontend.engine.controller.Controllers;
 import com.infomaximum.platform.component.frontend.engine.filter.FilterGRequest;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteServiceDisable;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteServiceImp;
 import com.infomaximum.platform.component.frontend.engine.service.requestcomplete.RequestCompleteCallbackService;
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticServiceImpl;
@@ -52,6 +54,7 @@ public class FrontendEngine implements AutoCloseable {
     private final RequestCompleteCallbackService requestCompleteCallbackService;
 
     private final Controllers controllers;
+    private final boolean isGraphQLDisabled;
 
     private FrontendEngine(Builder builder) {
         this.builder = builder;
@@ -93,6 +96,7 @@ public class FrontendEngine implements AutoCloseable {
         }
 
         this.controllers = new Controllers(this);
+        this.isGraphQLDisabled = builder.isGraphQLDisabled;
     }
 
     public ComponentExecutorTransportImpl.Builder registerControllers(ComponentExecutorTransportImpl.Builder builder) {
@@ -106,13 +110,15 @@ public class FrontendEngine implements AutoCloseable {
     }
 
     public void start() throws NetworkException {
-        graphQLRequestExecuteService = new GraphQLRequestExecuteService(
-                component,
-                platform.getQueryPool(),
-                graphQLEngine, graphQLSubscribeEngine,
-                requestAuthorizeBuilder,
-                platform.getUncaughtExceptionHandler()
-        );
+        graphQLRequestExecuteService = isGraphQLDisabled ?
+                new GraphQLRequestExecuteServiceDisable() :
+                new GraphQLRequestExecuteServiceImp(
+                        component,
+                        platform.getQueryPool(),
+                        graphQLEngine, graphQLSubscribeEngine,
+                        requestAuthorizeBuilder,
+                        platform.getUncaughtExceptionHandler()
+                );
 
         network = builder.builderNetwork.build();
     }
@@ -172,6 +178,8 @@ public class FrontendEngine implements AutoCloseable {
 
         private StatisticService statisticService = new StatisticServiceImpl();
 
+        private boolean isGraphQLDisabled = false;
+
         public Builder(Platform platform, Component component) {
             this.platform = platform;
             this.component = component;
@@ -204,6 +212,11 @@ public class FrontendEngine implements AutoCloseable {
 
         public Builder withStatisticService(StatisticService statisticService) {
             this.statisticService = statisticService;
+            return this;
+        }
+
+        public Builder withGraphQLDisabled(boolean isGraphQLDisabled) {
+            this.isGraphQLDisabled = isGraphQLDisabled;
             return this;
         }
 

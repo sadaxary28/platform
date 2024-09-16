@@ -1,5 +1,6 @@
 package com.infomaximum.platform.component.frontend.engine.controller.http.graphql;
 
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteServiceImp;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GExecutionStatistics;
 import com.infomaximum.cluster.graphql.executor.struct.GSubscriptionPublisher;
 import com.infomaximum.cluster.graphql.struct.GRequest;
@@ -8,6 +9,7 @@ import com.infomaximum.platform.component.frontend.engine.FrontendEngine;
 import com.infomaximum.platform.component.frontend.engine.filter.FilterGRequest;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.GraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
+import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.utils.GraphQLExecutionResultUtils;
 import com.infomaximum.platform.component.frontend.engine.service.requestcomplete.RequestCompleteCallbackService;
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
 import com.infomaximum.platform.component.frontend.request.graphql.GraphQLRequest;
@@ -50,7 +52,7 @@ public class GraphQLController {
         try {
             graphQLRequest = frontendEngine.getGraphQLRequestBuilder().build(request);
         } catch (PlatformException e) {
-            GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLPlatformException(e);
+            GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLExecutionResultUtils.coercionGraphQLPlatformException(e);
             return CompletableFuture.completedFuture(buildResponseEntity(null, graphQLWrapperSubsystemException));
         }
 
@@ -69,7 +71,7 @@ public class GraphQLController {
                     filter.filter(gRequest);
                 }
             } catch (PlatformException e) {
-                GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLRequestExecuteService.coercionGraphQLPlatformException(e);
+                GraphQLWrapperPlatformException graphQLWrapperSubsystemException = GraphQLExecutionResultUtils.coercionGraphQLPlatformException(e);
                 return CompletableFuture.completedFuture(buildResponseEntity(null, graphQLWrapperSubsystemException));
             }
         }
@@ -89,8 +91,8 @@ public class GraphQLController {
                         SingleSubscriber singleSubscriber = new SingleSubscriber();
                         completionPublisher.subscribe(singleSubscriber);
                         return singleSubscriber.getCompletableFuture().thenApply(executionResult -> {
-                            GraphQLResponse graphQLResponse =
-                                    GraphQLRequestExecuteService.buildResponse(executionResult, null);
+                            GraphQLResponse<JSONObject> graphQLResponse =
+                                    GraphQLExecutionResultUtils.buildResponse(executionResult, null);
                             return buildResponseEntity(gRequest, graphQLResponse);
                         });
                     } else if (data instanceof GOutputFile) {
@@ -159,10 +161,10 @@ public class GraphQLController {
         JSONObject out = new JSONObject();
         if (!graphQLResponse.error) {
             httpStatus = HttpStatus.OK;
-            out.put(GraphQLRequestExecuteService.JSON_PROP_DATA, graphQLResponse.data);
+            out.put(GraphQLRequestExecuteServiceImp.JSON_PROP_DATA, graphQLResponse.data);
         } else {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-            out.put(GraphQLRequestExecuteService.JSON_PROP_ERROR, graphQLResponse.data);
+            out.put(GraphQLRequestExecuteServiceImp.JSON_PROP_ERROR, graphQLResponse.data);
         }
 
         HttpHeaders headers = new HttpHeaders();
