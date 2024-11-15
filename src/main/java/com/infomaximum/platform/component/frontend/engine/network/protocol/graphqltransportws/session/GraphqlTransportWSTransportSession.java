@@ -6,6 +6,7 @@ import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.GraphqlTransportWSProtocol;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.packet.Packet;
@@ -24,8 +25,8 @@ public class GraphqlTransportWSTransportSession extends TransportSession {
     //Флаг определяеющий что мы в фазе рукопожатия
     private volatile boolean phaseHandshake;
 
-    public GraphqlTransportWSTransportSession(GraphqlTransportWSProtocol protocol, final Transport transport, final Object channel) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        super(protocol, transport, channel);
+    public GraphqlTransportWSTransportSession(GraphqlTransportWSProtocol protocol, final Transport transport, final Object channel, UpgradeRequest upgradeRequest) {
+        super(protocol, transport, channel, upgradeRequest);
 
         //Проверяем наличие фазы рукопожатия
         if (protocol.handshake != null) {

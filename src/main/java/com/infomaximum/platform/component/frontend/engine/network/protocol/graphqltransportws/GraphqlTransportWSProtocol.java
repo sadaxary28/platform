@@ -2,12 +2,11 @@ package com.infomaximum.platform.component.frontend.engine.network.protocol.grap
 
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.session.TransportSession;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.handler.graphql.GraphQLTransportWSHandler;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.handler.handshake.Handshake;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.session.GraphqlTransportWSTransportSession;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class GraphqlTransportWSProtocol extends Protocol {
 
@@ -27,8 +26,8 @@ public class GraphqlTransportWSProtocol extends Protocol {
     }
 
     @Override
-    public TransportSession onConnect(Transport transport, Object channel) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
-        GraphqlTransportWSTransportSession transportSession = new GraphqlTransportWSTransportSession(this, transport, channel);
+    public TransportSession onConnect(Transport transport, Object channel, UpgradeRequest upgradeRequest) {
+        GraphqlTransportWSTransportSession transportSession = new GraphqlTransportWSTransportSession(this, transport, channel, upgradeRequest);
 
         //Начинаем фазу рукопожатия
         if (handshake == null) {

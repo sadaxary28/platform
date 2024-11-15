@@ -8,6 +8,7 @@ module com.infomaximum.platform {
     requires net.minidev.jsonsmart;
     requires spring.core;
     requires spring.web;
+    requires jakarta.servlet;
     requires org.eclipse.jetty.ee10.servlet;
     requires org.eclipse.jetty.websocket.api;
     requires io.prometheus.metrics.core;

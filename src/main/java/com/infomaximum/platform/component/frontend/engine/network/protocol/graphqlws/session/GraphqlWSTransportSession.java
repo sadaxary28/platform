@@ -6,6 +6,7 @@ import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.GraphqlWSProtocol;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqlws.packet.Packet;
@@ -15,8 +16,6 @@ import net.minidev.json.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
-
 public class GraphqlWSTransportSession extends TransportSession {
 
     private final static Logger log = LoggerFactory.getLogger(GraphqlWSTransportSession.class);
@@ -24,15 +23,14 @@ public class GraphqlWSTransportSession extends TransportSession {
     //Флаг определяеющий что мы в фазе рукопожатия
     private volatile boolean phaseHandshake;
 
-    public GraphqlWSTransportSession(GraphqlWSProtocol protocol, final Transport transport, final Object channel) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        super(protocol, transport, channel);
+    public GraphqlWSTransportSession(GraphqlWSProtocol protocol, final Transport transport, final Object channel, UpgradeRequest upgradeRequest) {
+        super(protocol, transport, channel, upgradeRequest);
 
         //Проверяем наличие фазы рукопожатия
         if (protocol.handshake != null) {
             phaseHandshake = true;
         } else {
             phaseHandshake = false;
-//			network.onHandshake(session);
         }
     }
 

@@ -7,6 +7,7 @@ import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.struct.RemoteAddress;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.GraphQLSubscriber;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.packet.Packet;
 import com.infomaximum.platform.component.frontend.engine.network.protocol.graphqltransportws.packet.TypePacket;
@@ -14,17 +15,12 @@ import com.infomaximum.platform.component.frontend.engine.network.protocol.graph
 import com.infomaximum.platform.component.frontend.engine.provider.ProviderGraphQLRequestExecuteService;
 import com.infomaximum.platform.component.frontend.engine.service.graphqlrequestexecute.struct.GraphQLResponse;
 import com.infomaximum.platform.component.frontend.request.GRequestWebSocket;
-import com.infomaximum.platform.sdk.utils.StreamUtils;
-import jakarta.servlet.http.Cookie;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.eclipse.jetty.websocket.api.UpgradeRequest;
 
 import java.io.Serializable;
-import java.net.HttpCookie;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -80,10 +76,7 @@ public class GraphQLTransportWSHandler implements PacketHandler {
 
         UpgradeRequest upgradeRequest = ((SessionImpl) session).getTransportSession().getUpgradeRequest();
 
-        Map<String, String> parameters = new HashMap<>();
-        for (Map.Entry<String, List<String>> entry : upgradeRequest.getParameterMap().entrySet()) {
-            parameters.put(entry.getKey(), entry.getValue().get(0));
-        }
+        Map<String, String> parameters = upgradeRequest.getParameters();
 
         RemoteAddress remoteAddress = ((SessionImpl) session).getTransportSession().buildRemoteAddress();
         String xTraceId = ((SessionImpl) session).getTransportSession().getXTraceId();
@@ -95,7 +88,7 @@ public class GraphQLTransportWSHandler implements PacketHandler {
                 xTraceId,
                 session.getUuid(),
                 parameters,
-                buildCookies(upgradeRequest),
+                upgradeRequest.getCookies(),
                 session.getHandshakeData()
         );
 
@@ -132,18 +125,6 @@ public class GraphQLTransportWSHandler implements PacketHandler {
             } else {
                 throw new RuntimeException("Not support type out: " + data);
             }
-        }
-    }
-
-    private static Cookie[] buildCookies(UpgradeRequest upgradeRequest) {
-        List<HttpCookie> cookies = upgradeRequest.getCookies();
-        if (cookies == null) {
-            return new Cookie[0];
-        } else {
-            return upgradeRequest.getCookies().stream()
-                    .filter(StreamUtils.distinctByKey(HttpCookie::getName))
-                    .map(httpCookie -> new Cookie(httpCookie.getName(), httpCookie.getValue()))
-                    .toArray(Cookie[]::new);
         }
     }
 }
