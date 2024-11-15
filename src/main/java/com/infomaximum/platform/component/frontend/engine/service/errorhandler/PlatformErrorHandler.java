@@ -2,12 +2,12 @@ package com.infomaximum.platform.component.frontend.engine.service.errorhandler;
 
 import com.infomaximum.platform.utils.ExceptionUtils;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.io.EofException;
-import org.eclipse.jetty.server.Dispatcher;
+import org.eclipse.jetty.ee10.servlet.Dispatcher;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.handler.ErrorHandler;
+import org.eclipse.jetty.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.util.NestedServletException;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 public class PlatformErrorHandler extends ErrorHandler {
@@ -34,7 +35,7 @@ public class PlatformErrorHandler extends ErrorHandler {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
+    public boolean handle(Request request, Response response, Callback callback) {
         try {
             if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
                 actionErrorHandler.handlerNotFound(response);
@@ -43,12 +44,13 @@ public class PlatformErrorHandler extends ErrorHandler {
 
                 response.setStatus(responseEntity.getStatusCodeValue());
                 responseEntity.getHeaders().forEach((name, values) -> {
-                    response.setHeader(name, values.get(0));
+                    response.getHeaders().add(name, values.get(0));
                     for (int i = 1; i < values.size(); i++) {
-                        response.addHeader(name, values.get(i));
+                        response.getHeaders().add(name, values.get(i));
                     }
                 });
-                response.getOutputStream().write(responseEntity.getBody());
+                response.write(true, ByteBuffer.wrap(responseEntity.getBody()), Callback.NOOP);
+//                response.getOutputStream().write(responseEntity.getBody());
 
                 log.error("SERVICE_UNAVAILABLE", (Throwable) request.getAttribute(Dispatcher.ERROR_EXCEPTION));
             } else if (response.getStatus() >= 400 && response.getStatus() < 500) {
@@ -62,11 +64,12 @@ public class PlatformErrorHandler extends ErrorHandler {
                 }
             }
         } catch (Throwable ex) {
-            processingException(ex, baseRequest, response);
+            processingException(ex, request, response);
         }
+        return true;
     }
 
-    private void processingException(Throwable ex, Request baseRequest, HttpServletResponse response) {
+    private void processingException(Throwable ex, Request request, Response response) {
         List<Throwable> chainThrowables = ExceptionUtils.getThrowableList(ex);
 
         if (ex instanceof EofException) {
@@ -141,7 +144,7 @@ public class PlatformErrorHandler extends ErrorHandler {
             return;
         }
 
-        String msgException = "BaseRequest: " + baseRequest.toString() + ", response.status: " + response.getStatus();
+        String msgException = "Request: " + request.toString() + ", response.status: " + response.getStatus();
         log.error(msgException, ex);
 
         //Пишем отладочную информацию

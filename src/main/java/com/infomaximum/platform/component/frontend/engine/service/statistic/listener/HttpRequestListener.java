@@ -1,7 +1,8 @@
 package com.infomaximum.platform.component.frontend.engine.service.statistic.listener;
 
+import com.infomaximum.network.event.HttpChannelListener;
 import com.infomaximum.platform.component.frontend.engine.service.statistic.StatisticService;
-import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.server.Request;
 
 import java.nio.ByteBuffer;
@@ -9,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class HttpRequestListener implements HttpChannel.Listener {
+public class HttpRequestListener implements HttpChannelListener {
 
     private ConcurrentMap<Request, AtomicLong> fileDownloadRequests;
 
@@ -18,7 +19,7 @@ public class HttpRequestListener implements HttpChannel.Listener {
     }
 
     @Override
-    public void onResponseBegin(Request request) {
+    public void onResponseBegin(Request request, int status, HttpFields headers) {
         Long downloadFileSize = (Long) request.getAttribute(StatisticService.ATTRIBUTE_DOWNLOAD_FILE_SIZE);
         if (downloadFileSize != null) {
             fileDownloadRequests.put(request, new AtomicLong(downloadFileSize));
@@ -26,7 +27,7 @@ public class HttpRequestListener implements HttpChannel.Listener {
     }
 
     @Override
-    public void onResponseContent(Request request, ByteBuffer content) {
+    public void onResponseWrite(Request request, boolean last, ByteBuffer content) {
         AtomicLong size = fileDownloadRequests.get(request);
         if (size != null) {
             int capacity = content.capacity();
@@ -35,12 +36,7 @@ public class HttpRequestListener implements HttpChannel.Listener {
     }
 
     @Override
-    public void onComplete(Request request) {
-        fileDownloadRequests.remove(request);
-    }
-
-    @Override
-    public void onResponseFailure(Request request, Throwable failure) {
+    public void onComplete(Request request, int status, HttpFields headers, Throwable failure) {
         fileDownloadRequests.remove(request);
     }
 

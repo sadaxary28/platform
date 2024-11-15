@@ -2,15 +2,14 @@ module com.infomaximum.platform {
     requires transitive com.infomaximum.rdao;
     requires transitive com.infomaximum.cluster;
     requires transitive com.infomaximum.cluster.graphql;
-    requires org.slf4j;
     requires com.graphqljava;
     requires com.infomaximum.network;
     requires org.reflections;
     requires net.minidev.jsonsmart;
-    requires org.eclipse.jetty.server;
     requires spring.core;
     requires spring.web;
-    requires org.eclipse.jetty.websocket.jetty.api;
+    requires org.eclipse.jetty.ee10.servlet;
+    requires org.eclipse.jetty.websocket.api;
     requires io.prometheus.metrics.core;
     requires io.prometheus.metrics.model;
     requires io.prometheus.metrics.instrumentation.jvm;

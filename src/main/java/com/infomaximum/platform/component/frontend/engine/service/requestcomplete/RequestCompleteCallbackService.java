@@ -1,9 +1,10 @@
 package com.infomaximum.platform.component.frontend.engine.service.requestcomplete;
 
-import org.eclipse.jetty.server.HttpChannel;
+import com.infomaximum.network.event.HttpChannelListener;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.server.Request;
 
-public class RequestCompleteCallbackService implements HttpChannel.Listener {
+public class RequestCompleteCallbackService implements HttpChannelListener {
 
     public final static String ATTRIBUTE_COMPLETE_REQUEST_CALLBACK = "com.infomaximum.request.complete.callback";
 
@@ -18,13 +19,7 @@ public class RequestCompleteCallbackService implements HttpChannel.Listener {
     }
 
     @Override
-    public void onComplete(Request request) {
-        execCallback(request);
-    }
-
-    @Override
-    public void onResponseFailure(Request request, Throwable failure) {
-        //Ulitin V. Нет уверености в порядке вызовов - поэтому на всякий случай вызывем - хуже не будет
+    public void onComplete(Request request, int status, HttpFields headers, Throwable failure) {
         execCallback(request);
     }
 
