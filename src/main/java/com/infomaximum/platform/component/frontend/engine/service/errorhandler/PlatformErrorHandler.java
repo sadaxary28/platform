@@ -50,8 +50,6 @@ public class PlatformErrorHandler extends ErrorHandler {
                     }
                 });
                 response.write(true, ByteBuffer.wrap(responseEntity.getBody()), Callback.NOOP);
-//                response.getOutputStream().write(responseEntity.getBody());
-
                 log.error("SERVICE_UNAVAILABLE", (Throwable) request.getAttribute(Dispatcher.ERROR_EXCEPTION));
             } else if (response.getStatus() >= 400 && response.getStatus() < 500) {
                 //Ошибки построения запроса клиентом - игнорируем и прокидываем ответ напрямую
@@ -66,6 +64,7 @@ public class PlatformErrorHandler extends ErrorHandler {
         } catch (Throwable ex) {
             processingException(ex, request, response);
         }
+        callback.succeeded();//Крайне важный вызов, без него соединение keep-alive зависнет и все последующие запросы от браузера в рамках этого соединения также зависнут
         return true;
     }
 
