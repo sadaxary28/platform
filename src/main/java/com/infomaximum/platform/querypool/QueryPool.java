@@ -6,6 +6,7 @@ import com.infomaximum.platform.querypool.service.DetectLongQuery;
 import com.infomaximum.platform.querypool.service.DetectQueueFilling;
 import com.infomaximum.platform.querypool.service.threadcontext.ThreadContext;
 import com.infomaximum.platform.querypool.service.threadcontext.ThreadContextImpl;
+import com.infomaximum.platform.querypool.thread.QueryThreadPoolExecutor;
 import com.infomaximum.platform.sdk.component.Component;
 import com.infomaximum.platform.sdk.context.ContextTransaction;
 import com.infomaximum.platform.sdk.context.ContextTransactionInternal;
@@ -160,20 +161,18 @@ public class QueryPool {
     private volatile PlatformException hardException = null;
 
     public QueryPool(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        DefaultThreadGroup defaultThreadGroup = new DefaultThreadGroup("QueryPool", uncaughtExceptionHandler);
-
-        this.threadPool = new DefaultThreadPoolExecutor(
+        this.threadPool = new QueryThreadPoolExecutor(
                 MAX_THREAD_COUNT,
                 MAX_THREAD_COUNT,
                 0L,
                 TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(MAX_WORKED_QUERY_COUNT),
-                defaultThreadGroup
+                uncaughtExceptionHandler
         );
         this.detectLongQuery = new DetectLongQuery(this, uncaughtExceptionHandler);
         this.detectHighLoad = new DetectHighLoad(this, threadPool, uncaughtExceptionHandler);
         this.detectQueueFilling = new DetectQueueFilling();
-        this.threadContext = new ThreadContextImpl(defaultThreadGroup);
+        this.threadContext = new ThreadContextImpl();
     }
 
     public void setHardException(PlatformException e) {

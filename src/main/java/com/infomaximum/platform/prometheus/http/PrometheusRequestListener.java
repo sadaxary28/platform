@@ -55,6 +55,7 @@ public class PrometheusRequestListener implements HttpChannelListener, AutoClose
     public void close() {
         isClose.set(true);
         executorService.shutdownNow();
+        executorService.close();
     }
 
     private record RequestInfo(String method, String uriPath, int status, double requestSeconds){}

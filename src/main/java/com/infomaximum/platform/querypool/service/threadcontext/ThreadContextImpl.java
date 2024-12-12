@@ -1,16 +1,13 @@
 package com.infomaximum.platform.querypool.service.threadcontext;
 
 import com.infomaximum.platform.sdk.context.Context;
-import com.infomaximum.platform.utils.DefaultThreadGroup;
 
 
 public class ThreadContextImpl implements ThreadContext {
 
-    private final DefaultThreadGroup defaultThreadGroup;
     private final ThreadLocal<Context> threadContexts;
 
-    public ThreadContextImpl(DefaultThreadGroup defaultThreadGroup) {
-        this.defaultThreadGroup = defaultThreadGroup;
+    public ThreadContextImpl() {
         threadContexts = new ThreadLocal<Context>();
     }
 
@@ -24,10 +21,6 @@ public class ThreadContextImpl implements ThreadContext {
 
     @Override
     public Context getContext() {
-        Thread thread = Thread.currentThread();
-        if (thread.getThreadGroup() != defaultThreadGroup) {
-            return null;
-        }
         return threadContexts.get();
     }
 }
