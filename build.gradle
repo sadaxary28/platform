@@ -10,7 +10,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.1.18'
+version '0.1.19'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -72,7 +72,7 @@ dependencies {
     api 'com.infomaximum:rdao:1.14.15'
 //    api project(':rdao')
 
-    api 'com.infomaximum:network:1.2.5'
+    api 'com.infomaximum:network:1.2.6'
 //    api project(':network')
 
     implementation 'io.prometheus:prometheus-metrics-core:1.3.1'
