@@ -50,7 +50,7 @@ public class Platform implements AutoCloseable {
                     .withExceptionBuilder(new ClusterExceptionBuilder())
                     .withListenerUpdateConnect(updateNodeConnectService)
                     .build();
-            this.queryPool = new QueryPool(builder.uncaughtExceptionHandler);
+            this.queryPool = new QueryPool(builder.isVirtualThread, builder.uncaughtExceptionHandler);
 
             instant = this;
         }
@@ -122,6 +122,8 @@ public class Platform implements AutoCloseable {
 
         private Object clusterContext;
 
+        private boolean isVirtualThread = true;
+
         public Builder() {
             this(
                     new Thread.UncaughtExceptionHandler() {
@@ -149,6 +151,11 @@ public class Platform implements AutoCloseable {
 
         public Builder withClusterContext(Object clusterContext) {
             this.clusterContext = clusterContext;
+            return this;
+        }
+
+        public Builder withVirtualThread(boolean value) {
+            this.isVirtualThread = value;
             return this;
         }
 

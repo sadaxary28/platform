@@ -112,7 +112,7 @@ public class QueryPoolFutureTest {
     }
 
     private QueryPool buildQueryPool() {
-        return new QueryPool((t, e) -> uncaughtException = e);
+        return new QueryPool(true, (t, e) -> uncaughtException = e);
     }
 
     @AfterAll

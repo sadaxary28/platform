@@ -74,7 +74,7 @@ public class QueryPoolTest {
     }
 
     private QueryPool buildPool() {
-        return new QueryPool((t, e) -> uncaughtException = e);
+        return new QueryPool(true, (t, e) -> uncaughtException = e);
     }
 
     @Test
