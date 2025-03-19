@@ -1,5 +1,6 @@
 package com.infomaximum.platform.querypool;
 
+import com.infomaximum.platform.Platform;
 import com.infomaximum.platform.exception.PlatformException;
 import com.infomaximum.platform.querypool.service.DetectHighLoad;
 import com.infomaximum.platform.querypool.service.DetectLongQuery;
@@ -14,6 +15,8 @@ import com.infomaximum.platform.sdk.exception.GeneralExceptionBuilder;
 import com.infomaximum.platform.utils.DefaultThreadGroup;
 import com.infomaximum.platform.utils.DefaultThreadPoolExecutor;
 import com.infomaximum.platform.utils.LockGuard;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.*;
@@ -21,6 +24,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class QueryPool {
+
+    private final static Logger log = LoggerFactory.getLogger(QueryPool.class);
 
     public enum LockType {
         SHARED, EXCLUSIVE
@@ -160,15 +165,28 @@ public class QueryPool {
     private volatile int lowPriorityWaitingQueryCount = 0;
     private volatile PlatformException hardException = null;
 
-    public QueryPool(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
-        this.threadPool = new QueryThreadPoolExecutor(
-                MAX_THREAD_COUNT,
-                MAX_THREAD_COUNT,
-                0L,
-                TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(MAX_WORKED_QUERY_COUNT),
-                uncaughtExceptionHandler
-        );
+    public QueryPool(boolean isVirtualThread, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+        if (isVirtualThread) {
+            this.threadPool = new QueryThreadPoolExecutor(
+                    MAX_THREAD_COUNT,
+                    MAX_THREAD_COUNT,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<>(MAX_WORKED_QUERY_COUNT),
+                    uncaughtExceptionHandler
+            );
+        } else {
+            DefaultThreadGroup defaultThreadGroup = new DefaultThreadGroup("QueryPool", uncaughtExceptionHandler);
+            this.threadPool = new DefaultThreadPoolExecutor(
+                    MAX_THREAD_COUNT,
+                    MAX_THREAD_COUNT,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<>(MAX_WORKED_QUERY_COUNT),
+                    defaultThreadGroup
+            );
+        }
+
         this.detectLongQuery = new DetectLongQuery(this, uncaughtExceptionHandler);
         this.detectHighLoad = new DetectHighLoad(this, threadPool, uncaughtExceptionHandler);
         this.detectQueueFilling = new DetectQueueFilling();
