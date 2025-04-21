@@ -10,7 +10,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '0.1.26'
+version '0.1.27'
 
 ext.moduleName = 'com.infomaximum.platform'
 
@@ -60,14 +60,8 @@ dependencies {
     api 'com.infomaximum:cluster:1.1.11'
 //    api project(':cluster')
 
-    api 'com.infomaximum:cluster-graphql:1.1.15'
+    api 'com.infomaximum:cluster-graphql:1.1.16'
 //    api project(':cluster-graphql')
-    //Разобраться! Транзитивная зависимость,
-    implementation('com.graphql-java:graphql-java:19.11') {
-        exclude group: 'org.reactivestreams', module: 'reactive-streams'
-        exclude group: 'com.graphql-java', module: 'java-dataloader'//from exclude org.slf4j
-        exclude group: 'org.slf4j', module: 'slf4j-api'
-    }
 
     api 'com.infomaximum:rdao:1.14.15'
 //    api project(':rdao')
