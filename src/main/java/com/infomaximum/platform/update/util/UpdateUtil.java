@@ -154,10 +154,14 @@ public class UpdateUtil {
         }
 
         for (Class updateTask : new Reflections(component.getInfo().getUuid()).getTypesAnnotatedWith(Update.class, true)) {
-            final Update annotationEntity = UpdateUtil.getUpdateAnnotation(updateTask);
-            if (equalsUpdateVersion(Version.parseTaskUpdate(annotationEntity.previousVersion()), oldVersion)
-                    && equalsUpdateVersion(Version.parseTaskUpdate(annotationEntity.version()), newVersion)) {
-                return updateTask;
+            try {
+                final Update annotationEntity = UpdateUtil.getUpdateAnnotation(updateTask);
+                if (equalsUpdateVersion(Version.parseTaskUpdate(annotationEntity.previousVersion()), oldVersion)
+                        && equalsUpdateVersion(Version.parseTaskUpdate(annotationEntity.version()), newVersion)) {
+                    return updateTask;
+                }
+            } catch (Exception e) {
+                throw new UpdateException("Error processing updateTask: " + updateTask.getName() + ", component: " + component, e);
             }
         }
         throw new UpdateException("Can't find update task " + oldVersion + "->" + newVersion + " for " + component);
